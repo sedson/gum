@@ -1,0 +1,63 @@
+@font-face {
+  font-family: 'undefined';
+  src: url(/fonts/undefined-medium.woff);
+}
+@font-face {
+  font-family: 'Victor';
+  src: url(/fonts/VictorMono-Medium.woff);
+}
+@font-face {
+  font-family: 'Victor';
+  src: url(/fonts/VictorMono-MediumItalic.woff);
+  font-style: italic;
+}
+
+:root {
+  font-size: 12px;
+  color: silver;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4em;
+  font-size: 1em;
+}
+
+body {
+  overflow: hidden;
+  font-family: 'Victor', 'Courier New', Courier, monospace;
+}
+
+.felt-panel {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(45, 45, 45);
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats {
+  position: absolute;
+  z-index: 20;
+  font-size: 1em;
+  color: silver;
+  white-space: pre;
+}
+
+
+#canvas2 {
+  background-color: yellow;
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  transform: none;
+  background-origin: padding-box;
+  z-index: 100;
+}
