@@ -61,3 +61,8 @@ body {
   background-origin: padding-box;
   z-index: 100;
 }
+
+a {
+  color: silver;
+  cursor: pointer;
+}

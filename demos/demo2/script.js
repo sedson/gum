@@ -1,4 +1,4 @@
-import { g, Gum } from './js/GUM.js';
+import { g, Gum } from '/js/GUM.js';
 
 window.g = g;
 window.gum = new Gum('#canvas', 1000, 1000, { scale: 0.5 });

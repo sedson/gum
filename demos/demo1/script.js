@@ -1,6 +1,6 @@
 
 
-import {g, Gum} from './js/GUM.js'
+import {g, Gum} from '/js/GUM.js'
 // const { ft, FeltApp } = FELT;
 
 // Create a new felt app that renders to the '#canvas' element. The size 
@@ -22,12 +22,12 @@ let A, B;
 
 let tex = new g.Texer(64);
 
-let blueTex = new g.Texer(32);
-blueTex.fill(g.color('green').rgbString());
-blueTex.clear();
+// let blueTex = new g.Texer(32);
+// blueTex.fill(g.color('green').rgbString());
+// blueTex.clear();
 
 
-app.defaultPass = 'geo';
+app.defaultPass = 'textured';
 
 
 /**
@@ -43,9 +43,7 @@ function setup () {
   A.geometry = app.addMesh(cube);
   B.geometry = app.addMesh(sphere);
 
-  B.move(0, 0.5, 0);
-  B.scale(1);
-  B.setParent(A);
+  B.move(0, 1, 0).scale(0.5).setParent(A);
 
   A.texture = tex.id;
   B.texture = tex.id;
@@ -55,7 +53,7 @@ function setup () {
   });
 
   app.addTexer(tex);
-  app.addTexer(blueTex);
+  // app.addTexer(blueTex);
   
   // app.addEffect();
 }
