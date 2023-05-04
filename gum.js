@@ -1,4 +1,4 @@
-var FELT = (function (exports) {
+var gum = (function (exports) {
   'use strict';
 
   /**
@@ -403,7 +403,7 @@ var FELT = (function (exports) {
 
 
     /**
-     * Get the css-ready rgb or rgba string representation of this color.
+     * Get the CSS-ready rgb or rgba string representation of this color.
      * @returns {string}
      */
     rgbString () {
@@ -418,7 +418,7 @@ var FELT = (function (exports) {
 
 
     /**
-     * Get the css-ready hsl or hsla string representation of this color.
+     * Get the CSS-ready hsl or hsla string representation of this color.
      * @returns {string}
      */
     hslString () {
@@ -429,6 +429,14 @@ var FELT = (function (exports) {
         return `hsl(${h360}, ${s100}, ${l100})`;
       }
       return `hsla(${h360}, ${s100}, ${l100}, this._a)`;
+    }
+
+    /**
+     * Blend this color with other by amount using mode. 
+     * 
+     */
+    blend (other, amt = 0.5, mode = 'RGB') {
+      return blend(this, other, amt, mode);
     }
   }
 
@@ -478,7 +486,7 @@ var FELT = (function (exports) {
 
 
   /**
-   * Check if an array is a valid array of parsable numbers with at least three
+   * Check if an array is a valid array of parse-able numbers with at least three
    * values.
    * @param {array} arr An array of potential color values. 
    * @returns {boolean} Whether the array is valid.
@@ -705,6 +713,63 @@ var FELT = (function (exports) {
     return [h, s, l, a];
   }
 
+
+  /**
+   * Check if an object is an instance of Color.
+   */ 
+  function isColor (any) {
+    return (any instanceof Color);
+  }
+
+  /**
+   * Blend two colors – src and target - by amount using mode. 
+   * @param {Color} src The source color.
+   * @param {Color} target The target color.
+   * @param {number} amt The 0->1 blend amount.
+   * @param {string} mode The blend space. 'RGB' or 'HSL'.
+   * @return {Color}
+   */
+  function blend (src, target, amt = 0.5, mode = 'RGB') {
+    switch (mode.toUpperCase()) {
+      case 'RGB' : 
+        return blendRGB_(src, target, amt);
+
+      case 'HSL' :
+        return blendHSL_(src, target, amt);
+    }
+  }
+
+
+
+  function blendRGB_ (src, target, amt = 0.5) {
+    if (!isColor(src) || !isColor(target)) {
+      return new Color();
+    }
+
+    amt *= target.a;
+
+    const r = lerp(src.r, target.r, amt);
+    const g = lerp(src.g, target.g, amt);
+    const b = lerp(src.b, target.b, amt);
+    return new Color(r, g, b, src.a);
+  }
+
+
+  function blendHSL_ (src, target, amt = 0.5) {
+    if (!isColor(src) || !isColor(target)) {
+      return new Color();
+    }
+
+    amt *= target.a;
+
+    const h= lerp(src.h, target.h, amt);
+    const s = lerp(src.s, target.s, amt);
+    const l = lerp(src.l, target.l, amt);
+    return new Color(...hslToRgb(h, s, l, src.a));
+  }
+
+
+
   window.Color = Color;
 
   /**
@@ -713,9 +778,16 @@ var FELT = (function (exports) {
    */
 
   const shaders = {
+    "default": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nin vec4 vColor;\nout vec4 fragColor;\n\nvoid main() {\n  fragColor = vec4(vColor.rgb, 1.0);\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nout vec4 vColor;\n\n\nvoid main() \n{\n  mat4 modelView = uView * uModel;\n  gl_Position = uProjection * uView * uModel * aPosition;\n  vColor = aColor;\n}"
+    },
     "geo": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\nuniform vec4 uColor;\n\nin vec4 vWorldPosition;\nin vec4 vColor;\nin vec3 vWorldNormal;\nin vec3 vViewNormal;\nin vec3 vSurfaceId;\nin float vDepth;\nin float vId;\n\nout vec4 fragColor;\n\nvoid main() {\n  vec3 lightDir = normalize(vec3(3.0, 4.0, 2.0));\n  float nDotL = clamp(dot(vWorldNormal, lightDir), 0.0, 1.0);\n  float light = clamp(smoothstep(0.1, 0.4, nDotL) + 0.8, 0.0, 1.0);\n  float nDotV = dot(vViewNormal, vec3(0.0, 0.0, 1.0));\n\n  fragColor = vec4(vId, nDotV, nDotL, 1.0);\n\n  // fragColor = vec4(vec3(nDotL * 0.5 + 0.5), 1.0);\n  fragColor = vec4(vViewNormal * 0.5 + 0.5, 1.0);\n  fragColor = vec4(vSurfaceId, 1.0);\n  // fragColor = vec4(vColor.rgb, 1.0);\n  // fragColor = vec4(vColor.rgb * nDotL, 1.0);\n\n}",
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\nuniform vec4 uColor;\n\nin vec4 vWorldPosition;\nin vec4 vColor;\nin vec3 vWorldNormal;\nin vec3 vViewNormal;\nin vec3 vSurfaceId;\nin float vDepth;\nin float vId;\n\nout vec4 fragColor;\n\nvoid main() {\n  vec3 lightDir = normalize(vec3(3.0, 4.0, 2.0));\n  float nDotL = clamp(dot(vWorldNormal, lightDir), 0.0, 1.0);\n  float light = clamp(smoothstep(0.1, 0.4, nDotL) + 0.8, 0.0, 1.0);\n  float nDotV = dot(vViewNormal, vec3(0.0, 0.0, 1.0));\n\n  fragColor = vec4(vId, nDotV, nDotL, 1.0);\n\n  fragColor = vec4(vViewNormal * 0.5 + 0.5, 1.0);\n  fragColor = vec4(vSurfaceId, 1.0);\n}",
       "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\nuniform float uNear;\nuniform float uFar;\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nin vec4 aNormal;\nin float aSurfaceId;\n\nout vec4 vWorldPosition;\nout vec4 vColor;\nout vec3 vWorldNormal;\nout vec3 vViewNormal;\nout vec3 vSurfaceId;\nout float vDepth;\nout float vId;\n\n/**\n *\n */\nvec3 hashId(float id) {\n  float r = fract(mod(id * 25738.32498, 456.221));\n  float g = fract(mod(id * 565612.08321, 123.1231));\n  float b = fract(mod(id * 98281.32498, 13.221));\n  return vec3(r, g, b);\n}\n\n/**\n *\n */\nvoid main() {\n  gl_PointSize = 4.0;\n  mat4 modelView = uView * uModel;\n  mat3 normMatrix = transpose(inverse(mat3(modelView)));\n  vViewNormal = normalize(normMatrix * aNormal.xyz);\n  vWorldNormal = normalize(mat3(uModel) * aNormal.xyz);\n  vColor = aColor;\n\n  gl_Position = uProjection * uView * uModel * aPosition;\n\n  vec3 rounded = round(gl_Position.xyz * 10.0) / 10.0;\n  // gl_Position.xyz = rounded;\n\n  float id = mod(aSurfaceId + uObjectId, 255.0);\n  vId = id / 255.0 + (1.0 / 255.0);\n\n  vSurfaceId = hashId(aSurfaceId + uObjectId);\n\n  vWorldPosition = gl_Position;\n}"
+    },
+    "post-chromatic": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\n  vec2 rOff = vec2(0.0, 4.0);\n  vec2 gOff = vec2(0.0, 0.0);\n  vec2 bOff = vec2(4.0, 0.0);\n  vec2 pixelSize = 1.0 / uTexSize;\n  vec4 col = texture(uMainTex, vTexCoord);\n\n  fragColor = col;\n  float r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\n  float g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\n  float b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\n  fragColor.rgb = vec3(r, g, b);\n\n  // vec2 uv = vTexCoord;\n  // uv *= 1.0 - uv.xy;\n\n  // float vig = uv.x * uv.y * 15.0;\n\n  // vig = pow(vig, 0.03);\n\n  // fragColor.rgb *= vig;\n}"
     },
     "post-outline": {
       "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\n  float z = d * 2.0 - 1.0;\n  return (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\nvec4 gradient(sampler2D tex, vec2 coord) {\n  vec2 offset = vec2(1.0, 1.0) / uTexSize;\n\n  vec4 xSum = vec4(0.0);\n  vec4 ySum = vec4(0.0);\n\n  xSum += texture(tex, coord + vec2(-offset.x, 0.0)) * -1.0;\n  xSum += texture(tex, coord + vec2(+offset.x, 0.0));\n\n  ySum += texture(tex, coord + vec2(0.0, -offset.y)) * -1.0;\n  ySum += texture(tex, coord + vec2(0.0, +offset.y));\n\n  return sqrt(xSum * xSum + ySum * ySum);\n}\n\nvoid main() {\n  vec4 col = texture(uMainTex, vTexCoord);\n  float depth = texture(uDepthTex, vTexCoord).r;\n  float lDepth = linearDepth(depth, uNear, uFar);\n\n  vec4 colGrad = gradient(uMainTex, vTexCoord);\n  vec4 depthGrad = gradient(uDepthTex, vTexCoord);\n\n  float idQ = mix(colGrad.r, 0.0, smoothstep(0.0, 0.3, lDepth));\n\n  float idEdge = step(0.0001, colGrad.x);\n\n  float depthQ = mix(0.0, 100.0, smoothstep(0.0, 0.01, col.g));\n\n  float depthEdge = step(0.01, depthGrad.r);\n\n  float normEdge = step(0.3, colGrad.g);\n\n  float edge = max(idEdge, depthEdge);\n\n  vec3 grad = vec3(idEdge, depthEdge, 0.0);\n\n  float fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));\n\n  // float surfaceId = round(col.r * 20.0);\n  fragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);\n  // fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);\n  // fragColor.a = 1.0;\n\n  fragColor = vec4(vec3(edge * 0.4 + 0.1), 1.0);\n\n  // fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n\n  // fragColor = vec4(mix(vec3(1.0, 1.0, 0.2), vec3(0.1, 0.1, 0.1), edge), 1.0);\n\n  // fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n  // fragColor = vec4(vec3(idEdge), 1.0);\n  // fragColor = vec4(colGrad.ggg, 1.0);\n  // fragColor = vec4(1.0, 0.0, 1.0, 1.0);\n  // fragColor = vec4(vec3(fog), 1.0);\n\n}"
@@ -734,9 +806,184 @@ var FELT = (function (exports) {
   };
 
   /**
+   * 2 element vector class.
+   */
+  class Vec2 {
+    constructor(x, y, z) {
+      this._x = x || 0;
+      this._y = y || 0;
+      this._changed = false;
+    }
+
+    get x ()    { return this._x; }
+    set x (val) { this._x = val; this._changed = true; }
+    get y ()    { return this._y; }
+    set y (val) { this._y = val; this._changed = true; }
+    
+    get xy ()   { return [this.x, this.y]; }
+    set xy (xy) { this.set(...xy); }
+
+    changed () {
+      if (this._changed) {
+        this._changed = false;
+        return true;
+      }
+      return false;
+    }
+
+    set (x, y) {
+      this._x = x;
+      this._y = y;
+      this._changed = true;
+      return this;
+    }
+
+    copy () {
+      return new Vec2(...this.xy);
+    }
+    
+    add (a) {
+      this.x += a.x;
+      this.y += a.y;
+      return this;
+    }
+
+    distance (a) {
+      const dx = this.y - a.x;
+      const dy = this.y - a.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    distance2 (a) {
+      const dx = this.y - a.x;
+      const dy = this.y - a.y;
+      return dx * dx + dy * dy;
+    }
+    
+  }
+
+
+  /**
+   * 3 element vector class.
+   */
+  class Vec3 {
+    constructor(x, y, z) {
+      this._x = x || 0;
+      this._y = y || 0;
+      this._z = z || 0;
+      this._changed = false;
+    }
+    
+    get x ()    { return this._x; }
+    set x (val) { this._x = val; this._changed = true; }
+    get y ()    { return this._y; }
+    set y (val) { this._y = val; this._changed = true; }
+    get z ()    { return this._z; }
+    set z (val) { this._z = val; this._changed = true; }
+
+    get xyz ()    { return [this.x, this.y, this.z]; }
+    set xyz (xyz) { this.set(...xyz); } 
+    
+
+    changed () {
+      if (this._changed) {
+        this._changed = false;
+        return true;
+      }
+      return false;
+    }
+
+    set (x, y, z) {
+      this._x = x;
+      this._y = y;
+      this._z = z;
+      this._changed = true;
+      return this;
+    }
+   
+    copy () {
+      return new Vec3(...this.xyz);
+    }
+
+    add (a) {
+      this.x += a.x;
+      this.y += a.y;
+      this.z += a.z;
+      return this;
+    }
+
+    sub (a) {
+      this.x -= a.x;
+      this.y -= a.y;
+      this.z -= a.z;
+      return this;
+    }
+
+    distance (a) {
+      const dx = this.y - a.x;
+      const dy = this.y - a.y;
+      const dz = this.z - a.z;
+      return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    distance2 (a) {
+      const dx = this.y - a.x;
+      const dy = this.y - a.y;
+      const dz = this.z - a.z;
+      return dx * dx + dy * dy + dz * dz;
+    }
+
+    mag () {
+      return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
+
+    mult (s) {
+      this.x *= s;
+      this.y *= s;
+      this.z *= s;
+      return this;
+    }
+
+    div (s) {
+      return this.mult(1 / s);
+    }
+
+
+    normalize (len = 1) {
+      const mag = this.mag(); 
+      if (mag === 0) {
+        return this;
+      }
+      let scalar = len / mag;
+      this.x *= scalar;
+      this.y *= scalar;
+      this.z *= scalar;
+      return this;
+    }
+
+    dot (a) {
+      return this.x * a.x + this.y * a.y + this.z * a.z;
+    }
+
+    cross (a) {
+      const x = this.y * a.z - this.z * a.y;
+      const y = this.z * a.x - this.x * a.z;
+      const z = this.x * a.y - this.y * a.x;
+      return new Vec3(x, y, z);
+    }
+
+    equals (a, tolerance = Number.EPSILON) {
+      return Math.abs(this.x - a.x) < tolerance &&
+             Math.abs(this.y - a.y) < tolerance && 
+             Math.abs(this.z - a.z) < tolerance;
+    }
+
+
+  }
+
+  /**
    * @file Provide the operations used on meshes.
    */
-
 
   /**
    * Triangulate a mesh. Discard any "faces" with fewer than 3 vertices. Convert 
@@ -931,6 +1178,34 @@ var FELT = (function (exports) {
     return outEdges;
   }
 
+
+  function verticesToNormals (vertices) {
+    const outEdges = [];
+    for (let vi = 0; vi < vertices.length; vi++) {
+      const vertex = vertices[vi];
+      if (!vertex.position || !vertex.normal) { continue; }
+
+      const { position, normal } = vertex;
+      const position2 = new Vec3(...position);
+      position2.add(new Vec3(...normal).normalize(1));
+
+      outEdges.push(vertex);
+
+      const vertex2 = { 
+        ...vertex,
+        position: position2
+      };
+
+      outEdges.push(vertex2);
+
+
+
+
+    }
+    console.log(outEdges);
+    return outEdges;
+  }
+
   var meshOps = /*#__PURE__*/Object.freeze({
     __proto__: null,
     applyAttribConstant: applyAttribConstant,
@@ -938,7 +1213,8 @@ var FELT = (function (exports) {
     facesToEdges: facesToEdges,
     findGroups: findGroups,
     triangulate: triangulate,
-    validate: validate
+    validate: validate,
+    verticesToNormals: verticesToNormals
   });
 
   /**
@@ -961,8 +1237,10 @@ var FELT = (function (exports) {
      * Construct a mesh from a list of vertices and faces.
      * @param {array<Vertex>} vertices 
      * @param {array<Face>} faces 
+     * @param {object} meta Additional meta information about the mesh. Name and 
+     *     more.
      */
-    constructor (vertices, faces) {
+    constructor (vertices, faces, meta = {}) {
       
       /** 
        * The array of vertices for this mesh. Each entry is object with with 
@@ -979,7 +1257,12 @@ var FELT = (function (exports) {
        * @type {array<Face>}
        */
       this.faces = faces;
-    }
+
+      /**
+       * A name for this mesh.
+       */
+      this.name = meta.name || 'mesh';
+  }
 
 
     /**
@@ -1024,8 +1307,10 @@ var FELT = (function (exports) {
         attribs[attrib] = new Float32Array(attribs[attrib]);
       }
 
-      return { mode, vertexCount, attribs };
+      const name = this.name;
+      return { mode, vertexCount, attribs, name };
     }
+
 
     renderEdges () {
       const mode = 'LINES';
@@ -1049,7 +1334,9 @@ var FELT = (function (exports) {
       for (let attrib in attribs) {
         attribs[attrib] = new Float32Array(attribs[attrib]);
       }
-      return {mode, vertexCount, attribs};
+
+      const name = this.name + '_edges';
+      return { mode, vertexCount, attribs, name };
     }
 
 
@@ -1073,10 +1360,45 @@ var FELT = (function (exports) {
         attribs[attrib] = new Float32Array(attribs[attrib]);
       }
 
-      return { mode, vertexCount, attribs };
+      const name = this.name + '_points';
+      return { mode, vertexCount, attribs, name};
     }
 
 
+    renderNormals (length = 0.05) {
+      const mode = 'LINES';
+      const vertexCount = this.vertices.length * 2;
+      const attribs = {};
+
+      for (let vi = 0; vi < this.vertices.length; vi++) {
+        const vertex = this.vertices[vi];
+
+
+        for (let attrib in vertex) {
+          const data = vertex[attrib];
+          if (!attribs[attrib]) {
+            attribs[attrib] = [];
+          }
+          attribs[attrib].push(...data);
+
+          if (attrib === 'position' && vertex['normal']) {
+            const { position, normal } = vertex;
+            const position2 = new Vec3(...position);
+            position2.add(new Vec3(...normal).normalize(length));
+            attribs[attrib].push(...position2.xyz);
+          } else {
+              attribs[attrib].push(...data);
+          }
+        }
+      }
+
+      for (let attrib in attribs) {
+        attribs[attrib] = new Float32Array(attribs[attrib]);
+      }
+
+      const name = this.name + '_normals';
+      return { mode, vertexCount, attribs, name };
+    }
 
 
     /**
@@ -1092,188 +1414,15 @@ var FELT = (function (exports) {
     }
 
 
+    /**
+     * Fill the vetex colors for the mesh with a single vertex color.
+     */
     fill (col) {
       this.vertices = applyAttribConstant('color', col.rgba, this.vertices);
       return this;
     }
 
     
-  }
-
-  /**
-   * 2 element vector class.
-   */
-  class Vec2 {
-    constructor(x, y, z) {
-      this._x = x || 0;
-      this._y = y || 0;
-      this._changed = false;
-    }
-
-    get x ()    { return this._x; }
-    set x (val) { this._x = val; this._changed = true; }
-    get y ()    { return this._y; }
-    set y (val) { this._y = val; this._changed = true; }
-    
-    get xy ()   { return [this.x, this.y]; }
-    set xy (xy) { this.set(...xy); }
-
-    changed () {
-      if (this._changed) {
-        this._changed = false;
-        return true;
-      }
-      return false;
-    }
-
-    set (x, y) {
-      this._x = x;
-      this._y = y;
-      this._changed = true;
-      return this;
-    }
-
-    copy () {
-      return new Vec2(...this.xy);
-    }
-    
-    add (a) {
-      this.x += a.x;
-      this.y += a.y;
-      return this;
-    }
-
-    distance (a) {
-      const dx = this.y - a.x;
-      const dy = this.y - a.y;
-      return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    distance2 (a) {
-      const dx = this.y - a.x;
-      const dy = this.y - a.y;
-      return dx * dx + dy * dy;
-    }
-    
-  }
-
-
-  /**
-   * 3 element vector class.
-   */
-  class Vec3 {
-    constructor(x, y, z) {
-      this._x = x || 0;
-      this._y = y || 0;
-      this._z = z || 0;
-      this._changed = false;
-    }
-    
-    get x ()    { return this._x; }
-    set x (val) { this._x = val; this._changed = true; }
-    get y ()    { return this._y; }
-    set y (val) { this._y = val; this._changed = true; }
-    get z ()    { return this._z; }
-    set z (val) { this._z = val; this._changed = true; }
-
-    get xyz ()    { return [this.x, this.y, this.z]; }
-    set xyz (xyz) { this.set(...xyz); } 
-    
-
-    changed () {
-      if (this._changed) {
-        this._changed = false;
-        return true;
-      }
-      return false;
-    }
-
-    set (x, y, z) {
-      this._x = x;
-      this._y = y;
-      this._z = z;
-      this._changed = true;
-      return this;
-    }
-   
-    copy () {
-      return new Vec3(...this.xyz);
-    }
-
-    add (a) {
-      this.x += a.x;
-      this.y += a.y;
-      this.z += a.z;
-      return this;
-    }
-
-    sub (a) {
-      this.x -= a.x;
-      this.y -= a.y;
-      this.z -= a.z;
-      return this;
-    }
-
-    distance (a) {
-      const dx = this.y - a.x;
-      const dy = this.y - a.y;
-      const dz = this.z - a.z;
-      return Math.sqrt(dx * dx + dy * dy + dz * dz);
-    }
-
-    distance2 (a) {
-      const dx = this.y - a.x;
-      const dy = this.y - a.y;
-      const dz = this.z - a.z;
-      return dx * dx + dy * dy + dz * dz;
-    }
-
-    mag () {
-      return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-    }
-
-    mult (s) {
-      this.x *= s;
-      this.y *= s;
-      this.z *= s;
-      return this;
-    }
-
-    div (s) {
-      return this.mult(1 / s);
-    }
-
-
-    normalize (len = 1) {
-      const mag = this.mag(); 
-      if (mag === 0) {
-        return this;
-      }
-      let scalar = len / mag;
-      this.x *= scalar;
-      this.y *= scalar;
-      this.z *= scalar;
-      return this;
-    }
-
-    dot (a) {
-      return this.x * a.x + this.y * a.y + this.z * a.z;
-    }
-
-    cross (a) {
-      const x = this.y * a.z - this.z * a.y;
-      const y = this.z * a.x - this.x * a.z;
-      const z = this.x * a.y - this.y * a.x;
-      return new Vec3(x, y, z);
-    }
-
-    equals (a, tolerance = Number.EPSILON) {
-      return Math.abs(this.x - a.x) < tolerance &&
-             Math.abs(this.y - a.y) < tolerance && 
-             Math.abs(this.z - a.z) < tolerance;
-    }
-
-
   }
 
   /**
@@ -1335,7 +1484,7 @@ var FELT = (function (exports) {
     quad(3, 0, 4, 7, [-1, 0, 0], [0, 0, 1, 1]); // LEFT
     quad(1, 2, 6, 5, [+1, 0, 0], [1, 1, 0, 1]); // RIGHT
 
-    let mesh = new Mesh(vertices, faces);
+    let mesh = new Mesh(vertices, faces, { name: 'cube' });
     return mesh;
   }
 
@@ -1488,7 +1637,7 @@ var FELT = (function (exports) {
       });
     }
 
-    return new Mesh(vertices, faces);
+    return new Mesh(vertices, faces, { name: 'icosphere' });
   }
 
 
@@ -1511,7 +1660,7 @@ var FELT = (function (exports) {
       return { position: pos.xyz, normal: [0, 1, 0] };
     });
 
-    return new Mesh(vertices, faces);
+    return new Mesh(vertices, faces, { name: 'quad' });
   }
 
 
@@ -1564,7 +1713,7 @@ var FELT = (function (exports) {
       [0, 0, 1, 1], [0, 0, 1, 1],
       [0, 1, 1, 1], [0, 1, 1, 1],
       [1, 0, 1, 1], [1, 0, 1, 1],
-      [1, 1, 1, 1], [1, 1, 0, 1],
+      [1, 1, 0, 1], [1, 1, 0, 1],
     ];
 
     const normals = [
@@ -1608,7 +1757,12 @@ var FELT = (function (exports) {
    * @return {Float32Array} Identity Matrix 
    */ 
   function create () {
-    const out = new Float32Array(16);
+
+    let out;
+    {
+      out = new Array(16).fill(0);
+    }
+
     out[0] = 1;
     out[5] = 1;
     out[10] = 1;
@@ -2099,9 +2253,10 @@ var FELT = (function (exports) {
     get ry () { return this.transform.rotation.y };
     get rz () { return this.transform.rotation.z };
 
+
     /** 
-     * Move this node to a location. 
-     * */
+     * Move this node to a location, this is the local position.
+     */
     move (x, y, z) {
       this.transform.position.set(x, y, z);
       return this;
@@ -2117,6 +2272,10 @@ var FELT = (function (exports) {
     scale (x) {
       this.transform.scale.set(x, x, x);
       return this;
+    }
+
+    get worldPosition () {
+      return ([this._worldMatrix[12], this._worldMatrix[13], this._worldMatrix[14]]);
     }
 
 
@@ -2144,6 +2303,10 @@ var FELT = (function (exports) {
       return this;
     }
 
+    setGeometry (geo) {
+      this.geometry = geo;
+      return this;
+    }
 
     createChildNode (name, geometry) {
       let node = new Node(name, geometry);
@@ -2161,18 +2324,18 @@ var FELT = (function (exports) {
     }
 
 
-    _removeChild(node) {
+    _removeChild (node) {
       this.children = this.children.filter(n => n !== node);
     }
 
 
-    _addChild(node) {
+    _addChild (node) {
       this.children.push(node);
       this._dirty = true;
     }
 
 
-    _print(output, depth) {
+    _print (output, depth) {
       if (depth > 0) {
         for (let i = 1; i < depth; i++) { 
           output += '  ';
@@ -2190,7 +2353,7 @@ var FELT = (function (exports) {
       return output;
     }
 
-    _toDrawList(drawList, children = true) {
+    _toDrawList (drawList, children = true) {
       if (!this.visible) {
         return;
       }
@@ -2215,7 +2378,7 @@ var FELT = (function (exports) {
     }
 
 
-    traverse(fn) {
+    traverse (fn) {
       fn(this);
       this.children.forEach(child => child.traverse(fn));
     }
@@ -2238,7 +2401,7 @@ var FELT = (function (exports) {
       this.updateViewProjection();
     }
 
-    get eye () { return this.transform.position.xyz; }
+    get eye () { return this.worldPosition }
     set aspect (val) { this._aspect = val; }
 
 
@@ -2250,7 +2413,7 @@ var FELT = (function (exports) {
 
   /**
    * @fileoverview A scene contains a transform hierarchy that can be rendered by 
-   * a renderer. 
+   * a renderer. It also contains a camera.
    */
 
 
@@ -2260,9 +2423,9 @@ var FELT = (function (exports) {
   class Scene extends Node {
     constructor() {
       super('scene', null);
-
       this.camera = new Camera();
       this.camera.setParent(this);
+      this._drawCalls = [];
     }
 
     print () {
@@ -2270,7 +2433,8 @@ var FELT = (function (exports) {
     }
 
     drawCalls () {
-      return this._toDrawList([]);
+      this._drawCalls = [];
+      return this._toDrawList(this._drawCalls);
     }
 
     add () {
@@ -2287,14 +2451,14 @@ var FELT = (function (exports) {
   }
 
   const graphStyle = {
-    width: '200px',
+    width: '300px',
     height: '400px',
     position: 'absolute',
     backgroundColor: 'rgba(0,0,0,0.25)',
     left: '1em',
     top: '1em',
     zIndex: 101,
-    overflow: 'scroll',
+    overflow: 'hidden',
     whiteSpace: 'pre',
     padding: '1em',
   };
@@ -2970,6 +3134,14 @@ var FELT = (function (exports) {
       return unit;
     }
 
+
+    /**
+     * Get the total number of vertices in this mesh.
+     */ 
+    totalVertices () {
+      return Object.values(this.meshes).reduce((a, b) => a + b.data.vertexCount, 0);
+    }
+
     
   }
 
@@ -3078,7 +3250,7 @@ var FELT = (function (exports) {
       vertices = this._unfoldVertices(vertices, header.vertexFormat);
       faces    = this._trimFaces(faces);
 
-      const mesh = new Mesh(vertices, faces);
+      const mesh = new Mesh(vertices, faces, { name: file });
       mesh.name = file;
 
       if (this._verbose) {
@@ -3485,16 +3657,16 @@ var FELT = (function (exports) {
   }
 
   /**
-   * @file Index for Felt. Sets up the ft name space and the FeltApp class.
+   * @file Index for GUM. Sets up the g name space and the Gum class.
    */
 
 
   /**
-   * The ft (Felt tools) namespace provides all the helpful ~static~ functions 
-   * to do cool things inside a felt app.
+   * The g (gum tools) namespace provides all the helpful ~static~ functions 
+   * to do cool things inside a gum app.
    * @namespace
    */
-  const ft = {
+  const g = {
     sin: Math.sin, 
     cos: Math.cos,
     vec2: (x, y) => new Vec2(x, y),
@@ -3510,15 +3682,15 @@ var FELT = (function (exports) {
   _inlineModule(primitives, 'shapes');
   _inlineModule(meshOps, 'meshops');
 
-  window.ft = ft;
+  window.g = g;
 
 
 
   /**
    * 
    */
-  ft._usedColors = {};
-  ft.color = function (...args) {
+  g._usedColors = {};
+  g.color = function (...args) {
     const argString = args.join('');
     if (this._usedColors[argString]) {
       return this._usedColors[argString];
@@ -3527,16 +3699,14 @@ var FELT = (function (exports) {
     const color$1 = color(...args);
     this._usedColors[argString] = color$1;
     return color$1;
-  }.bind(ft);
-
-
+  }.bind(g);
 
 
 
   /**
-   * The felt app is one instance of felt. It has a renderer, a scene-graph, etc.
+   * The class for one instance of Gum. It has a renderer, a scene-graph, etc.
    */
-  class FeltApp {
+  class Gum {
     constructor (canvas, w, h, settings) {
       settings = settings || {};
 
@@ -3607,6 +3777,11 @@ var FELT = (function (exports) {
       this._frame = 0;
 
       /**
+       * The time at last tick. 
+       */
+      this._lastNow = 0;
+
+      /**
        * An array of textures.
       */
      this.texers = [];
@@ -3635,7 +3810,6 @@ var FELT = (function (exports) {
        * The name of the default geometry pass.
        */
       this.defaultPass = 'unlit';
-    
       this._info();
     } 
 
@@ -3644,7 +3818,7 @@ var FELT = (function (exports) {
      * Set up.
      * @returns 
      */
-    _setUp () {
+    _setup () {
       if (this.vert && this.frag) {
         this.renderer.createProgram('default', this.vert, this.frag);
         return;
@@ -3660,17 +3834,16 @@ var FELT = (function (exports) {
 
 
     /**
-     * Run this felt app. 
+     * Run this Gum App. 
      * TODO : This is ugly. Find a way to automatically find the setup and draw 
      *     functions.
      * @param {function} setup 
      * @param {function} draw 
      */
     run (setup, draw) {
-      // 1) Call the internal setup.
-      this._setUp ();
+      this._setup();
 
-      // 2) Call the user's custom setup.
+      // 1) Call the user's custom setup.
       setup();
 
       this._info();
@@ -3706,6 +3879,8 @@ var FELT = (function (exports) {
      */
     _tick () {
       let now = performance.now();
+      let delta = 0.001 * (now - this._lastNow) / (1 / 60);
+      this._lastNow = now;
       
       identity(this._imMatrix);
 
@@ -3714,7 +3889,7 @@ var FELT = (function (exports) {
 
       if (this._loop && this._draw) {
         this._preDraw();
-        this._draw();
+        this._draw(delta);
         this._postDraw();
       }
 
@@ -3737,7 +3912,11 @@ var FELT = (function (exports) {
      * Update any 'engine-level' gui components.
      */
     _info () {
-      this.sceneGraph.innerHTML = this.scene.print();
+      this.sceneGraph.innerHTML = '';
+      const verts = (this.renderer.totalVertices() / 1000).toFixed(1);
+      this.sceneGraph.innerHTML += 'verts: ' + verts + 'k\n';   
+      this.sceneGraph.innerHTML += this.scene.print();
+
     }
 
 
@@ -3850,7 +4029,7 @@ var FELT = (function (exports) {
 
       
       const vert = shaders.post.vert;
-      const frag = shaders['post-outline'].frag;
+      const frag = shaders['post-chromatic'].frag;
       
       this.renderer.createProgram(name, vert, frag);
 
@@ -3902,19 +4081,19 @@ var FELT = (function (exports) {
 
 
   /**
-   * Inline any public functions from a module into the ft namespace.
+   * Inline any public functions from a module into the g namespace.
    * @param {Module} module An imported module.
    * @param {string} target An optional string location to put the module under.  
    */
   function _inlineModule (module, target) {
-    let targetObj = ft;
+    let targetObj = g;
 
     if (target) {
-      if (ft[target]) {
-        targetObj = ft[target];
+      if (g[target]) {
+        targetObj = g[target];
       } else {
         targetObj = {};
-        ft[target] = targetObj;
+        g[target] = targetObj;
       }
     }
 
@@ -3927,8 +4106,8 @@ var FELT = (function (exports) {
     }
   }
 
-  exports.FeltApp = FeltApp;
-  exports.ft = ft;
+  exports.Gum = Gum;
+  exports.g = g;
 
   return exports;
 

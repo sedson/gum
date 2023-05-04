@@ -1,2 +1,2 @@
 node shaders/bundleShaders.js
-rollup js/felt-app.js --file bundle.js --format iife --name "GUM"
+rollup js/GUM.js --file gum.js --format iife --name "gum"
