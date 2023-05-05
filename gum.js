@@ -1431,9 +1431,9 @@ var gum = (function (exports) {
 
 
   /**
-   * Make a cube shape.
+   * Make a cube. Centered on the origin with w, h, d of size.
    * @param {number} size The size of the cube.
-   * @return {object} A vertex attribute array.
+   * @return {Mesh}
    */ 
   function cube (size = 1) {
     const s = size / 2;
@@ -1490,11 +1490,11 @@ var gum = (function (exports) {
 
 
   /**
-   * Make a icosphere shape.
-   * @param {number} size The radius of the sphere.
+   * Make an icosphere shape with diameter size.
+   * @param {number} size The diameter of the sphere.
    * @param {number} level The subdivision level to use.
    * @param {boolean} flat Whether to use flat shading. Default smooth (false).
-   * @return {object} A vertex attribute array.
+   * @return {Mesh}
    */ 
   function icosphere (size = 1, level = 1, flat = false) {
     
@@ -1523,7 +1523,7 @@ var gum = (function (exports) {
       [0, 3, 7],
       [0, 7, 11],
       [0, 11, 8],
-      [0, 8, 4], //*
+      [0, 8, 4],
       [0, 4, 3],
 
       [2, 1, 6],
@@ -1559,7 +1559,6 @@ var gum = (function (exports) {
     const foundMidPoints = {};
 
     /**
-     * 
      * @param {*} a 
      * @param {*} b 
      * @returns 
@@ -1627,11 +1626,9 @@ var gum = (function (exports) {
 
         faceBuffer.push([pointer, pointer + 1, pointer + 2]);
       }
-
       faces = faceBuffer;
 
     } else {
-      
       vertices = positions.map(pos => {
         return { position: pos.xyz, normal: pos.normalize().xyz };
       });
@@ -1642,9 +1639,9 @@ var gum = (function (exports) {
 
 
   /**
-   * Make a quad. Faces UP along y axis.
-   * @param {number} size The size of the quad.
-   * @return {object} A vertex attribute array.
+   * Make a quad facing up along y axis.
+   * @param {number} size The w and d of the quad.
+   * @return {Mesh}
    */ 
   function quad (size) {
     const s = size / 2;
@@ -1655,7 +1652,7 @@ var gum = (function (exports) {
       new Vec3(-s, 0, +s),
     ];
     
-    const faces = [[0, 2, 1,], [0, 3, 2]];
+    const faces = [[0, 3, 2, 1]];
     const vertices = positions.map(pos => {
       return { position: pos.xyz, normal: [0, 1, 0] };
     });
@@ -1664,14 +1661,107 @@ var gum = (function (exports) {
   }
 
 
+  /**
+   * Make a grid facing up along y axis.
+   * @param {number} size The size of the quad.
+   * @param {number} subdivisions The number of subdivisions.
+   * @return {Mesh}
+   */ 
+  function grid (size, subdivisions = 10, flat = false) {
+    const s = size / 2;
+    const step = size / (subdivisions + 1);
+
+    const positions = [];
+    const faces = [];
+
+    if (flat) {
+
+      // Flat normals case. Copy shared verts.
+      let vertIndex = 0;
+      for (let i = 0; i < subdivisions + 1; i++) {
+        const z = i * step;
+        for (let j = 0; j < subdivisions + 1; j++) {
+          const x = j * step;
+          positions.push([-s + x,        0, -s + z]);
+          positions.push([-s + x + step, 0, -s + z]);
+          positions.push([-s + x + step, 0, -s + z + step]);
+          positions.push([-s + x       , 0, -s + z + step]);
+          
+          faces.push([vertIndex, vertIndex + 3, vertIndex + 2, vertIndex + 1]);
+          vertIndex += 4;
+        }
+      }
+
+    } else {
+
+      // Smooth normals case. Reuse shared verts.
+      for (let i = 0; i < subdivisions + 2; i++) {
+        const z = i * step;
+        for (let j = 0; j < subdivisions + 2; j++) {
+          const x = j * step;
+          positions.push([-s + x, 0, -s + z]);
+
+          if (i < subdivisions + 1 && j < subdivisions + 1) {
+            const a = i * (subdivisions + 2) + j;
+            const b = a + 1;
+            const c = a + subdivisions + 2;
+            const d = c + 1;
+            faces.push([a, c, d, b]);
+          }
+        }
+      }
+    }
+
+    const vertices = positions.map(pos => {
+      return { position: pos, normal: [0, 1, 0] };
+    });
+
+    return new Mesh(vertices, faces, { name: 'grid' });
+  }
+
+
+  /**
+   * Make a circle with diameter size facing up along y axis.
+   * @param {number} size The size of the quad.
+   * @param {number} resolution The number of straight line segments to use.
+   * @return {Mesh}
+   */ 
+  function circle (size, resolution = 12, fill = 'ngon') {
+    const positions = [];
+    const faces = [];
+
+    if (fill === 'fan') {
+      positions.push([0, 0, 0]);
+    } else if (fill === 'ngon') {
+      faces[0] = [];
+    }
+
+    for (let i = 0; i < resolution; i++) {
+      const theta = -i * Math.PI * 2 / resolution;
+      const x = Math.cos(theta) * (size / 2);
+      const z = Math.sin(theta) * (size / 2);
+
+      positions.push([x, 0, z]);
+
+      if (fill === 'fan') {
+        const next = (i + 1) % (resolution);
+        faces.push([0, i + 1, next + 1]);
+      } else if (fill === 'ngon') {
+        faces[0].push(i);
+      }
+    }
+
+    const vertices = positions.map(pos => {
+      return { position: pos, normal: [0, 1, 0] };
+    });
+    return new Mesh(vertices, faces, { name: 'circle' });
+  }
 
 
   /**
    * Make a full screen quad for rendering post effects..
-   * @return {object} A vertex attribute array.
    */
   function _fsQuad() {
-
     const vertices = [
       [-1, -1, 0],
       [+1, -1, 0],
@@ -1693,9 +1783,7 @@ var gum = (function (exports) {
 
 
   /**
-   * Make a quad. Faces UP along y axis.
-   * @param {number} size The size of the quad.
-   * @return {object} A vertex attribute array.
+   * Make an axes gizmo.
    */ 
   function _axes () {
     const positions = [
@@ -1740,7 +1828,9 @@ var gum = (function (exports) {
     __proto__: null,
     _axes: _axes,
     _fsQuad: _fsQuad,
+    circle: circle,
     cube: cube,
+    grid: grid,
     icosphere: icosphere,
     quad: quad
   });

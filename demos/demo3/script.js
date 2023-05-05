@@ -7,7 +7,8 @@ const bg = g.color('#333');
 const col = g.color('rawsienna');
 
 
-window.cube = g.shapes.cube(0.2, 1, false).findGroups();
+window.grid = g.shapes.grid(2, 40).triangulate().findGroups();
+console.log(grid);
 
 
 let spin;
@@ -18,7 +19,7 @@ let time = 0;
 gum.background(bg); 
 gum.camera.fov = 30;
 gum.axes();
-gum.defaultPass = 'unlit';
+gum.defaultPass = 'geo';
 
 
 
@@ -27,9 +28,13 @@ function setup () {
   spin = gum.node('camera.root');
   gum.camera.setParent(spin);
 
+  // gum.node('C').setGeometry(gum.addMesh(cube.fill(g.color('#ff0')).render()))
+  gum.node('C').setGeometry(gum.addMesh(grid.renderEdges()));
+
+
   gum.plyLoader.load('/models/uvsphere.ply', mesh => {
-    gum.node('A').setGeometry(gum.addMesh(mesh.fill(g.color('#888')).renderEdges()));
-    gum.node('B').setGeometry(gum.addMesh(mesh.fill(g.color('#0ff')).renderNormals()));
+    // gum.node('A').setGeometry(gum.addMesh(mesh.fill(g.color('#888')).renderEdges()));
+    // gum.node('B').setGeometry(gum.addMesh(mesh.fill(g.color('#0ff')).renderNormals()));
   });
 }
 
