@@ -16,7 +16,11 @@ export class Node {
     this.parent = null;
     this.children = [];
     this._worldMatrix = m4.create();
-    this.uniforms = {};
+    this.uniforms = {
+      uObjectId: this.id,
+      uModel: this._worldMatrix,
+      uTex: 'none',
+    };
   }
 
   get x ()  { return this.transform.position.x };
@@ -133,15 +137,7 @@ export class Node {
     }
 
     if (this.geometry) {
-      drawList.push({
-        name: this.name,
-        geometry: this.geometry,
-        uniforms: {
-          uModel: this._worldMatrix,
-          uObjectId: this.id,
-          uTex: this.texture || 'none',
-        }
-      });
+      drawList.push(this);
     }
 
     if (children) {
@@ -155,5 +151,9 @@ export class Node {
   traverse (fn) {
     fn(this);
     this.children.forEach(child => child.traverse(fn));
+  }
+
+  uniform (name, value) {
+    this.uniforms[name] = value;
   }
 }

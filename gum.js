@@ -2332,7 +2332,11 @@ var gum = (function (exports) {
       this.parent = null;
       this.children = [];
       this._worldMatrix = create();
-      this.uniforms = {};
+      this.uniforms = {
+        uObjectId: this.id,
+        uModel: this._worldMatrix,
+        uTex: 'none',
+      };
     }
 
     get x ()  { return this.transform.position.x };
@@ -2449,15 +2453,7 @@ var gum = (function (exports) {
       }
 
       if (this.geometry) {
-        drawList.push({
-          name: this.name,
-          geometry: this.geometry,
-          uniforms: {
-            uModel: this._worldMatrix,
-            uObjectId: this.id,
-            uTex: this.texture || 'none',
-          }
-        });
+        drawList.push(this);
       }
 
       if (children) {
@@ -2471,6 +2467,10 @@ var gum = (function (exports) {
     traverse (fn) {
       fn(this);
       this.children.forEach(child => child.traverse(fn));
+    }
+
+    uniform (name, value) {
+      this.uniforms[name] = value;
     }
   }
 
