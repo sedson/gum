@@ -39,6 +39,11 @@ export class RendererGL2 {
 
       // Mimic Processing's optional clear pattern.
       preserveDrawingBuffer: true,
+    };
+
+    if (config) {
+      Object.assign(this.glSettings, config);
+      console.log({ glSettings: this.glSettings });
     }
     
     /**

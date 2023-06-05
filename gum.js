@@ -2243,6 +2243,7 @@ var gum = (function (exports) {
     return out;
   }
 
+
   /**
    * Scales the mat4 by the dimensions in the given vec3 not using vectorization
    *
@@ -2657,6 +2658,11 @@ var gum = (function (exports) {
         // Mimic Processing's optional clear pattern.
         preserveDrawingBuffer: true,
       };
+
+      if (config) {
+        Object.assign(this.glSettings, config);
+        console.log({ glSettings: this.glSettings });
+      }
       
       /**
        * The WebGl2 context.
@@ -4059,6 +4065,18 @@ var gum = (function (exports) {
     _preDraw () {
       this.renderer.setProgram('default');
       this.renderer.setRenderTarget('default');
+
+      const dWidth = this.canvas.clientWidth;
+      const dHeight = this.canvas.clientHeight;
+
+      const needsResize = this.canvas.width !== dWidth || this.canvas.height !== dHeight;
+
+      if (needsResize) {
+        this.canvas.width = dWidth;
+        this.canvas.height = dHeight;
+      }
+
+      this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
      
       this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight; 
       this.camera.updateViewProjection();
@@ -4165,7 +4183,7 @@ var gum = (function (exports) {
      */
     drawMesh (mesh) {
       this.renderer.uniform('uModel', this._imMatrix);
-      this.renderer.drawMesh(mesh);
+      this.renderer.draw(mesh);
     }
   }
 

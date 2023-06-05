@@ -341,6 +341,18 @@ export class Gum {
   _preDraw () {
     this.renderer.setProgram('default');
     this.renderer.setRenderTarget('default');
+
+    const dWidth = this.canvas.clientWidth;
+    const dHeight = this.canvas.clientHeight;
+
+    const needsResize = this.canvas.width !== dWidth || this.canvas.height !== dHeight;
+
+    if (needsResize) {
+      this.canvas.width = dWidth;
+      this.canvas.height = dHeight;
+    }
+
+    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
    
     this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight; 
     this.camera.updateViewProjection();
@@ -448,7 +460,7 @@ export class Gum {
    */
   drawMesh (mesh) {
     this.renderer.uniform('uModel', this._imMatrix);
-    this.renderer.drawMesh(mesh);
+    this.renderer.draw(mesh);
   }
 }
 
