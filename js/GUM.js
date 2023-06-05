@@ -47,6 +47,7 @@ export const g = {
   Vec3: Vec3,
   Mesh: Mesh,
   Texer: Texer,
+  m4: m4,
 };
 
 _inlineModule(common);
