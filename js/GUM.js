@@ -55,7 +55,7 @@ _inlineModule(dom, 'dom');
 _inlineModule(primitives, 'shapes');
 _inlineModule(meshOps, 'meshops');
 
-window.g = g;
+// window.g = g;
 
 
 
@@ -164,8 +164,10 @@ export class Gum {
      * The post processing stack.
      */
     this.postProcessingStack = {
-      frameBufferTex: null,
-      frameBufferDepth: null,
+      colorBufferA: null,
+      depthBufferA: null,
+      colorBufferB: null,
+      depthBufferB: null,
       effects: [],
     };
 
@@ -260,16 +262,15 @@ export class Gum {
     this.renderer.setProgram('default');
     this.renderer.setRenderTarget(null);
 
+
+
     if (this._loop && this._draw) {
       this._preDraw();
       this._draw(delta);
       this._postDraw();
     }
 
-    if (this._axesMesh) {
-      this.renderer.uniform('uModel', this.scene.transform.matrix);
-      this.renderer.draw(this._axesMesh);
-    }
+    
     
     const elapsed = now - this._timeAtLastInfo;
     if (elapsed > 1000) {
@@ -324,7 +325,12 @@ export class Gum {
   }
 
   axes () {
-    this._axesMesh = this.renderer.addMesh(primitives._axes());
+    if (!this._axes) {
+      this._axes = this.renderer.addMesh(primitives._axes());
+    }
+    
+    this.renderer.uniform('uModel', this.scene.transform.matrix);
+    this.renderer.draw(this._axes);
   }
 
   node (name) {
@@ -363,6 +369,7 @@ export class Gum {
     this.renderer.uniform('uEye', this.camera.eye);
     this.renderer.uniform('uView', this.camera.view);
     this.renderer.uniform('uProjection', this.camera.projection);
+    this.renderer.uniform('uAspect', this.camera.aspect);
 
     for (let texer of this.texers) {
       if (texer.changed()) {
@@ -375,38 +382,67 @@ export class Gum {
   _postDraw () {
 
     if (this.postProcessingStack.effects.length > 0) {
-      const { frameBufferTex, frameBufferDepth } = this.postProcessingStack;
-      for (let effect of this.postProcessingStack.effects) {
+      
+      const { colorBufferA, 
+              colorBufferB, 
+              depthBufferA, 
+              depthBufferB } = this.postProcessingStack;
+      
+      this.postProcessingStack.effects.forEach((effect, i) => {
         
         this.renderer.setProgram(effect.program);
-        this.renderer.setRenderTarget('canvas');
-        this.renderer.uniform('uMainTex', frameBufferTex);
-        this.renderer.uniform('uDepthTex', frameBufferDepth);
-        this.renderer.uniform('uTexSize', [
-          this.canvas.width, this.canvas.height,
-        ]);
+
+
+        if (i % 2 === 0) {
+          this.renderer.setRenderTarget('bufferB');
+
+          this.renderer.uniform('uMainTex', colorBufferA);
+          this.renderer.uniform('uDepthTex', depthBufferA);
+
+        } else {
+          this.renderer.setRenderTarget('bufferA');
+          this.renderer.uniform('uMainTex', colorBufferB);
+          this.renderer.uniform('uDepthTex', depthBufferB);
+
+        }
+
+        if (i === this.postProcessingStack.effects.length - 1) {
+          this.renderer.setRenderTarget('canvas');
+          // this.renderer.uniform
+        }
+
+        this.renderer.uniform('uTexSize', [this.canvas.width, this.canvas.height]);
+
         this.renderer.uniform('uNear', this.camera.near);
         this.renderer.uniform('uFar', this.camera.far);
         this.renderer.clear([1, 0, 0, 1]);
         this.renderer.draw('effect-quad');
-      }
+      });
     }
   }
 
 
-  addEffect (name, type) {
+  addEffect (name, shader) {
     
     if (this.postProcessingStack.effects.length === 0) {
-      this.renderer.createRenderTarget('frameBuffer', true);
-      const targetInfo = this.renderer.renderTargets['frameBuffer'];
-      this.postProcessingStack.frameBufferTex = targetInfo.colorTexUnit;
-      this.postProcessingStack.frameBufferDepth = targetInfo.depthTexUnit;
+      this.renderer.createRenderTarget('bufferA', true);
+      this.renderer.createRenderTarget('bufferB', true);
+
+      const bufferA = this.renderer.renderTargets['bufferA'];
+      const bufferB = this.renderer.renderTargets['bufferB'];
+
+      this.postProcessingStack.colorBufferA = bufferA.colorTexUnit;
+      this.postProcessingStack.colorBufferB = bufferB.colorTexUnit;
+
+      this.postProcessingStack.depthBufferA = bufferA.depthTexUnit;
+      this.postProcessingStack.depthBufferB = bufferB.depthTexUnit;
+
+
       const fsQuad = primitives._fsQuad();
       fsQuad.name = 'effect-quad';
       this.renderer.addMesh(fsQuad);
-      this.renderer.renderTargets['default'] = targetInfo;
-    };
-
+      this.renderer.renderTargets['default'] = bufferA;
+    }
 
     const effect = {
       name: name,
@@ -415,7 +451,7 @@ export class Gum {
 
     
     const vert = shaders.post.vert;
-    const frag = shaders['post-chromatic'].frag;
+    const frag = shaders[shader].frag;
     
     this.renderer.createProgram(name, vert, frag);
 

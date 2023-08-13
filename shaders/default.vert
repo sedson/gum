@@ -9,6 +9,8 @@ in vec4 aColor;
 
 out vec4 vColor;
 
+#include common.glsl
+
 
 void main() 
 {

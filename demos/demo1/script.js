@@ -14,7 +14,7 @@ const blue = g.color('salviablue');
 
 // Make an icosphere. Radius = 1, subdivisions = 2, and flat shading is true.
 let sphere = g.shapes.icosphere(0.5, 1, true).findGroups();
-let cube = g.shapes.cube(1).findGroups();
+let cube = g.shapes.cube(1);
 
 let spinAngle = 0;
 
@@ -34,28 +34,24 @@ app.defaultPass = 'textured';
  * Runs once at the beginning of the app's life cycle.
  */
 function setup () {
-  // Draw axes in the app.
-  app.axes();
 
   A = app.node('A');
   B = app.node('B');
 
-  A.geometry = app.addMesh(cube);
-  B.geometry = app.addMesh(sphere);
+  A.geometry = app.addMesh(cube.render());
+  B.geometry = A.geometry;
 
   B.move(0, 1, 0).scale(0.5).setParent(A);
 
-  A.texture = tex.id;
-  B.texture = tex.id;
+  A.uniform('uTex', tex.id);
+  B.uniform('uTex', tex.id);
 
   app.plyLoader.load('/models/uvsphere.ply', mesh => {
-    B.geometry = app.addMesh(mesh.render());
+    console.log(mesh);
+    B.geometry = app.addMesh(mesh);
   });
 
   app.addTexer(tex);
-  // app.addTexer(blueTex);
-  
-  // app.addEffect();
 }
 
 
@@ -64,6 +60,7 @@ function setup () {
  */
 function draw () {
   app.background(bg);
+  app.axes();
 
   
   let r = g.remap(g.sin(app.time() * 0.005), -1, 1, 0, 100);

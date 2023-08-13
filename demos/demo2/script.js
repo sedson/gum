@@ -34,14 +34,15 @@ for (let i = 0; i < 50; i++) {
   shapes.push(n);
 }
 
-gum.addEffect();
-
+gum.addEffect('post', 'post-outline');
+gum.addEffect('post2', 'post-chromatic');
 
 function setup () {}
 
 function draw (delta) {
   gum.background(bg);
   gum.drawScene();
+  
   for (let i = 0; i < shapes.length; i++) {
     const s = shapes[i];
     s.move(s.x, g.sin(time + (i * 0.1)) * 0.3, 0)

@@ -105,7 +105,6 @@ export class PlyLoader {
     faces    = this._trimFaces(faces);
 
     const mesh = new Mesh(vertices, faces, { name: file });
-    mesh.name = file;
 
     if (this._verbose) {
       console.log(`Loaded ${file} with ${vertices.length} vertices.`);

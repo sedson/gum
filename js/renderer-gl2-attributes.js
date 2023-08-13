@@ -3,54 +3,47 @@
  * these attribs, but any that it does have will be forced to use the same 
  * layout.
  */
-export const vertexAttributeLayout = {
-  
-  'aPosition': {
-    index: 0,
+export const vertexAttributeLayout = [
+   {
+    name: 'aPosition',
     size: 3,
     type: 'FLOAT',
     normalized: false,
   },
-
-  'aNormal': {
-    index: 1,
+  {
+    name: 'aNormal',
     size: 3,
     type: 'FLOAT',
     normalized: false,
   },
-
-  'aTexCoord': {
-    index: 2,
+  {
+    name: 'aTexCoord',
     size: 2,
     type: 'FLOAT',
     normalized: false,
   },
-  
-  'aColor': {
-    index: 3,
+  {
+    name: 'aColor',
     size: 4,
     type: 'FLOAT',
     normalized: false,
   },
-
-  'aSurfaceId': {
-    index: 4,
+  {
+    name: 'aSurfaceId',
     size: 1,
     type: 'FLOAT',
     normalized: false,
   },
-
-  'aRegister1': {
-    index: 5, 
+  {
+    name: 'aRegister1',
     size: 4,
     type: 'FLOAT',
     normalized: false,
   },
-
-  'aRegister2': {
-    index: 6,
+  {
+    name: 'aRegister2',
     size: 4,
     type: 'FLOAT',
     normalized: false,
   },
-};
+];

@@ -41,9 +41,9 @@ export class RendererGL2 {
       preserveDrawingBuffer: true,
     };
 
+    // Apply the config to the gl settings.
     if (config) {
       Object.assign(this.glSettings, config);
-      console.log({ glSettings: this.glSettings });
     }
     
     /**
@@ -129,6 +129,24 @@ export class RendererGL2 {
      * Which texture unit each frame buffer ends up on.
      */
     this.texturesByName = {};
+
+    /**
+     * A list of the the vertex attributes.
+     */ 
+    this.vertexAttributes = [...vertexAttributeLayout];
+
+    if (config.attributes) {
+      this.vertexAttributes.push(...config.attributes);
+    }
+
+    /**
+     * Attrib info hashes keyed by name.
+     */ 
+    this.attributeInfoByName = {};
+    this.vertexAttributes.forEach((attrib, i) => {
+      this.attributeInfoByName[attrib.name] = attrib;
+      this.attributeInfoByName[attrib.name].index = i;
+    });
   }
 
 
@@ -269,7 +287,6 @@ export class RendererGL2 {
     const rt = this.renderTargets[target];
     const frameBuffer = rt.frameBuffer;
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, frameBuffer);
-    
     this.renderTarget = target;
   }
 
@@ -320,6 +337,9 @@ export class RendererGL2 {
         unit: target.depthTexUnit,
         texture: target.depthTexture,
       };
+      
+      this.textureUnitIndex ++;
+
 
       gl.activeTexture(gl.TEXTURE0 + target.depthTexUnit);
       gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
@@ -346,10 +366,22 @@ export class RendererGL2 {
    */
   draw (mesh) {
     if (!this.meshes[mesh]) {
+      console.warn('No mesh found:', mesh);
       return;
     }
 
+
     const call = this.meshes[mesh];
+
+    if (call.program && call.program !== this.activeProgram) {
+      const cachedProgram = this.activeProgram;
+      if (!this.shaderPrograms[call.program]) {
+        console.warn('No program found: ', program);
+        return;
+      }
+
+    }
+
     this.gl.bindVertexArray(call.vao);
     this.gl.drawArrays(this.gl[call.data.mode], 0, call.data.vertexCount);
     this.gl.bindVertexArray(null);
@@ -434,8 +466,9 @@ export class RendererGL2 {
    * @param {*} program 
    */
   bindVertexAttributeLocations (program) {
-    for (const [attrib, info] of Object.entries(vertexAttributeLayout)) {
-      this.gl.bindAttribLocation(program, info.index, attrib);
+    for (let i = 0; i < this.vertexAttributes.length; i++) {
+      const attrib = this.vertexAttributes[i];
+      this.gl.bindAttribLocation(program, i, attrib.name);
     }
   }
   
@@ -448,12 +481,12 @@ export class RendererGL2 {
     for (const [attrib, data] of Object.entries(attribs)) {
 
       const attribName = this._prefixAttribName(attrib);
-      const attribInfo = vertexAttributeLayout[attribName];
+      const attribInfo = this.attributeInfoByName[attribName];
       
       if (!attribInfo) {
         continue;
       }
-      
+
       const buffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
       gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
@@ -491,14 +524,17 @@ export class RendererGL2 {
     let name = data.name || 'mesh';
     name = this._getMeshId(name);
 
+
     if (this.meshes[name]) { 
       this.updateMesh(name, data);
       return;
     }
 
     const mesh = { data };
+    data.name = name;
     mesh.vao = this.gl.createVertexArray();
 
+    console.log('add mesh: ', name)
     this._bufferAttribs(mesh.vao, data.attribs);
     
     this.meshes[name] = mesh;

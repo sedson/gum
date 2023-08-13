@@ -1418,6 +1418,7 @@ var gum = (function (exports) {
      * Fill the vetex colors for the mesh with a single vertex color.
      */
     fill (col) {
+      
       this.vertices = applyAttribConstant('color', col.rgba, this.vertices);
       return this;
     }
@@ -2670,57 +2671,50 @@ var gum = (function (exports) {
    * these attribs, but any that it does have will be forced to use the same 
    * layout.
    */
-  const vertexAttributeLayout = {
-    
-    'aPosition': {
-      index: 0,
+  const vertexAttributeLayout = [
+     {
+      name: 'aPosition',
       size: 3,
       type: 'FLOAT',
       normalized: false,
     },
-
-    'aNormal': {
-      index: 1,
+    {
+      name: 'aNormal',
       size: 3,
       type: 'FLOAT',
       normalized: false,
     },
-
-    'aTexCoord': {
-      index: 2,
+    {
+      name: 'aTexCoord',
       size: 2,
       type: 'FLOAT',
       normalized: false,
     },
-    
-    'aColor': {
-      index: 3,
+    {
+      name: 'aColor',
       size: 4,
       type: 'FLOAT',
       normalized: false,
     },
-
-    'aSurfaceId': {
-      index: 4,
+    {
+      name: 'aSurfaceId',
       size: 1,
       type: 'FLOAT',
       normalized: false,
     },
-
-    'aRegister1': {
-      index: 5, 
+    {
+      name: 'aRegister1',
       size: 4,
       type: 'FLOAT',
       normalized: false,
     },
-
-    'aRegister2': {
-      index: 6,
+    {
+      name: 'aRegister2',
       size: 4,
       type: 'FLOAT',
       normalized: false,
     },
-  };
+  ];
 
   /**
    * @fileoverview The RenderContext class creates a helpful level of abstraction 
@@ -2764,9 +2758,9 @@ var gum = (function (exports) {
         preserveDrawingBuffer: true,
       };
 
+      // Apply the config to the gl settings.
       if (config) {
         Object.assign(this.glSettings, config);
-        console.log({ glSettings: this.glSettings });
       }
       
       /**
@@ -2852,6 +2846,24 @@ var gum = (function (exports) {
        * Which texture unit each frame buffer ends up on.
        */
       this.texturesByName = {};
+
+      /**
+       * A list of the the vertex attributes.
+       */ 
+      this.vertexAttributes = [...vertexAttributeLayout];
+
+      if (config.attributes) {
+        this.vertexAttributes.push(...config.attributes);
+      }
+
+      /**
+       * Attrib info hashes keyed by name.
+       */ 
+      this.attributeInfoByName = {};
+      this.vertexAttributes.forEach((attrib, i) => {
+        this.attributeInfoByName[attrib.name] = attrib;
+        this.attributeInfoByName[attrib.name].index = i;
+      });
     }
 
 
@@ -3069,6 +3081,7 @@ var gum = (function (exports) {
      */
     draw (mesh) {
       if (!this.meshes[mesh]) {
+        console.warn('No mesh found:', mesh);
         return;
       }
 
@@ -3157,8 +3170,9 @@ var gum = (function (exports) {
      * @param {*} program 
      */
     bindVertexAttributeLocations (program) {
-      for (const [attrib, info] of Object.entries(vertexAttributeLayout)) {
-        this.gl.bindAttribLocation(program, info.index, attrib);
+      for (let i = 0; i < this.vertexAttributes.length; i++) {
+        const attrib = this.vertexAttributes[i];
+        this.gl.bindAttribLocation(program, i, attrib.name);
       }
     }
     
@@ -3171,11 +3185,14 @@ var gum = (function (exports) {
       for (const [attrib, data] of Object.entries(attribs)) {
 
         const attribName = this._prefixAttribName(attrib);
-        const attribInfo = vertexAttributeLayout[attribName];
+        const attribInfo = this.attributeInfoByName[attribName];
         
         if (!attribInfo) {
           continue;
         }
+
+        console.log({attrib,attribName,attribInfo,data});
+
         
         const buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -3214,14 +3231,17 @@ var gum = (function (exports) {
       let name = data.name || 'mesh';
       name = this._getMeshId(name);
 
+
       if (this.meshes[name]) { 
         this.updateMesh(name, data);
         return;
       }
 
       const mesh = { data };
+      data.name = name;
       mesh.vao = this.gl.createVertexArray();
 
+      console.log('buffering', name, mesh);
       this._bufferAttribs(mesh.vao, data.attribs);
       
       this.meshes[name] = mesh;
@@ -3452,7 +3472,6 @@ var gum = (function (exports) {
       faces    = this._trimFaces(faces);
 
       const mesh = new Mesh(vertices, faces, { name: file });
-      mesh.name = file;
 
       if (this._verbose) {
         console.log(`Loaded ${file} with ${vertices.length} vertices.`);
@@ -3884,7 +3903,7 @@ var gum = (function (exports) {
   _inlineModule(primitives, 'shapes');
   _inlineModule(meshOps, 'meshops');
 
-  window.g = g;
+  // window.g = g;
 
 
 
@@ -4089,16 +4108,15 @@ var gum = (function (exports) {
       this.renderer.setProgram('default');
       this.renderer.setRenderTarget(null);
 
+
+
       if (this._loop && this._draw) {
         this._preDraw();
         this._draw(delta);
         this._postDraw();
       }
 
-      if (this._axesMesh) {
-        this.renderer.uniform('uModel', this.scene.transform.matrix);
-        this.renderer.draw(this._axesMesh);
-      }
+      
       
       const elapsed = now - this._timeAtLastInfo;
       if (elapsed > 1000) {
@@ -4153,7 +4171,12 @@ var gum = (function (exports) {
     }
 
     axes () {
-      this._axesMesh = this.renderer.addMesh(_axes());
+      if (!this._axes) {
+        this._axes = this.renderer.addMesh(_axes());
+      }
+      
+      this.renderer.uniform('uModel', this.scene.transform.matrix);
+      this.renderer.draw(this._axes);
     }
 
     node (name) {

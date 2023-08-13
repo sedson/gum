@@ -7,8 +7,7 @@ const bg = g.color('#333');
 const col = g.color('rawsienna');
 
 
-window.grid = g.shapes.grid(2, 40).triangulate().findGroups();
-console.log(grid);
+window.grid = g.shapes.grid(2, 5).findGroups();
 
 
 let spin;
@@ -18,8 +17,7 @@ let time = 0;
 
 gum.background(bg); 
 gum.camera.fov = 30;
-gum.axes();
-gum.defaultPass = 'geo';
+gum.defaultPass = 'default';
 
 
 
@@ -28,18 +26,17 @@ function setup () {
   spin = gum.node('camera.root');
   gum.camera.setParent(spin);
 
-  // gum.node('C').setGeometry(gum.addMesh(cube.fill(g.color('#ff0')).render()))
-  gum.node('C').setGeometry(gum.addMesh(grid.renderEdges()));
+  // gum.node('C').setGeometry(gum.addMesh(grid.fill(col).renderEdges()));
 
-
-  gum.plyLoader.load('/models/uvsphere.ply', mesh => {
-    // gum.node('A').setGeometry(gum.addMesh(mesh.fill(g.color('#888')).renderEdges()));
-    // gum.node('B').setGeometry(gum.addMesh(mesh.fill(g.color('#0ff')).renderNormals()));
+  gum.plyLoader.load('/models/roundcube.ply', mesh => {
+    gum.node('A').setGeometry(gum.addMesh(mesh.fill(g.color('#888')).renderEdges()));
+    gum.node('B').setGeometry(gum.addMesh(mesh.fill(g.color('#0ff')).renderNormals(0.1)));
   });
 }
 
 function draw (delta) {
   gum.background(g.color('#333'));
+  gum.axes();
   gum.drawScene();
   time += 0.05 * delta;
 

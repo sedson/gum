@@ -6,6 +6,7 @@ uniform mat4 uProjection;
 uniform float uNear;
 uniform float uFar;
 uniform float uObjectId;
+uniform float uAspect;
 
 in vec4 aPosition;
 in vec4 aColor;
@@ -30,6 +31,7 @@ vec3 hashId(float id) {
   float b = fract(mod(id * 98281.32498, 13.221));
   return vec3(r, g, b);
 }
+
 
 /**
  *
