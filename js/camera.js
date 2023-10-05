@@ -22,6 +22,7 @@ export class Camera extends Node {
 
   get eye () { return this.worldPosition }
   set aspect (val) { this._aspect = val; }
+  get aspect () { return this._aspect; }
 
 
   updateViewProjection () {

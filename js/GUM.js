@@ -16,6 +16,9 @@ import { Mesh } from './mesh.js';
 import * as meshOps from './mesh-ops.js';
 import * as primitives from './mesh-primitives.js';
 
+/** Lines. */
+import { Line } from './line.js';
+
 /** Vector and matrix math. */
 import { Vec2, Vec3 } from './vectors.js';
 import * as m4 from './matrix.js';
@@ -46,6 +49,7 @@ export const g = {
   Vec2: Vec2,
   Vec3: Vec3,
   Mesh: Mesh,
+  Line: Line,
   Texer: Texer,
   m4: m4,
 };
@@ -54,9 +58,6 @@ _inlineModule(common);
 _inlineModule(dom, 'dom');
 _inlineModule(primitives, 'shapes');
 _inlineModule(meshOps, 'meshops');
-
-// window.g = g;
-
 
 
 /**
@@ -180,11 +181,35 @@ export class Gum {
      * Keep a matrix to transform each frame for immediate mod graphics.
      */
     this._imMatrix = m4.create();
+
+    /**
+     * Keep a clean identity to reset shaders.
+     */ 
+    this._identity = m4.create();
    
     /**
      * The name of the default geometry pass.
      */
     this.defaultPass = 'unlit';
+
+    /**
+     * Some global uniforms.
+     */ 
+    this.globalUniforms = {
+      'uNear': 0.1,
+      'uFar': 1000,
+      'uEye': [0, 0, 0],
+      'uView': m4.create(),
+      'uProjection': m4.create(),
+      'uAspect': 1,
+    };
+
+    this._frameStats = {
+      frameStart: 0,
+      frameTime: 0,
+      avgFrameTime: 0,
+    };
+
     this._info();
   } 
 
@@ -262,15 +287,12 @@ export class Gum {
     this.renderer.setProgram('default');
     this.renderer.setRenderTarget(null);
 
-
-
     if (this._loop && this._draw) {
       this._preDraw();
       this._draw(delta);
       this._postDraw();
     }
 
-    
     
     const elapsed = now - this._timeAtLastInfo;
     if (elapsed > 1000) {
@@ -288,9 +310,11 @@ export class Gum {
   _info () {
     this.sceneGraph.innerHTML = '';
     const verts = (this.renderer.totalVertices() / 1000).toFixed(1);
-    this.sceneGraph.innerHTML += 'verts: ' + verts + 'k\n';   
+    const time = this._frameStats.avgFrameTime.toFixed(2);
+    const fps = (1000 / time).toFixed(2);
+    this.sceneGraph.innerHTML += 'verts: ' + verts + 'k\n';
+    this.sceneGraph.innerHTML += 'frame time: ' + time + 'ms — fps: ' + fps + '\n';
     this.sceneGraph.innerHTML += this.scene.print();
-
   }
 
 
@@ -346,8 +370,7 @@ export class Gum {
 
 
   _preDraw () {
-    this.renderer.setProgram('default');
-    this.renderer.setRenderTarget('default');
+    this._frameStats.frameStart = performance.now();
 
     const dWidth = this.canvas.clientWidth;
     const dHeight = this.canvas.clientHeight;
@@ -359,17 +382,23 @@ export class Gum {
       this.canvas.height = dHeight;
     }
 
-    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-   
     this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight; 
     this.camera.updateViewProjection();
-    
-    this.renderer.uniform('uNear', this.camera.near);
-    this.renderer.uniform('uFar',  this.camera.far);
-    this.renderer.uniform('uEye', this.camera.eye);
-    this.renderer.uniform('uView', this.camera.view);
-    this.renderer.uniform('uProjection', this.camera.projection);
-    this.renderer.uniform('uAspect', this.camera.aspect);
+
+    this.globalUniforms['uNear'] = this.camera.near;
+    this.globalUniforms['uFar'] = this.camera.far;
+    this.globalUniforms['uEye'] = this.camera.eye;
+    this.globalUniforms['uAspect'] = this.camera.aspect;
+    this.globalUniforms['uView'] = this.camera.view;
+    this.globalUniforms['uProjection'] = this.camera.projection;
+
+    this.renderer.setProgram('default');
+    this.renderer.setRenderTarget('default');
+
+    this.renderer.globalUniformBlock = this.globalUniforms;
+    this.renderer.setGlobalUniformBlock();
+
+    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
     for (let texer of this.texers) {
       if (texer.changed()) {
@@ -380,6 +409,7 @@ export class Gum {
 
 
   _postDraw () {
+
 
     if (this.postProcessingStack.effects.length > 0) {
       
@@ -395,34 +425,41 @@ export class Gum {
 
         if (i % 2 === 0) {
           this.renderer.setRenderTarget('bufferB');
-
           this.renderer.uniform('uMainTex', colorBufferA);
           this.renderer.uniform('uDepthTex', depthBufferA);
-
         } else {
           this.renderer.setRenderTarget('bufferA');
           this.renderer.uniform('uMainTex', colorBufferB);
           this.renderer.uniform('uDepthTex', depthBufferB);
-
         }
 
         if (i === this.postProcessingStack.effects.length - 1) {
           this.renderer.setRenderTarget('canvas');
-          // this.renderer.uniform
         }
 
+        this.renderer.uniform('uView', this._identity);
+        this.renderer.uniform('uModel', this._identity);
+        this.renderer.uniform('uProjection', this._identity);
         this.renderer.uniform('uTexSize', [this.canvas.width, this.canvas.height]);
-
         this.renderer.uniform('uNear', this.camera.near);
         this.renderer.uniform('uFar', this.camera.far);
         this.renderer.clear([1, 0, 0, 1]);
-        this.renderer.draw('effect-quad');
+
+        // Pass false to draw without global uniforms.
+        this.renderer.draw('effect-quad', false);
       });
     }
+
+    let frameEnd = performance.now();
+    this._frameStats.frameTime = frameEnd - this._frameStats.frameStart;
+
+    this._frameStats.avgFrameTime = 
+      ((this._frameStats.avgFrameTime || this._frameStats.frameTime) + this._frameStats.frameTime) / 2;
+
   }
 
 
-  addEffect (name, shader) {
+  addEffect (shader) {
     
     if (this.postProcessingStack.effects.length === 0) {
       this.renderer.createRenderTarget('bufferA', true);
@@ -445,17 +482,24 @@ export class Gum {
     }
 
     const effect = {
-      name: name,
-      program: name,
+      name: shader,
+      program: shader,
     };
 
-    
-    const vert = shaders.post.vert;
-    const frag = shaders[shader].frag;
-    
-    this.renderer.createProgram(name, vert, frag);
+    if (!this.renderer.shaderPrograms[shader]) {
+      const vert = shaders.post.vert;
+      const frag = shaders[shader].frag;
+      this.renderer.createProgram(shader, vert, frag);
+    }
 
     this.postProcessingStack.effects.push(effect);
+  }
+
+  
+  addProgram (programName) {
+    if (shaders[programName].vert && shaders[programName].frag) {
+      this.renderer.createProgram(programName, shaders[programName].vert, shaders[programName].frag);
+    }
   }
   
 
@@ -469,10 +513,7 @@ export class Gum {
     this.renderer.uniform('uTex', 'none');
 
     for (let call of this.scene.drawCalls()) {
-      for (let [uniform, value] of Object.entries(call.uniforms)) {
-        this.renderer.uniform(uniform, value);
-      }
-      this.renderer.draw(call.geometry);
+      this.renderer.draw(call.geometry, call.uniforms);
     }
   }
 

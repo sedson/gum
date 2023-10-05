@@ -67,7 +67,7 @@ export class Mesh {
    */
   render () {
     const mode = 'TRIANGLES';
-    const triangles   = MeshOps.triangulate(this.faces);
+    const triangles = MeshOps.triangulate(this.faces);
     const vertexCount = triangles.length * 3;
     const attribs = {};
     

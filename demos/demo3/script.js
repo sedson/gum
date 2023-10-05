@@ -19,6 +19,10 @@ gum.background(bg);
 gum.camera.fov = 30;
 gum.defaultPass = 'default';
 
+gum.addEffect('post-blur');
+// gum.addEffect('post-chromatic');
+
+
 
 
 function setup () {

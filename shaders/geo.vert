@@ -37,7 +37,7 @@ vec3 hashId(float id) {
  *
  */
 void main() {
-  gl_PointSize = 4.0;
+  gl_PointSize = 20.0;
   mat4 modelView = uView * uModel;
   mat3 normMatrix = transpose(inverse(mat3(modelView)));
   vViewNormal = normalize(normMatrix * aNormal.xyz);

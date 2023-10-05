@@ -5,7 +5,7 @@ window.gum = new Gum('#canvas', 1000, 1000, { scale: 0.5 });
 
 // Make some colors.
 const bg    = g.color('#333');
-const red   = g.color('#fff');
+const red   = g.color('#e4a');
 const blue  = g.color('#fff333');
 
 // Make a sphere.
@@ -34,8 +34,12 @@ for (let i = 0; i < 50; i++) {
   shapes.push(n);
 }
 
-gum.addEffect('post', 'post-outline');
-gum.addEffect('post2', 'post-chromatic');
+
+gum.addEffect('post-blur');
+gum.addEffect('post-chromatic');
+
+
+
 
 function setup () {}
 

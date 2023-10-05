@@ -118,7 +118,7 @@ export class RendererGL2 {
       'FLOAT_VEC4' : 'uniform4fv',
       'FLOAT_MAT4' : 'uniformMatrix4fv',
       'SAMPLER_2D' : 'uniform1i',
-    }
+    };
     
     /**
      * The available meshes.
@@ -147,6 +147,8 @@ export class RendererGL2 {
       this.attributeInfoByName[attrib.name] = attrib;
       this.attributeInfoByName[attrib.name].index = i;
     });
+
+    this.globalUniformBlock = {};
   }
 
 
@@ -260,6 +262,8 @@ export class RendererGL2 {
 
     this.gl.useProgram(this.shaderPrograms[program]);
     this.activeProgram = program;
+
+    this.setGlobalUniformBlock();
   }
 
 
@@ -364,7 +368,7 @@ export class RendererGL2 {
    * @param {string} mesh 
    * @returns 
    */
-  draw (mesh) {
+  draw (mesh, uniforms = {}) {
     if (!this.meshes[mesh]) {
       console.warn('No mesh found:', mesh);
       return;
@@ -376,10 +380,16 @@ export class RendererGL2 {
     if (call.program && call.program !== this.activeProgram) {
       const cachedProgram = this.activeProgram;
       if (!this.shaderPrograms[call.program]) {
-        console.warn('No program found: ', program);
+        console.warn('No program found:', call.program);
         return;
       }
+      // console.log('SWAPPED TO ' + call.program, this.globalUniformBlock)
+      this.setProgram(call.program);
+      this.setGlobalUniformBlock();
+    }
 
+    for (let uniform in uniforms) {
+      this.uniform(uniform, uniforms[uniform]);
     }
 
     this.gl.bindVertexArray(call.vao);
@@ -534,6 +544,8 @@ export class RendererGL2 {
     data.name = name;
     mesh.vao = this.gl.createVertexArray();
 
+    mesh.program = data.program ?? null;
+
     console.log('add mesh: ', name)
     this._bufferAttribs(mesh.vao, data.attribs);
     
@@ -548,10 +560,10 @@ export class RendererGL2 {
     }
 
     const mesh = this.meshes[name];
-    this.gl.deleteVertexArray(mesh.vao);
+    // this.gl.deleteVertexArray(mesh.vao);
 
     mesh.data = data;
-    mesh.vao = this.gl.createVertexArray();
+    // mesh.vao = this.gl.createVertexArray();
     
     this._bufferAttribs(mesh.vao, data.attribs);
   }
@@ -656,5 +668,14 @@ export class RendererGL2 {
     return Object.values(this.meshes).reduce((a, b) => a + b.data.vertexCount, 0);
   }
 
+
+  /**
+   * Set any uniforms in the global block.
+   */
+  setGlobalUniformBlock () {
+    for (let uniform in this.globalUniformBlock) {
+      this.uniform(uniform, this.globalUniformBlock[uniform]);
+    }
+  }
   
 }
