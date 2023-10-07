@@ -336,7 +336,7 @@ export class Gum {
 
 
   loadMesh (model, fn) {
-    this.plyLoader.load('/models/' + model, function (mesh) {
+    this.plyLoader.load(model, function (mesh) {
       if (fn) { mesh = fn(mesh); }
       this.renderer.addMesh(fn(mesh));
     });

@@ -46,7 +46,7 @@ void main() {
 
   gl_Position = uProjection * uView * uModel * aPosition;
 
-  vec3 rounded = round(gl_Position.xyz * 10.0) / 10.0;
+  vec3 rounded = round(gl_Position.xyz * 20.0) / 20.0;
   // gl_Position.xyz = rounded;
 
   float id = mod(aSurfaceId + uObjectId, 255.0);

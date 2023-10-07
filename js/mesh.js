@@ -206,5 +206,21 @@ export class Mesh {
     return this;
   }
 
+
+  /**
+   * Inflate the mesh along its normals.
+   */ 
+  inflate (amt = 0) {
+    for (let vi = 0; vi < this.vertices.length; vi++) {
+      const vertex = this.vertices[vi];
+      if (!(vertex.position && vertex.normal)) continue;
+
+      for (let i = 0; i < 3; i++) {
+        vertex.position[i] += vertex.normal[i] * amt;
+      }
+    }
+    return this;
+  }
+
   
 }

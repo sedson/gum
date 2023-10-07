@@ -10,7 +10,7 @@ export class PlyLoader {
    * Make a new Loader. A given project should only need one loader instance.
    * @param {boolean} verbose 
    */
-  constructor (verbose = false) {
+  constructor (settings = {}) {
     
     /** The queue of files to be loaded. */
     this._filesToLoad = [];
@@ -28,7 +28,10 @@ export class PlyLoader {
     this.END_HEADER = 'end_header';
 
     /** Toggle certain debugging console.logs */
-    this._verbose = verbose;
+    this._verbose = settings.verbose ?? false;
+
+    /** Whether to normalize integer data. */
+    this._normalize = settings.normalize ?? true;
 
     /** 
      * The PLY format defines data types with these strings. This object helps
@@ -36,7 +39,7 @@ export class PlyLoader {
      */
     this.PLY_TYPES = {
       'char':   { bytes: 1, getter: 'getInt8'},
-      'uchar':  { bytes: 1, getter: 'getUint8'},
+      'uchar':  { bytes: 1, getter: 'getUint8', maxValue: 255 },
       'short':  { bytes: 2, getter: 'getInt16'},
       'ushort': { bytes: 2, getter: 'getUint16'},
       'int':    { bytes: 4, getter: 'getInt32'},
@@ -94,6 +97,8 @@ export class PlyLoader {
     
     const header = this._parseHeader(buffer);
 
+    console.log(header)
+
     if (!header.valid) {
       console.error('Malformed data. Missing ply header: ' + file);
       this._finishLoading();
@@ -115,6 +120,8 @@ export class PlyLoader {
     }
 
     this._finishLoading();
+
+    return mesh;
   }
 
 
@@ -261,14 +268,19 @@ export class PlyLoader {
     const v = {};
 
     for (let i = 0; i < format.length; i++) {
-      const property = format[i].property;
+      const { type, property } = format[i];
       const { attrib, index } = this.PLY_MAPPINGS[property];
 
       if (!v[attrib]) {
         v[attrib] = [];
       }
 
-      v[attrib][index] = vertex[i];
+      let val = vertex[i];
+      if (this._normalize && this.PLY_TYPES[type].maxValue !== undefined) {
+        val /= this.PLY_TYPES[type].maxValue;
+      }
+
+      v[attrib][index] = val;
     }
     return v;
   }
@@ -371,8 +383,9 @@ export class PlyLoader {
       let byteIndex = start;
 
       for (let { type } of vertexFormat) {
-        const { bytes, getter } = this.PLY_TYPES[type];
-        vertex.push(view[getter](byteIndex, littleEndian));
+        const { bytes, getter, maxValue } = this.PLY_TYPES[type];
+        let val = view[getter](byteIndex, littleEndian);
+        vertex.push(val);
         byteIndex += bytes;
       }
 
