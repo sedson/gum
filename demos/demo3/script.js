@@ -18,19 +18,12 @@ let time = 0;
 gum.background(bg); 
 gum.camera.fov = 30;
 gum.defaultPass = 'default';
-
-gum.addEffect('post-blur');
-// gum.addEffect('post-chromatic');
-
-
-
-
 function setup () {
 
   spin = gum.node('camera.root');
   gum.camera.setParent(spin);
 
-  // gum.node('C').setGeometry(gum.addMesh(grid.fill(col).renderEdges()));
+  gum.node('C').setGeometry(gum.addMesh(grid.fill(col).renderEdges()));
 
   gum.plyLoader.load('/models/roundcube.ply', mesh => {
     gum.node('A').setGeometry(gum.addMesh(mesh.fill(g.color('#888')).renderEdges()));

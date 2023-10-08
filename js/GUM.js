@@ -18,6 +18,8 @@ import * as primitives from './mesh-primitives.js';
 
 /** Lines. */
 import { Line } from './line.js';
+import { EdgeCollection } from './edge-collection.js';
+
 
 /** Vector and matrix math. */
 import { Vec2, Vec3 } from './vectors.js';
@@ -50,6 +52,7 @@ export const g = {
   Vec3: Vec3,
   Mesh: Mesh,
   Line: Line,
+  EdgeCollection: EdgeCollection,
   Texer: Texer,
   m4: m4,
 };
@@ -216,7 +219,6 @@ export class Gum {
 
   /**
    * Set up.
-   * @returns 
    */
   _setup () {
     if (this.vert && this.frag) {
@@ -410,7 +412,6 @@ export class Gum {
 
   _postDraw () {
 
-
     if (this.postProcessingStack.effects.length > 0) {
       
       const { colorBufferA, 
@@ -445,6 +446,10 @@ export class Gum {
         this.renderer.uniform('uFar', this.camera.far);
         this.renderer.clear([1, 0, 0, 1]);
 
+        for (let uniform in effect.uniforms) {
+          this.renderer.uniform(uniform, effect.uniforms[uniform]);
+        }
+
         // Pass false to draw without global uniforms.
         this.renderer.draw('effect-quad', false);
       });
@@ -459,7 +464,7 @@ export class Gum {
   }
 
 
-  addEffect (shader) {
+  addEffect (shader, uniforms = {}) {
     
     if (this.postProcessingStack.effects.length === 0) {
       this.renderer.createRenderTarget('bufferA', true);
@@ -484,6 +489,7 @@ export class Gum {
     const effect = {
       name: shader,
       program: shader,
+      uniforms: uniforms,
     };
 
     if (!this.renderer.shaderPrograms[shader]) {
@@ -513,7 +519,7 @@ export class Gum {
     this.renderer.uniform('uTex', 'none');
 
     for (let call of this.scene.drawCalls()) {
-      this.renderer.draw(call.geometry, call.uniforms);
+      this.renderer.draw(call.geometry, call.uniforms, call.program);
     }
   }
 

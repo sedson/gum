@@ -215,10 +215,6 @@ export function verticesToNormals (vertices) {
     };
 
     outEdges.push(vertex2);
-
-
-
-
   }
   console.log(outEdges)
   return outEdges;

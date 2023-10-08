@@ -222,5 +222,19 @@ export class Mesh {
     return this;
   }
 
+
+  getEdges () {
+    const edges = MeshOps.facesToEdges(this.faces);
+    const outEdges = [];
+
+    for (let ei = 0; ei < edges.length; ei++) {
+      const edge = edges[ei];
+      const pos1 = this.vertices[edge[0]].position;
+      const pos2 = this.vertices[edge[1]].position;
+      outEdges.push([pos1, pos2]);
+    }
+    return outEdges;
+  }
+
   
 }

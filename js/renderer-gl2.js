@@ -253,6 +253,7 @@ export class RendererGL2 {
    */
   setProgram (program) {
     if (!this.shaderPrograms[program]) {
+      console.warn('No program found:', mesh.program);
       return;
     }
     
@@ -368,32 +369,28 @@ export class RendererGL2 {
    * @param {string} mesh 
    * @returns 
    */
-  draw (mesh, uniforms = {}) {
-    if (!this.meshes[mesh]) {
-      console.warn('No mesh found:', mesh);
+  draw (meshName, uniforms = {}, program = null) {
+    if (!this.meshes[meshName]) {
+      console.warn('No mesh found:', meshName);
       return;
     }
+    
+    const mesh = this.meshes[meshName];
 
-
-    const call = this.meshes[mesh];
-
-    if (call.program && call.program !== this.activeProgram) {
-      const cachedProgram = this.activeProgram;
-      if (!this.shaderPrograms[call.program]) {
-        console.warn('No program found:', call.program);
-        return;
-      }
-      // console.log('SWAPPED TO ' + call.program, this.globalUniformBlock)
-      this.setProgram(call.program);
-      this.setGlobalUniformBlock();
+    if (program && program !== this.activeProgram) {
+      this.setProgram(program);
     }
+
+    if (mesh.program && mesh.program !== this.activeProgram) {
+      this.setProgram(mesh.program);
+    } 
 
     for (let uniform in uniforms) {
       this.uniform(uniform, uniforms[uniform]);
     }
 
-    this.gl.bindVertexArray(call.vao);
-    this.gl.drawArrays(this.gl[call.data.mode], 0, call.data.vertexCount);
+    this.gl.bindVertexArray(mesh.vao);
+    this.gl.drawArrays(this.gl[mesh.data.mode], 0, mesh.data.vertexCount);
     this.gl.bindVertexArray(null);
   }
   

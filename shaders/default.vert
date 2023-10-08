@@ -12,6 +12,6 @@ out vec4 vColor;
 void main() 
 {
   mat4 modelView = uView * uModel;
-  gl_Position = uProjection * uView * uModel * aPosition;
+  gl_Position = uProjection * uView * uModel * vec4(aPosition.xyz, 1.0);
   vColor = aColor;
 }

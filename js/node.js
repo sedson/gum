@@ -21,6 +21,7 @@ export class Node {
       uModel: this._worldMatrix,
       uTex: 'none',
     };
+    this.program = 'default';
   }
 
   get x ()  { return this.transform.position.x };
