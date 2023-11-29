@@ -40,10 +40,10 @@ export function cube (size = 1) {
 
   const quad = function (a, b, c, d, normal, color) {
     vertices.push(
-      {position: positions[a], normal, color, texCoord: [0, 0]},
-      {position: positions[b], normal, color, texCoord: [1, 0]},
-      {position: positions[c], normal, color, texCoord: [1, 1]},
-      {position: positions[d], normal, color, texCoord: [0, 1]},
+      {position: [...positions[a]], normal, color, texCoord: [0, 0]},
+      {position: [...positions[b]], normal, color, texCoord: [1, 0]},
+      {position: [...positions[c]], normal, color, texCoord: [1, 1]},
+      {position: [...positions[d]], normal, color, texCoord: [0, 1]},
     );
 
     faces.push([i, i + 1, i + 2, i + 3]);
@@ -213,6 +213,128 @@ export function icosphere (size = 1, level = 1, flat = false) {
   return new Mesh(vertices, faces, { name: 'icosphere' });
 }
 
+
+/**
+ * 
+ */ 
+export function uvsphere (size = 1, level = 1, flat = false) {
+  const radius = size / 2;
+
+  const segments = level + 2;
+
+  const getSphericalPos = (uFac, vFac) => {
+    const r = Math.sin(Math.PI * vFac);
+    const x = Math.cos(2 * Math.PI * uFac) * r * radius;
+    const y = -Math.cos(Math.PI * vFac) * radius;
+    const z = Math.sin(2 * Math.PI * uFac) * r * radius;
+    return [x, y, z];
+  };
+
+
+  let step = size / segments;
+
+  const positions = [];
+  const texCoords = [];
+  const normals = [];
+  const faces = [];
+
+  let vertIndex = 0;
+  console.log(segments);
+
+  for (let v = 0; v < segments; v++) {
+    
+    for (let u = 0; u < segments; u++) {
+
+      const uf0 = u / segments;
+      const uf1 = (u + 1) / segments;
+      
+      const vf0 = v / segments;
+      const vf1 = (v + 1) / segments;
+
+      // South pole case.
+      if (v === 0) {
+
+
+        positions.push(
+          getSphericalPos(uf0, vf0),
+          getSphericalPos(uf1, vf1),
+          getSphericalPos(uf0, vf1)
+        );
+
+        texCoords.push(
+          [uf0 + (0.5 * step), vf0],
+          [uf1, vf1],
+          [uf0, vf1]
+        );
+
+        faces.push([vertIndex, vertIndex + 2, vertIndex + 1]);
+
+        vertIndex += 3;
+        continue;
+
+
+      } 
+
+      // North pole case. 
+      if (v === segments - 1) {
+        positions.push(
+          getSphericalPos(uf0, vf0),
+          getSphericalPos(uf1, vf0),
+          getSphericalPos(uf1, vf1),
+        );
+
+        texCoords.push(
+          [uf0, vf0],
+          [uf1, vf0],
+          [uf1 - (0.5 / segments), vf1],
+        );
+
+        faces.push([vertIndex, vertIndex + 2, vertIndex + 1]);
+        vertIndex += 3;
+        continue;
+      }
+
+
+      
+
+      positions.push(
+        getSphericalPos(uf0, vf0),
+        getSphericalPos(uf1, vf0),
+        getSphericalPos(uf1, vf1),
+        getSphericalPos(uf0, vf1)
+      );
+
+
+      texCoords.push(
+        [uf0, vf0],
+        [uf1, vf0],
+        [uf1, vf1],
+        [uf0, vf1]
+      );
+
+      // texCoords.push(
+      //   [0, 1],
+      //   [1, 1],
+      //   [1, 0],
+      //   [0, 0]
+      // );
+
+
+      faces.push([vertIndex, vertIndex + 3, vertIndex + 2, vertIndex + 1]);
+      vertIndex += 4;
+
+    }
+  }
+
+  console.log(positions, faces)
+
+  const vertices = positions.map((pos, i) => {
+    return { position: pos, normal: pos, texCoord: texCoords[i]};
+  });
+
+  return new Mesh(vertices, faces, { name: 'uvsphere' });
+ 
+}
 
 /**
  * Make a quad facing up along y axis.

@@ -8,9 +8,9 @@ uniform sampler2D uDepthTex;
 uniform vec2 uTexSize;
 
 // Custom uniforms.
-uniform float kernel;
-uniform float dist;
-uniform float weight;
+uniform float uKernel;
+uniform float uDist;
+uniform float uWeight;
 
 in vec2 vTexCoord;
 out vec4 fragColor;
@@ -22,15 +22,15 @@ void main() {
   vec3 accum = vec3(0.0);
   vec3 weightSum = vec3(0.0);
 
-  vec2 pix = vec2(dist, dist) / uTexSize;
+  vec2 pix = vec2(uDist, uDist) / uTexSize;
 
 
 
-  for (float i = -kernel; i <= kernel; i++) {
-    for (float j = -kernel; j <= kernel; j++) {
+  for (float i = -uKernel; i <= uKernel; i++) {
+    for (float j = -uKernel; j <= uKernel; j++) {
       vec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);
-      accum += texture(uMainTex, sampleCoord).rgb * weight;
-      weightSum += weight;
+      accum += texture(uMainTex, sampleCoord).rgb * uWeight;
+      weightSum += uWeight;
     }
   }
 

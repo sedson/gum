@@ -11,6 +11,8 @@ const blue  = g.color('#fff333');
 // Make a sphere.
 const sphereShape = g.shapes.icosphere(0.2, 3);
 
+console.log({sphereShape})
+
 let spin;
 
 const shapes = [];
@@ -35,9 +37,7 @@ for (let i = 0; i < 50; i++) {
 }
 
 
-gum.addEffect('post-blur');
 gum.addEffect('post-chromatic');
-
 
 
 

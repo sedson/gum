@@ -19,21 +19,13 @@ let spinAngle = 0;
  * Runs once at the beginning of the gum's life cycle.
  */
 function setup () {
-  const edges = new g.EdgeCollection(sphere.getEdges(), g.color('peachred').rgba);
-  const edges1 = new g.EdgeCollection(cube.getEdges(), g.color('white').rgba);
+  const edges = new g.EdgeCollection(sphere.getEdges(), g.color('orange').rgba);
+  const edges1 = new g.EdgeCollection(cube.getEdges(), g.color('ginger').rgba);
 
   gum.addProgram('line2');
   gum.addProgram('line');
 
-  // gum.addEffect('post-outline2');
-  gum.addEffect('post-blur', {
-    kernel: 3,
-    weight: 0.3,
-    dist: 3,
-  });
-  gum.addEffect('post-chromatic');
-
-
+  gum.addEffect('post-outline2');
 
   a = gum.node('a').setGeometry(gum.addMesh(edges.render()));
   // a = gum.node('a').setGeometry(gum.addMesh(sphere.renderEdges()));
@@ -41,8 +33,9 @@ function setup () {
 
   b = gum.node('b').setGeometry(gum.addMesh(edges1));
 
+  gum.orbit();
   gum.node('c').setGeometry(gum.addMesh(
-    sphere.inflate(-0.01).fill(g.color('yellowocher'))
+    sphere.inflate(-0.01).fill(g.color('lilac'))
   )).setParent(a);
 }
 
@@ -51,7 +44,7 @@ function setup () {
  * Runs each frame;
  */
 function draw () {
-  gum.background(g.color('black'));
+  gum.background(g.color('#333'));
 
 
 
@@ -60,7 +53,7 @@ function draw () {
   let s = g.radians(spinAngle);
   let x = Math.cos(s) * 5;
   let z = Math.sin(s) * 5;
-  gum.camera.transform.position.set(x, 2, z)
+  // gum.camera.transform.position.set(x, 2, z)
 
   a.rotate(x * 0.35, z * 0.29, 0);
 

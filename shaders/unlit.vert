@@ -32,5 +32,5 @@ void main()
   vec3 surfaceId = hashId(uObjectId + aSurfaceId);
 
   vColor.a = 1.0;
-  vColor.rgb = vertexColor;
+  vColor = aColor;
 }

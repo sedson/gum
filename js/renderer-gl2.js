@@ -3,6 +3,8 @@
  *     between an app and the web gl rendering context.
  */
 import { vertexAttributeLayout } from './renderer-gl2-attributes.js';
+import { defaultUniformValues } from './default-uniform-values.js';
+
 
 export class RendererGL2 {
   /**
@@ -107,6 +109,11 @@ export class RendererGL2 {
      * The last used texture unit when binding frame buffer textures.
      */
     this.textureUnitIndex = 0;
+
+    /**
+     * The maximun number of samplers available.
+     */ 
+    this.MAX_TEX_UNIT = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
     /**
      * The GL uniform setter function keyed by the GL type.
@@ -419,8 +426,8 @@ export class RendererGL2 {
   createProgram (name, vert, frag) {
 
     const program = this.gl.createProgram();
-    const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
 
+    const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
     this.gl.shaderSource(vertexShader, vert);
     this.gl.compileShader(vertexShader);
     this.gl.attachShader(program, vertexShader);
@@ -431,7 +438,6 @@ export class RendererGL2 {
     this.gl.attachShader(program, fragmentShader);
 
     this.bindVertexAttributeLocations(program);
-
     this.gl.linkProgram(program);
 
     if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
@@ -440,7 +446,10 @@ export class RendererGL2 {
       return;
     }
 
-    
+    // Use the program so that default uniforms can be set.
+    this.gl.useProgram(program);
+
+    // Store information on any uniforms in the program.
     const uniformBlock = {};
     const uniformCount = this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS);
     
@@ -458,12 +467,18 @@ export class RendererGL2 {
         type: namedType,
         location: this.gl.getUniformLocation(program, name),
       };
+
+      // Set defaults.
+      if (defaultUniformValues[name] && this.uniformTypes[namedType]) {
+        const value = defaultUniformValues[name];
+        const location = uniformBlock[name].location;
+        const isMatrix = namedType.indexOf('MAT') > -1;
+        this._uniform(this.uniformTypes[namedType], location, value, isMatrix);
+      }
     }
-    
     
     this.shaderPrograms[name] = program;
     this.shaderProgramUniforms[name] = uniformBlock;
-
     return program;
   }
 
@@ -581,18 +596,33 @@ export class RendererGL2 {
     const { type, location } = uniforms[name];
 
     if (type.indexOf('MAT') > -1) {
-      this.gl[this.uniformTypes[type]](location, false, value);
+      this._uniform(this.uniformTypes[type], location, value, true);
       return;
     }
 
     // Allow the user to pass the name of the texture as a uniform value.
     if (typeof value === 'string' && this.texturesByName[value] !== undefined) {
       const unit = this.texturesByName[value].unit;
-      this.gl[this.uniformTypes[type]](location, unit);
+      this._uniform(this.uniformTypes[type], location, unit);
       return;
     }
+    this._uniform(this.uniformTypes[type], location, value);
+  }
 
-    this.gl[this.uniformTypes[type]](location, value);
+
+  /**
+   * Private internal uniform setter.
+   * @param {string} fn The name of the uniform setting function. 
+   * @param {WebGLUniformLocation} location The location in the program.
+   * @param {array|float|int} value The value to set.
+   * @param {boolean} isMatrix Matrix flag.
+   */ 
+  _uniform (fn, location, value, isMatrix = false) {
+    if (isMatrix) {
+      this.gl[fn](location, false, value);
+    } else {
+      this.gl[fn](location, value);
+    }
   }
 
 
@@ -625,7 +655,10 @@ export class RendererGL2 {
     const gl = this.gl;
 
     // No more than 8 textures per app.
-    if (this.textureUnitIndex >= 7) { return; }
+    if (this.textureUnitIndex >= this.MAX_TEX_UNIT) { 
+      console.warn('Maximum texture units exceeded.');
+      return; 
+    }
 
     let unit, texture;
     

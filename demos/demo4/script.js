@@ -17,7 +17,6 @@ let time = 0;
 gum.background(bg); 
 gum.camera.fov = 30;
 
-gum.addEffect('post-blur');
 gum.addEffect('post-outline'); 
 gum.addEffect('post-chromatic'); 
 

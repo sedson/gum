@@ -37,6 +37,9 @@ import { PlyLoader } from './ply-loader.js';
 /** Dynamic texer */
 import { Texer } from './texer.js';
 
+/** Colors */
+import { ColorDict } from './color-dict.js';
+
 
 /**
  * The g (gum tools) namespace provides all the helpful ~static~ functions 
@@ -55,6 +58,7 @@ export const g = {
   EdgeCollection: EdgeCollection,
   Texer: Texer,
   m4: m4,
+  colors: ColorDict,
 };
 
 _inlineModule(common);
@@ -340,7 +344,7 @@ export class Gum {
   loadMesh (model, fn) {
     this.plyLoader.load(model, function (mesh) {
       if (fn) { mesh = fn(mesh); }
-      this.renderer.addMesh(fn(mesh));
+      this.renderer.addMesh(mesh);
     });
   } 
 
@@ -531,20 +535,62 @@ export class Gum {
     let draws = [];
     node._toDrawList(draws, children);
     for (let call of draws) {
-      for (let [uniform, value] of Object.entries(call.uniforms)) {
-        this.renderer.uniform(uniform, value);
-      }
-      this.renderer.draw(call.geometry);
+      this.renderer.draw(call.geometry, call.uniforms, call.program);
     }
   }
 
   
   /**
-   * Render one 3D node.
+   * Render one 3D mesh with the default matrix.
    */
   drawMesh (mesh) {
     this.renderer.uniform('uModel', this._imMatrix);
     this.renderer.draw(mesh);
+  }
+
+
+  /**
+   * Set up orbit in the current scene.
+   */ 
+  orbit (distance = 3) {
+    let theta = 0;
+    let lift = 30;
+    let zoom = distance;
+    let mouseDown = false;
+
+    const moveCam = (e = {}, force = false) => {
+      if (!mouseDown && !force) return;
+
+      theta += e.movementX ?? 0;
+      lift -= e.movementY ?? 0;
+
+      lift = common.clamp(lift, 1, 180);
+
+      const x = Math.sin(common.radians(lift)) * Math.cos(common.radians(theta));
+      const z = Math.sin(common.radians(lift)) * Math.sin(common.radians(theta));
+      const y = Math.cos(common.radians(lift));
+
+      let pos = new Vec3(x,y,z).normalize(zoom);
+      this.camera.move(...pos.xyz)
+    }
+
+    moveCam({}, true);
+
+    this.canvas.onpointerdown = () => mouseDown = true;
+    window.onpointerup = () => mouseDown = false;
+    window.onmousemove = (e) => moveCam(e);
+
+    canvas.onwheel = (e) => {
+
+      zoom += e.deltaY * -0.1;
+      zoom = common.clamp(zoom, 0.1, 30);
+      moveCam(e, true);
+    }
+  }
+
+  texture (name, imageData, settings = {}) {
+    let result = this.renderer.addTexture(name, imageData, settings);
+    return result === false ? false : result;
   }
 }
 

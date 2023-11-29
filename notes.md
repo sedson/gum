@@ -1,6 +1,6 @@
 # TODOS
 [] Mesh loading extents for hit box 
-[] 
+[] Default values for uniforms
 
 
 

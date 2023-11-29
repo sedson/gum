@@ -3,10 +3,10 @@
  */ 
 
 export class Line {
-  constructor (points, color) {
+  constructor (points, color = [1, 1, 1, 1]) {
     this.points = points;
     this.color = color;
-    this.thickness = .05;
+    this.thickness = .03;
     this.name = 'line_' + (Date.now() % 253); 
 
   }

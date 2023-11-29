@@ -236,5 +236,19 @@ export class Mesh {
     return outEdges;
   }
 
+  shadeFlat () {
+    const { vertices, faces } = MeshOps.shadeFlat(this.vertices, this.faces);
+    this.vertices = vertices;
+    this.faces = faces;
+    return this;
+  }
+
+  shadeSmooth (tolerance) {
+    const { vertices, faces } = MeshOps.shadeSmooth(this.vertices, this.faces, tolerance);
+    this.vertices = vertices;
+    this.faces = faces;
+    return this;
+  }
+
   
 }

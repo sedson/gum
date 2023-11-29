@@ -1,4 +1,4 @@
-export const ColorDict = {
+const WadaSanzoColorDict = {
   'hermosapink': '#ffb3f0',
   'corinthianpink': '#ffa6d9',
   'cameopink': '#e6adcf',
@@ -157,3 +157,29 @@ export const ColorDict = {
   'slatecolor': '#1b3644',
   'black': '#000000',
 };
+
+const SimpleColorDict = {
+  burgundy: '#5e183b',
+  raspberry: '#b7274d',
+  red: '#e54127',
+  orange: '#ff8c00',
+  mango: '#ffc20e',
+  lime: '#d8eb27',
+  forest: '#003c38',
+  vert: '#006922',
+  turquoise: '#007b82',
+  blue: '#2311e4',
+  sky: '#78c5f8',
+  mint: '#b2e1d2',
+  lilac: '#bdbdf7',
+  rose: '#f892c5',
+  sand: '#e8e1d6',
+  melon: '#f3c1aa',
+  ginger: '#cd9a62',
+  chocolate: '#945526',
+  black: '#000000',
+  gray: '#b8bbb5',
+  white: '#f6f2eA',
+};
+
+export const ColorDict = SimpleColorDict;

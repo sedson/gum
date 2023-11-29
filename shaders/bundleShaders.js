@@ -43,8 +43,9 @@ function templateShader (fileContents) {
   const lines = fileContents.split('\n').map(x => x.trim());
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.startsWith('#include')) {
-      const path = line.split(' ')[1];
+    if (line.startsWith('#pragma include')) {
+      const path = line.split(' ')[2];
+      console.log('found', path)
       if (fs.existsSync(dir + '/' + path)) {
         lines[i] = fs.readFileSync(dir + '/' + path, {encoding : 'utf-8'});
 

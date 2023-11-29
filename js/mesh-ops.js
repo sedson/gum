@@ -3,6 +3,19 @@
  */
 import { Vec3 } from './vectors.js';
 
+
+export function copyVertex (vertex) {
+  const vertexCopy = {};
+  for (let attr in vertex) {
+    if (Array.isArray(vertex[attr])) {
+      vertexCopy[attr] = [...vertex[attr]];
+    } else {
+      vertexCopy[attr] = {...vertex[attr]};
+    }
+  }
+  return vertexCopy;
+}
+
 /**
  * Triangulate a mesh. Discard any "faces" with fewer than 3 vertices. Convert 
  * any faces with 4+ vertices to triangles using a triangle fan method. For 
@@ -218,5 +231,123 @@ export function verticesToNormals (vertices) {
   }
   console.log(outEdges)
   return outEdges;
+}
+
+
+export function shadeFlat (vertices, faces) {
+  const outVerts = []; 
+  const outFaces = [];
+
+  let outVertIndex = 0;
+
+
+  for (let fi = 0; fi < faces.length; fi++) {
+    const face = faces[fi];
+    let avgNormal;
+    let fstr = '';
+
+    
+    for (let vi = 0; vi < face.length; vi++) {
+      const vertLoc = face[vi];
+      const vert = vertices[vertLoc];
+      const vertCopy = {};
+      fstr += vertLoc + '-';
+
+      for (let attr in vert) {
+        vertCopy[attr] = [...vert[attr]];
+
+        if (attr === 'normal') {
+          if (!avgNormal) {
+            avgNormal = new Vec3(...vert.normal);
+          } else {
+            avgNormal.add(new Vec3(...vert.normal));
+          }
+        }
+      }
+
+      outVerts.push(vertCopy);
+    }
+
+    const faceCopy = [];
+    for (let n = 0; n < face.length; n++) {
+      faceCopy.push(n + outVertIndex);
+      if (avgNormal) {
+        outVerts[n + outVertIndex].normal = [...avgNormal.normalize().xyz];
+      }
+    }
+
+    outVertIndex += face.length;
+    outFaces.push(faceCopy);
+  }
+
+  return { vertices: outVerts, faces: outFaces };
+}
+
+
+
+export function shadeSmooth (vertices, faces, tolerance = 0.001) {
+  const outVerts = [];
+  const smoothNormals = new Map();
+
+  const fToS = f => Math.round(f / tolerance);
+
+  const hashVector = (v) => {
+    if (v['x']) {
+      return `${fToS(v.x)},${fToS(v.y)},${fToS(v.z)}`;    
+    }
+    return `${fToS(v[0])},${fToS(v[1])},${fToS(v[2])}`;    
+  };
+
+  for (let vi = 0; vi < vertices.length; vi++) {
+    const vert = vertices[vi];
+    const vertCopy = copyVertex(vert);
+
+    outVerts.push(vertCopy);
+
+    if (!vert.position && !vert.normal) {
+      continue;
+    }
+
+    const hash = hashVector(vert.position);
+
+    if (!smoothNormals.get(hash)) {
+      const data = {
+        normal: new Vec3(...vert.normal),
+        position: new Vec3(...vert.position),
+        replaceMap: [vi]
+      };
+      smoothNormals.set(hash, data);
+    } else {
+
+      const data = smoothNormals.get(hash);
+      data.normal.add(new Vec3(...vert.normal)).normalize();
+      data.position.add(new Vec3(...vert.position)).mult(0.5);
+      data.replaceMap.push(vi);
+    }
+  }
+
+
+  let totalVerts = 0;
+  smoothNormals.forEach(data => {
+    for (let vi of data.replaceMap) {
+      totalVerts ++;
+      console.log(`for vertex index ${vi} - replacing normal ${outVerts[vi].normal} with ${data.normal.xyz}`);
+      outVerts[vi].normal = data.normal.xyz;
+      outVerts[vi].position = data.position.xyz;
+
+    }
+  });
+
+
+
+  console.log(vertices.length, smoothNormals.size, totalVerts, smoothNormals, outVerts);
+
+  // const positions = vertices.map(x => hashVector(new Vec3(...x.position)));
+  // console.log(positions);
+
+  return { vertices: outVerts, faces: faces };
+
+
+
 }
 

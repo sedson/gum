@@ -30,7 +30,7 @@ body {
   font-family: 'Victor', 'Courier New', Courier, monospace;
 }
 
-.felt-panel {
+.gum-panel {
   width: 100vw;
   height: 100vh;
   background-color: rgb(45, 45, 45);
@@ -41,6 +41,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.tex-panel {
+  width: 33vw;
+  height: 100vh;
+  position: fixed;
+  pointer-events: none;
+  display: flex;
+  flex-flow: column;
+  top: 0;
+  right: 0;
 }
 
 .stats {
@@ -65,4 +76,13 @@ body {
 a {
   color: silver;
   cursor: pointer;
+  border: 1px solid silver;
+  text-decoration: none;
+  margin: 0.2em;
+  padding: 0.2em 0.4em;
+  display: inline-block;
+}
+
+.fs-l {
+/*  font-size: 1.25rem;*/
 }

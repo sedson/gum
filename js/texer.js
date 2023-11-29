@@ -32,7 +32,7 @@ export class Texer {
     this.id = 'texer.' + generateId();
 
     this.canvas = dom.tag('canvas.texer', this.texerStyle);
-    dom.select('.felt-panel').append(this.canvas);
+    dom.select('.gum-panel').append(this.canvas);
 
     this.canvas.width = size;
     this.canvas.height = size;
