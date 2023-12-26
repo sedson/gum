@@ -93,6 +93,10 @@ export class Color {
  * @returns {Color}
  */
 export function color (...args) {
+
+  if (args.length === 0) {
+    return new Color(Math.random(), Math.random(), Math.random());
+  }
   
   // 3 or more numbers were passed.
   if (validColorArray(args)) {

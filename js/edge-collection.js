@@ -6,7 +6,7 @@ export class EdgeCollection {
   constructor (edges, color) {
     this.edges = edges;
     this.color = color;
-    this.thickness = 0.05;
+    this.thickness = 0.2;
     this.name = 'edge_collection_' + (Date.now() % 253); 
 
   }

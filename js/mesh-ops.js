@@ -229,7 +229,6 @@ export function verticesToNormals (vertices) {
 
     outEdges.push(vertex2);
   }
-  console.log(outEdges)
   return outEdges;
 }
 
@@ -326,28 +325,15 @@ export function shadeSmooth (vertices, faces, tolerance = 0.001) {
     }
   }
 
-
   let totalVerts = 0;
   smoothNormals.forEach(data => {
     for (let vi of data.replaceMap) {
       totalVerts ++;
-      console.log(`for vertex index ${vi} - replacing normal ${outVerts[vi].normal} with ${data.normal.xyz}`);
       outVerts[vi].normal = data.normal.xyz;
       outVerts[vi].position = data.position.xyz;
-
     }
   });
 
-
-
-  console.log(vertices.length, smoothNormals.size, totalVerts, smoothNormals, outVerts);
-
-  // const positions = vertices.map(x => hashVector(new Vec3(...x.position)));
-  // console.log(positions);
-
   return { vertices: outVerts, faces: faces };
-
-
-
 }
 

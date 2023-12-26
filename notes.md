@@ -1,8 +1,10 @@
 # TODOS
-[] Mesh loading extents for hit box 
-[] Default values for uniforms
-
-
+[ ] Mesh loading extents for hit box 
+[ ] Default values for uniforms
+[ ] How to count vertices for instancerZ
+[ ] Flickering on resize
+[ ] Mesh join bug
+[ ]  
 
 # Vertex Attributes 
 
@@ -32,67 +34,4 @@ https://openframeworks.cc/documentation/3d/ofNode
 Should the base node class have a tick? 
 
 Should there be a behavior class that you can glue to a node?
-
-```js
-class Behavior {
-  constructor (node) {
-    this.node = node;
-    this.start();
-  }
-  start () {}
-  update () {}
-}
-
-class Bobber {
-  start () {
-    this.timer = 0;
-  }
-  update (deltaTime) {
-    this.node.transform.y = ft.sin(this.timer);
-    this.timer += 0.001 * deltaTime;
-  }
-}
-```
-
-
-
-
-# API Thoughts
-I want the API to include a patentable scene graph with retained, bound meshes.
-
-
-```html
-<script src=felt.js></script>
-<script>
-  const ft = FeltTools;
-  const app = new FeltApp('#canvas', 400, 400);
-
-  const ball = app.node();                            // type Node
-
-  
-  const sphereGeometry = ft.shapes.icosphere(0.5, 2); // type Mesh
-
-  
-  f.setup = function () {
-    ball.setMesh(ft.shapes.cube(1));
-
-    f.background('yellow');
-    f.scene.add(ball);
-  }
-
-
-  f.draw = function () {
-    f.background('yellow');
-
-    // Any immediate mode drawing commands. 
-
-    // This would be internal code 
-    f.computeMatrices(f.camera);
-    f.updateSceneGraph();
-    f.renderer.render(f.scene, f.camera);
-  }
-</script>
-```
-
-
 

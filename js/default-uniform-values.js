@@ -3,7 +3,7 @@
  */ 
 
 export const defaultUniformValues = {
-  uColorA: [1, 0, 0, 1],
+  uColorA: [0.9, 0.8, 0.9, 1],
   uColorB: [0, 0, 0, 1],
   uKernel: 2, 
   uDist: 1, 

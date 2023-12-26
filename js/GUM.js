@@ -2,7 +2,6 @@
  * @file Index for GUM. Sets up the g name space and the Gum class.
  */
 
-
 /** Basic utilities. */
 import * as common from './common.js'
 import * as dom from './dom-utils.js';
@@ -25,28 +24,25 @@ import { EdgeCollection } from './edge-collection.js';
 import { Vec2, Vec3 } from './vectors.js';
 import * as m4 from './matrix.js';
 
+/** Scenes */
 import { Scene } from './scene.js';
 import { SceneGraph } from './scene-graph.js';
 
 /** The renderer. */
 import { RendererGL2 } from './renderer-gl2.js';
-
-/** Model loader. */
 import { PlyLoader } from './ply-loader.js';
 
-/** Dynamic texer */
 import { Texer } from './texer.js';
+import { Instancer } from './instancer.js';
 
-/** Colors */
 import { ColorDict } from './color-dict.js';
-
+import { uuid } from './id.js'
 
 /**
- * The g (gum tools) namespace provides all the helpful ~static~ functions 
- * to do cool things inside a gum app.
+ * Some global helpers.
  * @namespace
  */
-export const g = {
+const globals = {
   sin: Math.sin, 
   cos: Math.cos,
   vec2: (x, y) => new Vec2(x, y),
@@ -55,32 +51,13 @@ export const g = {
   Vec3: Vec3,
   Mesh: Mesh,
   Line: Line,
+  Instancer: Instancer,
   EdgeCollection: EdgeCollection,
   Texer: Texer,
   m4: m4,
   colors: ColorDict,
 };
 
-_inlineModule(common);
-_inlineModule(dom, 'dom');
-_inlineModule(primitives, 'shapes');
-_inlineModule(meshOps, 'meshops');
-
-
-/**
- * 
- */
-g._usedColors = {};
-g.color = function (...args) {
-  const argString = args.join('');
-  if (this._usedColors[argString]) {
-    return this._usedColors[argString];
-  }
-  
-  const color = col.color(...args);
-  this._usedColors[argString] = color;
-  return color;
-}.bind(g);
 
 
 
@@ -88,24 +65,40 @@ g.color = function (...args) {
  * The class for one instance of Gum. It has a renderer, a scene-graph, etc.
  */
 export class Gum {
-  constructor (canvas, w, h, settings) {
+  constructor (canvas, settings) {
     settings = settings || {};
+
+    this.instanceId = uuid();
+
+    /**
+     * The pixel ratio for display.
+     */ 
+    this.pixelRatio = settings.pixelRatio || window.devicePixelRatio || 1;
 
     /**
      * The canvas.
      * @type {HTMLCanvasElement}
      */
     this.canvas = dom.select(canvas);
+    this.canvas.classList.add('gum-main-canvas');
 
-    /**
+    /** 
+     * The width of the canvas.
+     */
+    this.w = 500;
+
+    /** 
+     * The height of the canvas.
+     */ 
+    this.h = 500;
+
+    /*
      * The renderer.
      * @type {RendererGL2}
-    */
-    this.renderer = new RendererGL2(this.canvas, w, h, settings);
+     */
+    this.renderer = new RendererGL2(this.canvas, this.w, this.h, settings);
+    this.renderer.instanceId = this.instanceId;
     
-    const scale = settings?.scale ?? 1;
-    this.canvas.style.transform = `scale(${scale})`;
-   
     /**
      * A reference to the raw gl context.
      * @type {WebGL2RenderingContext}
@@ -165,9 +158,10 @@ export class Gum {
     /**
      * An array of textures.
     */
-   this.texers = [];
-   
-   
+    this.texers = [];
+
+    
+    
     /**
      * The post processing stack.
      */
@@ -217,12 +211,22 @@ export class Gum {
       avgFrameTime: 0,
     };
 
+    /** 
+     * Whether do do some extra blitting to get the full buffer ~after post processing~
+     * back into the drawing buffer.
+     */ 
+    this.recycleBuffer = false;
+
+    this._usedColors = {};
+
     this._info();
+
+   
   } 
 
 
   /**
-   * Set up.
+   * Internal set up. Runs dierectly before user setup.
    */
   _setup () {
     if (this.vert && this.frag) {
@@ -233,9 +237,10 @@ export class Gum {
     const { vert, frag } = shaders[this.defaultPass];
 
     this.renderer.createProgram('default', vert, frag);
+    this.renderer.setProgram('default');
     
     // Make a default magenta texture.
-    this.renderer.addTexture('none', new Uint8Array([255, 0, 255, 255]), {width: 1, height: 1, clamp: true, filter: 'NEAREST'});
+    this.renderer.addTexture('none', new Uint8Array([255, 0, 255, 255]), { width: 1, height: 1, clamp: true, filter: 'NEAREST' });
   }
 
 
@@ -247,10 +252,19 @@ export class Gum {
    * @param {function} draw 
    */
   run (setup, draw) {
+    this._onresize();
+
     this._setup();
+
+    // Do the pre draw routine once incase any code in setup asks to draw.
+    this._preDraw();
+
 
     // 1) Call the user's custom setup.
     setup();
+
+    // 2) Call one pass of post draw in case the set up fn did any drawing.
+    this._postDraw();
 
     this._info();
 
@@ -259,6 +273,8 @@ export class Gum {
 
     // 4) start animating.
     this._tick();
+
+    window.addEventListener('resize', this._onresize.bind(this));
   }
 
 
@@ -268,7 +284,7 @@ export class Gum {
    * @param {Color} color 
    * @returns 
    */
-  background (color) {
+  clear (color) {
     if (color instanceof col.Color) {
       this.renderer.clear(color.rgba);
       return;
@@ -279,19 +295,52 @@ export class Gum {
     }
   }
 
+  background (color) {
+
+  }
+
+  size (w, h) {
+    this.canvas.style.w = w;
+    this.canvas.style.h = h;
+    this._isFixedSize = true;
+  }
+
+
+  clearDepth () {
+    this.renderer.clearDepth();
+  }
+
+  /**
+   * Make or get a color.
+   */
+  color (...args) {
+    const argString = args.join('');
+    if (argString && this._usedColors[argString]) {
+      return this._usedColors[argString];
+    }
+    
+    const color = col.color(...args);
+    this._usedColors[argString] = color;
+    return color;
+  }
+
+
 
   /** 
    * The fire once per frame animation handler. 
    */
   _tick () {
+    if (this._disposed) return;
     let now = performance.now();
     let delta = 0.001 * (now - this._lastNow) / (1 / 60);
     this._lastNow = now;
+
+    this._time = now - this._timeAtLaunch;
     
     m4.identity(this._imMatrix);
 
     this.renderer.setProgram('default');
-    this.renderer.setRenderTarget(null);
+    this.renderer.setRenderTarget('default');
 
     if (this._loop && this._draw) {
       this._preDraw();
@@ -299,14 +348,13 @@ export class Gum {
       this._postDraw();
     }
 
-    
     const elapsed = now - this._timeAtLastInfo;
     if (elapsed > 1000) {
       this._info();
       this._timeAtLastInfo = now
     }
     
-    window.requestAnimationFrame(this.tick);
+    requestAnimationFrame(this.tick);
   }
 
 
@@ -336,9 +384,15 @@ export class Gum {
    * Get the time since launch.
    * @returns {number} Milliseconds since launch.
    */
-  time () {
-   return performance.now() - this._timeAtLaunch;
+  get time () {
+    return this._time;
   }
+  set time (val) {}
+
+  get frame () {
+    return this._frame;
+  }
+  set frame (val) {}
 
 
   loadMesh (model, fn) {
@@ -367,28 +421,34 @@ export class Gum {
     return this.scene.createChildNode(name, null);
   }
 
-  addMesh (mesh) {
-    if (mesh.render) {
-      return this.renderer.addMesh(mesh.render());
+  mesh (msh) {
+    if (msh.render) {
+      return this.renderer.addMesh(msh.render());
     }
-    return this.renderer.addMesh(mesh);
+    return this.renderer.addMesh(msh);
   }
 
 
-  _preDraw () {
+  _preDraw (settings = {}) {
     this._frameStats.frameStart = performance.now();
 
-    const dWidth = this.canvas.clientWidth;
-    const dHeight = this.canvas.clientHeight;
+    const pixelRatio = this.pixelRatio;
+    let dWidth = Math.round(this.canvas.clientWidth * pixelRatio);
+    let dHeight = Math.round(this.canvas.clientHeight * pixelRatio);
 
-    const needsResize = this.canvas.width !== dWidth || this.canvas.height !== dHeight;
-
-    if (needsResize) {
-      this.canvas.width = dWidth;
-      this.canvas.height = dHeight;
+    if (settings.screenshot) {
+      const { width, height } = settings.screenshot;
+      dWidth = width > 0 ? width : dWidth;
+      dHeight = height > 0 ? height: dHeight;
     }
 
-    this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight; 
+    // const needsResize = this._updateCanvasSize();
+    // if (needsResize) {
+    //   this.resized = true;
+    //   this.renderer.resize(this.w, this.h);
+    // }
+
+    this.camera.aspect = dWidth / dHeight; 
     this.camera.updateViewProjection();
 
     this.globalUniforms['uNear'] = this.camera.near;
@@ -404,7 +464,7 @@ export class Gum {
     this.renderer.globalUniformBlock = this.globalUniforms;
     this.renderer.setGlobalUniformBlock();
 
-    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    this.gl.viewport(0, 0, this.w, this.h);
 
     for (let texer of this.texers) {
       if (texer.changed()) {
@@ -415,7 +475,7 @@ export class Gum {
 
 
   _postDraw () {
-
+    this.renderer.gl.finish();
     if (this.postProcessingStack.effects.length > 0) {
       
       const { colorBufferA, 
@@ -457,7 +517,16 @@ export class Gum {
         // Pass false to draw without global uniforms.
         this.renderer.draw('effect-quad', false);
       });
+
+      if (this.recycleBuffer) {
+        const defaultBuffer = this.renderer.renderTargets['default'].frameBuffer;
+        this.renderer.blitBuffer(null, defaultBuffer);
+      }
     }
+
+
+    this._frame ++;
+    this.resized = false;
 
     let frameEnd = performance.now();
     this._frameStats.frameTime = frameEnd - this._frameStats.frameStart;
@@ -488,6 +557,7 @@ export class Gum {
       fsQuad.name = 'effect-quad';
       this.renderer.addMesh(fsQuad);
       this.renderer.renderTargets['default'] = bufferA;
+      this.renderer.setRenderTarget('default');
     }
 
     const effect = {
@@ -524,6 +594,7 @@ export class Gum {
 
     for (let call of this.scene.drawCalls()) {
       this.renderer.draw(call.geometry, call.uniforms, call.program);
+      // console.log(call);
     }
   }
 
@@ -592,6 +663,41 @@ export class Gum {
     let result = this.renderer.addTexture(name, imageData, settings);
     return result === false ? false : result;
   }
+
+  dispose () {
+    this._disposed = true; 
+    this.renderer.dispose();
+    this.tick = () => {};
+  }
+
+  screenshot (w = 100, h = 100) {
+    this._preDraw({ screenshot: { width: w, height: h }});
+    this._draw();
+    this._postDraw();
+    const data = this.canvas.toDataURL();
+    return data;
+  }
+
+
+  _onresize () {
+    if (this._isFixedSize) {
+      return;
+    }
+    const cW = Math.floor(this.canvas.clientWidth * this.pixelRatio);
+    const cH = Math.floor(this.canvas.clientHeight * this.pixelRatio);
+    if (cW !== this.w || cH !== this.h) {
+      this.resized = true;
+      this.canvas.width = cW;
+      this.canvas.height = cH;
+      this.w = cW;
+      this.h = cH;
+      this.renderer.resize(this.w, this.h);
+      this.onresize();          
+    }
+  }
+
+  // NOOP to be overrridden.
+  onresize () {}
 }
 
 
@@ -600,15 +706,16 @@ export class Gum {
  * @param {Module} module An imported module.
  * @param {string} target An optional string location to put the module under.  
  */
-function _inlineModule (module, target) {
-  let targetObj = g;
+function _inlineModule (module, context, target) {
+  let targetObj = context;
+
 
   if (target) {
-    if (g[target]) {
-      targetObj = g[target];
+    if (context[target]) {
+      targetObj = context[target];
     } else {
       targetObj = {};
-      g[target] = targetObj;
+      context[target] = targetObj;
     }
   }
 
@@ -620,3 +727,11 @@ function _inlineModule (module, target) {
     }
   }
 }
+
+_inlineModule(common, Gum.prototype);
+_inlineModule(globals, Gum.prototype);
+_inlineModule(dom, Gum.prototype, 'dom');
+_inlineModule(primitives, Gum.prototype, 'shapes');
+_inlineModule(meshOps, Gum.prototype, 'meshops');
+
+

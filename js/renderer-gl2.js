@@ -23,14 +23,14 @@ export class RendererGL2 {
      * @type {HTMLCanvasElement}
      */
     this.canvas = canvas;
-    this.canvas.width = w; 
-    this.canvas.height = h;
+    this.w = w; 
+    this.h = h;
     
     /**
      * The aspect ratio.
      * @type {number}
      */
-    this.aspectRatio = w / h;
+    this.aspectRatio = this.w / this.h;
 
     /**
      * Settings for the WebGl2 context.
@@ -155,7 +155,22 @@ export class RendererGL2 {
       this.attributeInfoByName[attrib.name].index = i;
     });
 
+    /**
+     * A hash to track a block of shared uniforms between programs. Useful 
+     * for things like view matrices, sky colors etc.
+     */ 
     this.globalUniformBlock = {};
+
+    /**
+     * Gl resource deleters by constructor name.
+     */ 
+    this.deleteLookup = {
+      'WebGLProgram' : 'deleteProgram',
+      'WebGLTexture' : 'deleteTexture',
+      'WebGLFramebuffer' : 'deleteFramebuffer',
+      'WebGLVertexArrayObject' : 'deleteVertexArray',
+    }
+    
   }
 
 
@@ -174,6 +189,19 @@ export class RendererGL2 {
     this.depthTest(this._configuration.depthTest);
     this.depthWrite(this._configuration.depthWrite);
     this.cullFace(this._configuration.faceCulling);
+  }
+
+  resize (w, h) {
+    if (w === this.w && h === this.h) return;
+    this.w = w;
+    this.h = h;
+    this.aspectRatio = w / h;
+    this.canvas.width = w;
+    this.canvas.height = h;
+    for (let targetName in this.renderTargets) {
+      this.updateRenderTarget(targetName);
+    }
+
   }
 
 
@@ -309,7 +337,7 @@ export class RendererGL2 {
    * @param {boolean} depth Whether to create a depth texture as well.
    */
   createRenderTarget (name, depth) {
-    const target = {};
+    const target = { w: this.w, h: this.h };
     const gl = this.gl;
 
     target.colorTexUnit = this.textureUnitIndex;
@@ -327,8 +355,7 @@ export class RendererGL2 {
     // Make a texture to be the color of the target.
     gl.bindTexture(gl.TEXTURE_2D, target.colorTexture);
     
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.canvas.width, 
-      this.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.w, this.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S,     gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T,     gl.CLAMP_TO_EDGE);
@@ -356,8 +383,7 @@ export class RendererGL2 {
       gl.activeTexture(gl.TEXTURE0 + target.depthTexUnit);
       gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
 
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, 
-        this.canvas.width, this.canvas.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.w, this.h, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
       
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -370,19 +396,64 @@ export class RendererGL2 {
     this.renderTargets[name] = target;
   }
 
+  updateRenderTarget (name) {
+    // this.gl.finish();
+    const target = this.renderTargets[name];
+    if (!target) return;
+
+    const gl = this.gl;
+
+    if (target.w === this.w && target.h === this.h) {
+      return;
+    }
+
+    target.w = this.w;
+    target.h = this.h;
+    
+    console.log('UpdateRenderTarget', this.w, this.h);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target.frameBuffer);
+
+    // TODO : Someway of saving the frame buffer tex2d data to avoid flickering.
+    if (target.colorTexture) {
+      gl.bindTexture(gl.TEXTURE_2D, target.colorTexture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.w, this.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.colorTexture, 0);
+      // gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+
+    if (target.depthTexture) {
+      gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.w, this.h, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, target.depthTexture, 0);
+      // gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    // gl.finish();
+
+  }
+
 
   /**
    * Draw a named mesh.
    * @param {string} mesh 
-   * @returns 
+   * @returns
    */
   draw (meshName, uniforms = {}, program = null) {
-    if (!this.meshes[meshName]) {
-      console.warn('No mesh found:', meshName);
-      return;
+    let mesh;
+
+    // Check for a named mesh, which is stored in the renderer's responsobility.
+    if (typeof meshName === 'string') {
+      mesh = this.meshes[meshName];
+      if (!mesh) {
+        console.warn('No mesh found:', meshName);
+        return;
+      }
+    } else {
+      mesh = meshName;
     }
     
-    const mesh = this.meshes[meshName];
 
     if (program && program !== this.activeProgram) {
       this.setProgram(program);
@@ -394,6 +465,15 @@ export class RendererGL2 {
 
     for (let uniform in uniforms) {
       this.uniform(uniform, uniforms[uniform]);
+    }
+
+    if (mesh.draw && typeof mesh.draw === 'function') {
+      mesh.draw();
+      return;
+    }
+
+    if (!mesh.vao) {
+      return;
     }
 
     this.gl.bindVertexArray(mesh.vao);
@@ -493,6 +573,33 @@ export class RendererGL2 {
       this.gl.bindAttribLocation(program, i, attrib.name);
     }
   }
+
+  attribsToVao (attribs) {
+    const vao = this.gl.createVertexArray();
+    this.gl.bindVertexArray(vao);
+
+    for (const [attrib, data] of Object.entries(attribs)) {
+      const name = this._prefixAttribName(attrib);
+      const info = this.attributeInfoByName[name];
+
+      // If there is no attrib info, the shader stack and the renderer have no 
+      // clue about that attrib name.
+      if (!info) {
+        continue;
+      }
+
+      const buffer = this.gl.createBuffer();
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+      this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+
+      const { index, size, type, normalized } = info;
+      this.gl.vertexAttribPointer(index, size, this.gl[type], normalized, 0, 0);
+      this.gl.enableVertexAttribArray(index);
+    }
+
+    this.gl.bindVertexArray(null);
+    return vao;
+  }
   
 
   _bufferAttribs (vao, attribs) {
@@ -520,6 +627,8 @@ export class RendererGL2 {
 
     gl.bindVertexArray(null);
   }
+
+
 
 
   _getMeshId (name) {
@@ -654,7 +763,6 @@ export class RendererGL2 {
   addTexture (name, imageData, settings) {
     const gl = this.gl;
 
-    // No more than 8 textures per app.
     if (this.textureUnitIndex >= this.MAX_TEX_UNIT) { 
       console.warn('Maximum texture units exceeded.');
       return; 
@@ -677,6 +785,7 @@ export class RendererGL2 {
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     
     const { width, height, filter, clamp } = settings;
+
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
     
     if (clamp) {
@@ -705,6 +814,62 @@ export class RendererGL2 {
   setGlobalUniformBlock () {
     for (let uniform in this.globalUniformBlock) {
       this.uniform(uniform, this.globalUniformBlock[uniform]);
+    }
+  }
+
+
+  /**
+   * Blit from one frame buffer to another.
+   * @param {WebGLFramebuffer|null} The source buffer or null for canvas.
+   * @param {WebGLFramebuffer|null} The target buffer or null for canvas.
+   */ 
+  blitBuffer (src, target) {
+    this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, src);
+    this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, target);
+    let w = this.w;
+    let h = this.h;
+    if (w > 0 && h > 0) {
+      this.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST);      
+    }
+  }
+
+  _disposeGLEntity (entity) {
+    if (!entity) return;
+    const constructor = entity.constructor.name;
+    if (this.deleteLookup[constructor]) {
+      this.gl[this.deleteLookup[constructor]](entity);
+    } else {
+      entity = null;
+    }
+  }
+
+
+  /**
+   * Dispose of any gl resources.
+   */ 
+  dispose () {
+    const gl = this.gl;
+    console.log('disposeId', this.instanceId);
+    for (let target of Object.values(this.renderTargets)) {
+      if (!target) continue;
+      for (let prop of Object.values(target)) {
+        this._disposeGLEntity(prop);
+      }
+    }
+    for (let tex of Object.values(this.texturesByName)) {
+      if (!tex) continue;
+      for (let prop of Object.values(tex)) {
+        this._disposeGLEntity(prop);
+      }
+    }
+    for (let prog of Object.values(this.shaderPrograms)) {
+      this._disposeGLEntity(prog);
+    }
+    for (let mesh of Object.values(this.meshes)) {
+      if (!mesh) continue;
+      for (let prop of Object.values(mesh)) {
+        this._disposeGLEntity(prop);
+      }
     }
   }
   

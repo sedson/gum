@@ -125,7 +125,7 @@ export function lookAt (out, eye, center, up) {
  * @param  {Number} far Far clip plane.
  * @return {Float32Array} Projection matrix. 
  */ 
-export function perspective(out, fovy, aspect, near, far) {
+export function perspective (out, fovy, aspect, near, far) {
   const f = 1.0 / Math.tan(fovy / 2);
   out[0] = f / aspect;
   out[1] = 0;
@@ -160,7 +160,7 @@ export function perspective(out, fovy, aspect, near, far) {
  * @param {Array} v [x, y, z] Vector array.
  * @return {Float32Array} Transform matrix. 
  */ 
-export function translate(out, a, v) {
+export function translate (out, a, v) {
   let x = v[0],
     y = v[1],
     z = v[2];
@@ -215,7 +215,7 @@ export function translate(out, a, v) {
  * @param {ReadonlyVec3} axis the axis to rotate around
  * @returns {mat4} out
  */
-export function rotate(out, a, rad, axis) {
+export function rotate (out, a, rad, axis) {
   let x = axis[0],
     y = axis[1],
     z = axis[2];
@@ -295,7 +295,7 @@ export function rotate(out, a, rad, axis) {
  * @param {mat4} out the receiving matrix
  * @returns {mat4} out
  */
-export function identity(out) {
+export function identity (out) {
   out[0] = 1;
   out[1] = 0;
   out[2] = 0;
@@ -324,7 +324,7 @@ export function identity(out) {
  * @param {ReadonlyMat4} b the second operand
  * @returns {mat4} out
  */
-export function multiply(out, a, b) {
+export function multiply (out, a, b) {
   let a00 = a[0],
       a01 = a[1],
       a02 = a[2],
@@ -389,7 +389,7 @@ export function multiply(out, a, b) {
  * @param {ReadonlyMat4} a the source matrix
  * @returns {mat4} out
  */
-export function copy(out, a) {
+export function copy (out, a) {
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -450,7 +450,7 @@ export function scale(out, a, v) {
  * @param {ReadonlyMat4} a the source matrix
  * @returns {mat4} out
  */
-export function invert(out, a) {
+export function invert (out, a) {
   let a00 = a[0],
     a01 = a[1],
     a02 = a[2],
@@ -530,4 +530,66 @@ export function transformMat4(out, a, m) {
   out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
   out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
   return out;
+}
+
+
+/**
+ * Transpose the values of a mat4
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {ReadonlyMat4} a the source matrix
+ * @returns {mat4} out
+ */
+export function transpose (out, a) {
+  // If we are transposing ourselves we can skip a few steps but have to cache some values
+  if (out === a) {
+    let a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
+    let a12 = a[6],
+      a13 = a[7];
+    let a23 = a[11];
+
+    out[1] = a[4];
+    out[2] = a[8];
+    out[3] = a[12];
+    out[4] = a01;
+    out[6] = a[9];
+    out[7] = a[13];
+    out[8] = a02;
+    out[9] = a12;
+    out[11] = a[14];
+    out[12] = a03;
+    out[13] = a13;
+    out[14] = a23;
+  } else {
+    out[0] = a[0];
+    out[1] = a[4];
+    out[2] = a[8];
+    out[3] = a[12];
+    out[4] = a[1];
+    out[5] = a[5];
+    out[6] = a[9];
+    out[7] = a[13];
+    out[8] = a[2];
+    out[9] = a[6];
+    out[10] = a[10];
+    out[11] = a[14];
+    out[12] = a[3];
+    out[13] = a[7];
+    out[14] = a[11];
+    out[15] = a[15];
+  }
+
+  return out;
+}
+
+
+export function print (a) {
+  let str = '';
+  for (let i = 0; i < 16; i++) {
+    str += a[i].toFixed(2);
+    str += i % 4 === 3 ? '\n' : ' ';
+  }
+  return str;
 }

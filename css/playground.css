@@ -1,0 +1,103 @@
+:root {
+  --font-size: 12px;
+  --header-height: 3em;
+  --line: 1px solid #888;
+  --page-height: calc(100vh - var(--header-height));
+  --burgundy: #5e183b;
+  --raspberry: #b7274d;
+  --red: #e54127;
+  --orange: #ff8c00;
+  --mango: #ffc20e;
+  --lime: #d8eb27;
+  --forest: #003c38;
+  --vert: #006922;
+  --turquoise: #007b82;
+  --blue: #2311e4;
+  --sky: #78c5f8;
+  --mint: #b2e1d2;
+  --lilac: #bdbdf7;
+  --rose: #f892c5;
+  --sand: #e8e1d6;
+  --melon: #f3c1aa;
+  --ginger: #cd9a62;
+  --chocolate: #945526;
+  --black: #000000;
+  --gray: #b8bbb5;
+  --white: #f6f2eA;
+}
+
+body {
+  background-color: #333;
+}
+
+
+header {
+  width: 100%;
+  border-bottom: var(--line);
+  display: flex;
+  height: var(--header-height);
+  align-items: center;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+header > * {
+  margin-right: 1em;
+}
+
+ {
+  background-color: green;
+}
+
+
+#page-container {
+  display: flex;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: 100vw;
+}
+
+.playground-editor-container {
+  border: none;
+  color: gray;
+  border-right: var(--line);
+  overflow: scroll;
+  padding: 0;
+  height: var(--page-height);
+  padding-bottom: 4em;
+  min-width: 80ch;
+}
+
+
+.playground-gum-container {
+  padding: 10px;
+  color: silver;
+  flex-grow: 2;
+  height: var(--page-height);
+}
+
+.gum-panel {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.gum-main-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.title {
+  font-weight: bold;
+  background-color: var(--lime);
+  border-right: var(--line);
+  padding: 1em;
+  color: #333;
+}
+
+.cm-editor .cm-scroller {
+  font-family: Victor;
+}

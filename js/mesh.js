@@ -4,6 +4,7 @@
 
 import * as MeshOps from './mesh-ops.js';
 import { Vec3 } from './vectors.js';
+import * as m4 from './matrix.js';
 
 /**
  * A single vertex. Contains 1 or more named attributes. 
@@ -46,7 +47,7 @@ export class Mesh {
      * A name for this mesh.
      */
     this.name = meta.name || 'mesh';
-}
+  }
 
 
   /**
@@ -250,5 +251,29 @@ export class Mesh {
     return this;
   }
 
-  
+  applyTransform (transform) {
+    for (let vi = 0; vi < this.vertices.length; vi++) {
+      const vert = this.vertices[vi];
+      if (vert.position) {
+        vert.position = transform.transformPoint(vert.position);
+      }
+      if (vert.normal) {
+        vert.normal = transform.transformNormal(vert.normal);
+      }
+    }
+    return this;
+  }
+
+  join (other) {
+    const offset = this.vertices.length;
+
+    const newFaces = other.faces.map(face => {
+      return face.map(index => index + offset);
+    });
+
+    this.vertices = this.vertices.concat(other.vertices);
+    this.faces = this.faces.concat(newFaces);
+    
+    return this;
+  }  
 }

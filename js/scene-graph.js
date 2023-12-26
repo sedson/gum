@@ -8,14 +8,17 @@ const graphStyle = {
   left: '1em',
   top: '1em',
   zIndex: 101,
-  overflow: 'hidden',
+  overflow: 'scroll',
   whiteSpace: 'pre',
   padding: '1em',
 };
 
 export function SceneGraph () {
   let graph = dom.tag('div#scene-graph', graphStyle);
-  document.body.append(graph);
+  let panel = dom.select('.gum-panel');
+  if (panel) {
+    panel.append(graph);
+  }
   return graph;
 }
 

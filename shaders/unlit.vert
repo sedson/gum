@@ -9,6 +9,7 @@ uniform float uObjectId;
 in vec4 aPosition;
 in vec3 aNormal;
 in vec4 aColor;
+in vec4 aRegister1;
 in float aSurfaceId;
 
 out vec4 vColor;
@@ -24,7 +25,10 @@ vec3 hashId (float id)
 void main() 
 {
   mat4 modelView = uView * uModel;
-  gl_Position = uProjection * uView * uModel * aPosition;
+  vec4 pos = aPosition;
+  pos.xyz += aRegister1.xyz;
+  
+  gl_Position = uProjection * uView * uModel * pos;
   
 
   vec3 vertexColor = aColor.rgb;

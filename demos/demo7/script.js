@@ -4,7 +4,7 @@ window.g = g;
 
 // Create a new felt app that renders to the '#canvas' element. The size 
 // is 2000 by 2000 pixels.
-window.gum = new Gum('#canvas', 1000, 1000, { scale: 0.5 });
+window.gum = new Gum('#canvas', 1000, 1000);
 
 let turntable, cube, sphere;
 

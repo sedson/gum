@@ -37,14 +37,16 @@ for (let i = 0; i < 50; i++) {
 }
 
 
-gum.addEffect('post-chromatic');
+gum.addEffect('post-chromatic2');
+gum.recycleBuffer = true;
 
 
 
 function setup () {}
 
 function draw (delta) {
-  gum.background(bg);
+  // gum.background(bg);
+  gum.clearDepth();
   gum.drawScene();
   
   for (let i = 0; i < shapes.length; i++) {

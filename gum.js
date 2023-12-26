@@ -1,4 +1,4 @@
-var gum = (function (exports) {
+var GUM3D = (function (exports) {
   'use strict';
 
   /**
@@ -170,169 +170,35 @@ var gum = (function (exports) {
     tag: tag
   });
 
-  const ColorDict = {
-    'hermosapink': '#ffb3f0',
-    'corinthianpink': '#ffa6d9',
-    'cameopink': '#e6adcf',
-    'fawn': '#d1b0b3',
-    'lightbrowndrab': '#b08699',
-    'coralred': '#ff7399',
-    'freshcolor': '#ff788c',
-    'grenadinepink': '#ff616b',
-    'eosinepink': '#ff5ec4',
-    'spinelred': '#ff4dc9',
-    'oldrose': '#d94d99',
-    'eugeniareda': '#ed3d66',
-    'eugeniaredb': '#e62e73',
-    'rawsienna': '#b85e00',
-    'vinaceoustawny': '#c74300',
-    'jasperred': '#fa2b00',
-    'spectrumred': '#f20000',
-    'redorange': '#e81900',
-    'etruscanred': '#c9303e',
-    'burntsienna': '#a93400',
-    'ochrered': '#a7374b',
-    'scarlet': '#d50c42',
-    'carmine': '#d60036',
-    'indianlake': '#cc1a97',
-    'rosolancpurple': '#b319ab',
-    'pomegranitepurple': '#b90078',
-    'hydrangeared': '#9e194d',
-    'brickred': '#a32100',
-    'carminered': '#a10b2b',
-    'pompeianred': '#a90636',
-    'red': '#a10045',
-    'brown': '#6c2b11',
-    'haysrusset': '#681916',
-    'vandykered': '#740909',
-    'pansypurple': '#6f0043',
-    'paleburntlake': '#730f1f',
-    'violetred': '#3d0079',
-    'vistorislake': '#5c2c45',
-    'sulpheryellow': '#f5f5b8',
-    'palelemonyellow': '#fff59e',
-    'naplesyellow': '#faed8f',
-    'ivorybuff': '#ebd999',
-    'seashellpink': '#ffcfc4',
-    'lightpinkishcinnamon': '#ffbf99',
-    'pinkishcinnamon': '#f2ad78',
-    'cinnamonbuff': '#ffbf6e',
-    'creamyellow': '#ffb852',
-    'goldenyellow': '#fa9442',
-    'vinaceouscinnamon': '#f59994',
-    'ochraceoussalmon': '#d99e73',
-    'isabellacolor': '#c3a55c',
-    'maple': '#c2975a',
-    'olivebuff': '#bcd382',
-    'ecru': '#c0b490',
-    'yellow': '#ffff00',
-    'lemonyellow': '#f2ff26',
-    'apricotyellow': '#ffe600',
-    'pyriteyellow': '#c4bf33',
-    'oliveocher': '#d1bd19',
-    'yellowocher': '#e0b81f',
-    'orangeyellow': '#ffab00',
-    'yelloworange': '#ff8c00',
-    'apricotorange': '#ff7340',
-    'orange': '#ff5200',
-    'peachred': '#ff3319',
-    'englishred': '#de4500',
-    'cinnamonrufous': '#c2612c',
-    'orangerufous': '#c05200',
-    'sulphineyellow': '#baa600',
-    'khaki': '#b68400',
-    'citronyellow': '#a6d40d',
-    'buffycitrine': '#888d2a',
-    'darkcitrine': '#7e8743',
-    'lightgrayisholive': '#76844e',
-    'krongbergsgreen': '#759243',
-    'olive': '#718600',
-    'orangecitrine': '#8c6510',
-    'sudanbrown': '#9b5348',
-    'olivegreen': '#58771e',
-    'lightbrownisholive': '#706934',
-    'deepgrayisholive': '#505423',
-    'palerawumber': '#5e4017',
-    'sepia': '#503d00',
-    'madderbrown': '#651300',
-    'marsbrowntobacco': '#522000',
-    'vandykebrown': '#362304',
-    'turquoisegreen': '#b5ffc2',
-    'glaucousgreen': '#b3e8c2',
-    'darkgreenishglaucous': '#b3d9a3',
-    'yellowgreen': '#a6ff47',
-    'lightgreenyellow': '#bdf226',
-    'nightgreen': '#7aff00',
-    'oliveyellow': '#99b333',
-    'artemesiagreen': '#65a98f',
-    'andovergreen': '#5c8a73',
-    'rainettegreen': '#85b857',
-    'pistachiogreen': '#56aa69',
-    'seagreen': '#33ff7d',
-    'benzolgreen': '#00d973',
-    'lightporcelaingreen': '#23c17c',
-    'green': '#40c945',
-    'dullviridiangreen': '#19cc33',
-    'oilgreen': '#6ea900',
-    'diaminegreen': '#1b8e13',
-    'cossackgreen': '#328e13',
-    'lincolngreen': '#405416',
-    'blackisholive': '#324e2a',
-    'deepslateolive': '#172713',
-    'nileblue': '#bfffe6',
-    'palekingsblue': '#abf5ed',
-    'lightglaucousblue': '#a6e6db',
-    'salviablue': '#96bfe6',
-    'cobaltgreen': '#94ff94',
-    'calamineblue': '#80ffcc',
-    'venicegreen': '#6bffb3',
-    'cerulianblue': '#29bdad',
-    'peacockblue': '#00cf91',
-    'greenblue': '#2dbc94',
-    'olympicblue': '#4f8fe6',
-    'blue': '#0d75ff',
-    'antwarpblue': '#008aa1',
-    'helvetiablue': '#0057ba',
-    'darkmediciblue': '#417777',
-    'duskygreen': '#00592e',
-    'deeplyonsblue': '#0024cc',
-    'violetblue': '#202d85',
-    'vandarpoelsblue': '#003e83',
-    'darktyrianblue': '#0d2b52',
-    'dullvioletblack': '#06004f',
-    'deepindigo': '#000831',
-    'deepslategreen': '#0f261f',
-    'grayishlavendera': '#b8b8ff',
-    'grayishlavenderb': '#bfabcc',
-    'laeliapink': '#cc85d1',
-    'lilac': '#b875eb',
-    'eupatoriumpurple': '#bf36e0',
-    'lightmauve': '#9161f2',
-    'aconiteviolet': '#9c52f2',
-    'dullblueviolet': '#6e66d4',
-    'darksoftviolet': '#4d52de',
-    'blueviolet': '#4733ff',
-    'purpledrab': '#754260',
-    'deepvioletplumbeous': '#5c7287',
-    'veroniapurple': '#7e3075',
-    'darkslatepurple': '#53225c',
-    'taupebrown': '#6b2e63',
-    'violetcarmine': '#531745',
-    'violet': '#2619d1',
-    'redviolet': '#3400a3',
-    'cotingapurple': '#340059',
-    'duskymadderviolet': '#2d0060',
-    'white': '#ffffff',
-    'neutralgray': '#b5d1cc',
-    'mineralgray': '#9fc2b2',
-    'warmgray': '#9cb29e',
-    'slatecolor': '#1b3644',
-    'black': '#000000',
+  const SimpleColorDict = {
+    burgundy: '#5e183b',
+    raspberry: '#b7274d',
+    red: '#e54127',
+    orange: '#ff8c00',
+    mango: '#ffc20e',
+    lime: '#d8eb27',
+    forest: '#003c38',
+    vert: '#006922',
+    turquoise: '#007b82',
+    blue: '#2311e4',
+    sky: '#78c5f8',
+    mint: '#b2e1d2',
+    lilac: '#bdbdf7',
+    rose: '#f892c5',
+    sand: '#e8e1d6',
+    melon: '#f3c1aa',
+    ginger: '#cd9a62',
+    chocolate: '#945526',
+    black: '#000000',
+    gray: '#b8bbb5',
+    white: '#f6f2eA',
   };
+
+  const ColorDict = SimpleColorDict;
 
   const containerStyle = {
     display: 'flex',
-    position: 'fixed',
+    position: 'absolute',
     width: '100%',
     backgroundColor: 'rgba(0,0,0,0.25)',
     bottom: 0,
@@ -349,8 +215,11 @@ var gum = (function (exports) {
 
     let container = select('#swatches');
     if (!container) {
-      container = tag('div#swatches', containerStyle);
-      document.body.append(container);
+      container = tag('div#swatches.gum-swatches', containerStyle);
+      const panel = select('.gum-panel');
+      if (panel) {
+        panel.append(container);
+      }
     }
 
     const swatch = tag('div.swatch', swatchStyle);
@@ -450,6 +319,10 @@ var gum = (function (exports) {
    * @returns {Color}
    */
   function color (...args) {
+
+    if (args.length === 0) {
+      return new Color(Math.random(), Math.random(), Math.random());
+    }
     
     // 3 or more numbers were passed.
     if (validColorArray(args)) {
@@ -779,29 +652,56 @@ var gum = (function (exports) {
 
   const shaders = {
     "default": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nin vec4 vColor;\nout vec4 fragColor;\n\nvoid main() {\n  fragColor = vec4(vColor.rgb, 1.0);\n}",
-      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nout vec4 vColor;\n\n\nvoid main() \n{\n  mat4 modelView = uView * uModel;\n  gl_Position = uProjection * uView * uModel * aPosition;\n  vColor = aColor;\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nin vec4 vColor;\nout vec4 fragColor;\n\nvoid main() {\nfragColor = vec4(vColor.rgb, 1.0);\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nout vec4 vColor;\n\nvoid main()\n{\nmat4 modelView = uView * uModel;\ngl_Position = uProjection * uView * uModel * vec4(aPosition.xyz, 1.0);\nvColor = aColor;\n}"
     },
     "geo": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\nuniform vec4 uColor;\n\nin vec4 vWorldPosition;\nin vec4 vColor;\nin vec3 vWorldNormal;\nin vec3 vViewNormal;\nin vec3 vSurfaceId;\nin float vDepth;\nin float vId;\n\nout vec4 fragColor;\n\nvoid main() {\n  vec3 lightDir = normalize(vec3(3.0, 4.0, 2.0));\n  float nDotL = clamp(dot(vWorldNormal, lightDir), 0.0, 1.0);\n  float light = clamp(smoothstep(0.1, 0.4, nDotL) + 0.8, 0.0, 1.0);\n  float nDotV = dot(vViewNormal, vec3(0.0, 0.0, 1.0));\n\n  fragColor = vec4(vId, nDotV, nDotL, 1.0);\n\n  fragColor = vec4(vViewNormal * 0.5 + 0.5, 1.0);\n  fragColor = vec4(vSurfaceId, 1.0);\n}",
-      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\nuniform float uNear;\nuniform float uFar;\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nin vec4 aNormal;\nin float aSurfaceId;\n\nout vec4 vWorldPosition;\nout vec4 vColor;\nout vec3 vWorldNormal;\nout vec3 vViewNormal;\nout vec3 vSurfaceId;\nout float vDepth;\nout float vId;\n\n/**\n *\n */\nvec3 hashId(float id) {\n  float r = fract(mod(id * 25738.32498, 456.221));\n  float g = fract(mod(id * 565612.08321, 123.1231));\n  float b = fract(mod(id * 98281.32498, 13.221));\n  return vec3(r, g, b);\n}\n\n/**\n *\n */\nvoid main() {\n  gl_PointSize = 4.0;\n  mat4 modelView = uView * uModel;\n  mat3 normMatrix = transpose(inverse(mat3(modelView)));\n  vViewNormal = normalize(normMatrix * aNormal.xyz);\n  vWorldNormal = normalize(mat3(uModel) * aNormal.xyz);\n  vColor = aColor;\n\n  gl_Position = uProjection * uView * uModel * aPosition;\n\n  vec3 rounded = round(gl_Position.xyz * 10.0) / 10.0;\n  // gl_Position.xyz = rounded;\n\n  float id = mod(aSurfaceId + uObjectId, 255.0);\n  vId = id / 255.0 + (1.0 / 255.0);\n\n  vSurfaceId = hashId(aSurfaceId + uObjectId);\n\n  vWorldPosition = gl_Position;\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\nuniform vec4 uColor;\n\nin vec4 vWorldPosition;\nin vec4 vColor;\nin vec3 vWorldNormal;\nin vec3 vViewNormal;\nin vec3 vSurfaceId;\nin float vDepth;\nin float vId;\n\nout vec4 fragColor;\n\nvoid main() {\nvec3 lightDir = normalize(vec3(1.0, 1.0, 1.0));\nfloat nDotL = clamp(dot(vWorldNormal, lightDir), 0.0, 1.0);\nfloat light = clamp(smoothstep(0.1, 0.4, nDotL) + 0.2, 0.0, 1.0);\nfloat nDotV = dot(vViewNormal, vec3(0.0, 0.0, 1.0));\n\nfragColor = vec4(vId, nDotV, nDotL, 1.0);\n\n// fragColor = vec4(vec3(light), 1.0);\n\n// fragColor = vec4(vViewNormal * 0.5 + 0.5, 1.0);\nfragColor = vec4(vSurfaceId, 1.0);\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\nuniform float uNear;\nuniform float uFar;\nuniform float uObjectId;\nuniform float uAspect;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nin vec4 aNormal;\nin float aSurfaceId;\n\nout vec4 vWorldPosition;\nout vec4 vColor;\nout vec3 vWorldNormal;\nout vec3 vViewNormal;\nout vec3 vSurfaceId;\nout float vDepth;\nout float vId;\n\n/**\n*\n*/\nvec3 hashId(float id) {\nfloat r = fract(mod(id * 25738.32498, 456.221));\nfloat g = fract(mod(id * 565612.08321, 123.1231));\nfloat b = fract(mod(id * 98281.32498, 13.221));\nreturn vec3(r, g, b);\n}\n\n\n/**\n*\n*/\nvoid main() {\ngl_PointSize = 20.0;\nmat4 modelView = uView * uModel;\nmat3 normMatrix = transpose(inverse(mat3(modelView)));\nvViewNormal = normalize(normMatrix * aNormal.xyz);\nvWorldNormal = normalize(mat3(uModel) * aNormal.xyz);\nvColor = aColor;\n\ngl_Position = uProjection * uView * uModel * aPosition;\n\nvec3 rounded = round(gl_Position.xyz * 20.0) / 20.0;\n// gl_Position.xyz = rounded;\n\nfloat id = mod(aSurfaceId + uObjectId, 255.0);\nvId = id / 255.0 + (1.0 / 255.0);\n\nvSurfaceId = hashId(aSurfaceId + uObjectId);\n\nvWorldPosition = gl_Position;\n}"
+    },
+    "line": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\n\nin vec4 vColor;\n\nout vec4 fragColor;\n\nvoid main () {\nfragColor = vColor;\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uNear;\nuniform float uFar;\nuniform float uAspect;\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec4 aColor;\nin vec4 aRegister1; // .xyz is previous\nin vec4 aRegister2; // .xyz is next\nin vec3 aNormal;    // .x is thickness\n// .y is orinetation\n\nout vec4 vColor;\n\n\n/**\n*\n*/\nvoid main () {\nmat4 mvp = uProjection * uView * uModel;\nvec2 aspect = vec2(uAspect, 1.0);\n\nfloat thickness = aNormal.x;\nfloat orientation = aNormal.y;\n\nvec4 current = mvp * vec4(aPosition.xyz, 1.0);\nvec4 previous = mvp * vec4(aRegister1.xyz, 1.0);\nvec4 next = mvp * vec4(aRegister2.xyz, 1.0);\n\n\n// could use z component to scale by distance.\nvec2 currentScreen = current.xy / current.w * aspect;\nvec2 previousScreen = previous.xy / previous.w * aspect;\nvec2 nextScreen = next.xy / next.w * aspect;\n\nvec2 lineDir = vec2(0.0);\n\nif (currentScreen == previousScreen) {\nlineDir = normalize(nextScreen - currentScreen);\n}\nelse if (currentScreen == nextScreen) {\nlineDir = normalize(currentScreen - previousScreen);\n}\nelse {\nvec2 dirA = normalize(currentScreen - previousScreen);\nif (orientation == 1.0) {\nvec2 dirB = normalize(nextScreen - currentScreen);\n\nvec2 tangent = normalize(dirA + dirB);\nvec2 perp = vec2(-dirA.y, dirA.x);\nvec2 miter = vec2(-tangent.y, tangent.x);\n\nlineDir = tangent;\nthickness = thickness / dot(miter, perp);\n\nthickness = clamp(thickness, 0.0, aNormal.x * 3.0);\n\n} else {\nlineDir = dirA;\n}\n}\n\nvec2 normal = vec2(-lineDir.y, lineDir.x) * thickness * 0.5;\nnormal.x /= uAspect;\n\nvec4 offset = vec4(normal * orientation, 0.0, 0.0);\n\ngl_Position = current + offset;\nvColor = aColor;\n}"
+    },
+    "line2": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\n\nin vec4 vColor;\n\nout vec4 fragColor;\n\nvoid main () {\nfragColor = vColor;\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uNear;\nuniform float uFar;\nuniform float uAspect;\nuniform float uObjectId;\n\nin vec3 aPosition;\nin vec4 aColor;\nin vec4 aRegister1; // .xyz is next\nin vec3 aNormal;    // .x is thickness\n// .y is corner index\n\nout vec4 vColor;\n\n\n/**\n*\n*/\nvoid main () {\nmat4 mvp = uProjection * uView * uModel;\nvec2 aspect = vec2(uAspect, 1.0);\n\nfloat thickness = aNormal.x;\nfloat orientation = aNormal.y;\n\nfloat extension = thickness * 0.25;\n\nvec4 current = mvp * vec4(aPosition.xyz, 1.0);\nvec4 next = mvp * vec4(aRegister1.xyz, 1.0);\n\n// could use z component to scale by distance.\nvec2 currentScreen = current.xy / current.w;\nvec2 nextScreen = next.xy / next.w;\n\nvec2 lineDir = normalize(nextScreen - currentScreen);\n\n\nvec2 normal = vec2(-lineDir.y, lineDir.x) * 0.5 * thickness;\n\nnormal.x /= uAspect;\n\n\nif (aNormal.y < 1.0) {\n\ncurrent.xy -= normal;\ncurrent.xy -= lineDir * extension;\ngl_Position = current;\n\n} else if (aNormal.y < 2.0) {\n\ncurrent.xy += normal;\ncurrent.xy -= lineDir * extension;\ngl_Position = current;\n\n} else if (aNormal.y < 3.0) {\n\nnext.xy -= normal;\nnext.xy += lineDir * extension;\ngl_Position = next;\n\n} else {\n\nnext.xy += normal;\nnext.xy += lineDir * extension;\ngl_Position = next;\n\n}\n\nvColor = aColor;\n}"
+    },
+    "lit": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nin vec4 vColor;\nin vec3 vNormal;\n\nout vec4 fragColor;\n\nvoid main() {\nif (!gl_FrontFacing) {\nfragColor = vec4(1.0, 0.0, 0.0, 1.0);\nreturn;\n}\n\nvec3 l = normalize(vec3(1.0, 1.0, 1.0));\nfloat ndotl = dot(normalize(vNormal), l);\n\nndotl = ndotl * 0.5 + 0.5;\nndotl *= ndotl;\n\nndotl += 0.3;\nndotl = clamp(ndotl, 0.0, 1.0);\n\n\nfragColor = vec4(vColor.rgb * ndotl, 1.0);\n\n\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec3 aNormal;\nin vec4 aColor;\nin vec4 aRegister1;\nin float aSurfaceId;\n\nout vec4 vColor;\nout vec3 vNormal;\n\nvoid main()\n{\nvec4 pos = aPosition;\npos.xyz += aRegister1.xyz;\ngl_Position = uProjection * uView * uModel * pos;\nmat3 normMatrix = transpose(inverse(mat3(uView * uModel)));\nvColor = aColor;\nvNormal = transpose(inverse(mat3(uModel))) * aNormal;\n}"
+    },
+    "noise": {
+      "glsl": "float rand (float n) {\nreturn fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\nreturn fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\nfloat pInt = floor(p);\nfloat pFract = fract(p);\nreturn mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\nvec2 d = vec2(0.0, 1.0);\nvec2 b = floor(p);\nvec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\nreturn mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}"
+    },
+    "post-blur": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uTexSize;\n\n\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\naccum += texture(uMainTex, sampleCoord).rgb * uWeight;\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\nfragColor = vec4(avg, 1.0);\n\n}"
     },
     "post-chromatic": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\n  vec2 rOff = vec2(0.0, 4.0);\n  vec2 gOff = vec2(0.0, 0.0);\n  vec2 bOff = vec2(4.0, 0.0);\n  vec2 pixelSize = 1.0 / uTexSize;\n  vec4 col = texture(uMainTex, vTexCoord);\n\n  fragColor = col;\n  float r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\n  float g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\n  float b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\n  fragColor.rgb = vec3(r, g, b);\n\n  // vec2 uv = vTexCoord;\n  // uv *= 1.0 - uv.xy;\n\n  // float vig = uv.x * uv.y * 15.0;\n\n  // vig = pow(vig, 0.03);\n\n  // fragColor.rgb *= vig;\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec2 rOff = vec2(0.0, 4.0);\nvec2 gOff = vec2(0.0, 0.0);\nvec2 bOff = vec2(4.0, 0.0);\nvec2 pixelSize = 1.0 / uTexSize;\nvec4 col = texture(uMainTex, vTexCoord);\n\nfragColor = col;\nfloat r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\nfloat g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\nfloat b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\nfragColor.rgb = vec3(r, g, b);\n\n// vec2 uv = vTexCoord;\n// uv *= 1.0 - uv.xy;\n\n// float vig = uv.x * uv.y * 15.0;\n\n// vig = pow(vig, 0.03);\n\n// fragColor.rgb *= vig;\n}"
+    },
+    "post-chromatic2": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nfloat rand (float n) {\n  return fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\n  return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\n  float pInt = floor(p);\n  float pFract = fract(p);\n  return mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\n  vec2 d = vec2(0.0, 1.0);\n  vec2 b = floor(p);\n  vec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\n  return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}\n\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec2 rOff = vec2(bnoise(col.x * 2.0), bnoise(col.y * 5.0));\nvec2 gOff = vec2(bnoise(col.y * -6.3), bnoise(col.z * 300.0));\nvec2 bOff = vec2(bnoise(col.z * -6.3), bnoise(col.x * 1.4));\nvec2 pixelSize = 1.0 / uTexSize;\n\nfragColor = col;\nfloat r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\nfloat g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\nfloat b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\nfragColor.rgb = vec3(r, g, b);\n\n// vec2 uv = vTexCoord;\n// uv *= 1.0 - uv.xy;\n\n// float vig = uv.x * uv.y * 15.0;\n\n// vig = pow(vig, 0.03);\n\n// fragColor.rgb *= vig;\n}"
+    },
+    "post-dither": {
+      "frag": "#version 300 es\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\n\n// Custom uniforms.\nuniform vec4 uColorA;\nuniform vec4 uColorB;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat rand (float n) {\n  return fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\n  return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\n  float pInt = floor(p);\n  float pFract = fract(p);\n  return mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\n  vec2 d = vec2(0.0, 1.0);\n  vec2 b = floor(p);\n  vec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\n  return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}\n\nconst int[64] BAYER64 = int[](\n0, 32, 8, 40, 2, 34, 10, 42,    /* 8x8 Bayer ordered dithering */\n48, 16, 56, 24, 50, 18, 58, 26, /* pattern. Each input pixel */\n12, 44, 4, 36, 14, 46, 6, 38,   /* is scaled to the 0..63 range */\n60, 28, 52, 20, 62, 30, 54, 22, /* before looking in this table */\n3, 35, 11, 43, 1, 33, 9, 41,    /* to determine the action. */\n51, 19, 59, 27, 49, 17, 57, 25,\n15, 47, 7, 39, 13, 45, 5, 37,\n63, 31, 55, 23, 61, 29, 53, 21\n);\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat brightness = dot(col.rgb, vec3(0.2126, 0.7152, 0.0722));\n\nvec2 xy = vTexCoord * uTexSize;\n\nint x = int(mod(xy.x, 8.0));\nint y = int(mod(xy.y, 8.0));\n\nfloat n = float(BAYER64[y * 8 + x]);\n\nbrightness += (bnoise(vTexCoord * uTexSize) * 2.0 - 1.0) * 0.0;\n\nfloat pix = step(n, brightness * 63.0);\n\n\nvec3 rgb = mix(uColorB.rgb,  uColorA.rgb, pix);\nfragColor = vec4(rgb, 1.0);\n// fragColor = vec4(vec3(noise), 1.0);\n\n// fragColor = vec4(gl_FragCoord.xy / uTexSize, 0.0, 1.0);\n\n}"
     },
     "post-outline": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\n  float z = d * 2.0 - 1.0;\n  return (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\nvec4 gradient(sampler2D tex, vec2 coord) {\n  vec2 offset = vec2(1.0, 1.0) / uTexSize;\n\n  vec4 xSum = vec4(0.0);\n  vec4 ySum = vec4(0.0);\n\n  xSum += texture(tex, coord + vec2(-offset.x, 0.0)) * -1.0;\n  xSum += texture(tex, coord + vec2(+offset.x, 0.0));\n\n  ySum += texture(tex, coord + vec2(0.0, -offset.y)) * -1.0;\n  ySum += texture(tex, coord + vec2(0.0, +offset.y));\n\n  return sqrt(xSum * xSum + ySum * ySum);\n}\n\nvoid main() {\n  vec4 col = texture(uMainTex, vTexCoord);\n  float depth = texture(uDepthTex, vTexCoord).r;\n  float lDepth = linearDepth(depth, uNear, uFar);\n\n  vec4 colGrad = gradient(uMainTex, vTexCoord);\n  vec4 depthGrad = gradient(uDepthTex, vTexCoord);\n\n  float idQ = mix(colGrad.r, 0.0, smoothstep(0.0, 0.3, lDepth));\n\n  float idEdge = step(0.0001, colGrad.x);\n\n  float depthQ = mix(0.0, 100.0, smoothstep(0.0, 0.01, col.g));\n\n  float depthEdge = step(0.01, depthGrad.r);\n\n  float normEdge = step(0.3, colGrad.g);\n\n  float edge = max(idEdge, depthEdge);\n\n  vec3 grad = vec3(idEdge, depthEdge, 0.0);\n\n  float fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));\n\n  // float surfaceId = round(col.r * 20.0);\n  fragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);\n  // fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);\n  // fragColor.a = 1.0;\n\n  fragColor = vec4(vec3(edge * 0.4 + 0.1), 1.0);\n\n  // fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n\n  // fragColor = vec4(mix(vec3(1.0, 1.0, 0.2), vec3(0.1, 0.1, 0.1), edge), 1.0);\n\n  // fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n  // fragColor = vec4(vec3(idEdge), 1.0);\n  // fragColor = vec4(colGrad.ggg, 1.0);\n  // fragColor = vec4(1.0, 0.0, 1.0, 1.0);\n  // fragColor = vec4(vec3(fog), 1.0);\n\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\nfloat z = d * 2.0 - 1.0;\nreturn (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\nvec4 gradient(sampler2D tex, vec2 coord) {\nvec2 offset = vec2(1.0, 1.0) / uTexSize;\n\nvec4 xSum = vec4(0.0);\nvec4 ySum = vec4(0.0);\n\nxSum += texture(tex, coord + vec2(-offset.x, 0.0)) * -1.0;\nxSum += texture(tex, coord + vec2(+offset.x, 0.0));\n\nySum += texture(tex, coord + vec2(0.0, -offset.y)) * -1.0;\nySum += texture(tex, coord + vec2(0.0, +offset.y));\n\nreturn sqrt(xSum * xSum + ySum * ySum);\n}\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat depth = texture(uDepthTex, vTexCoord).r;\nfloat lDepth = linearDepth(depth, uNear, uFar);\n\nvec4 colGrad = gradient(uMainTex, vTexCoord);\nvec4 depthGrad = gradient(uDepthTex, vTexCoord);\n\nfloat idQ = mix(colGrad.r, 0.0, smoothstep(0.0, 0.3, lDepth));\n\nfloat idEdge = step(0.0001, colGrad.x);\n\nfloat depthQ = mix(0.0, 100.0, smoothstep(0.0, 0.01, col.g));\n\nfloat depthEdge = step(0.01, depthGrad.r);\n\nfloat normEdge = step(0.3, colGrad.g);\n\nfloat edge = max(idEdge, depthEdge);\n\nvec3 grad = vec3(idEdge, depthEdge, 0.0);\n\nfloat fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));\n\n// float surfaceId = round(col.r * 20.0);\nfragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);\n// fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);\n// fragColor.a = 1.0;\n\nfragColor = vec4(vec3(edge * 0.4 + 0.1), 1.0);\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n\n// fragColor = vec4(mix(vec3(1.0, 1.0, 0.2), vec3(0.1, 0.1, 0.1), edge), 1.0);\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n// fragColor = vec4(vec3(idEdge), 1.0);\n// fragColor = vec4(colGrad.ggg, 1.0);\n// fragColor = vec4(1.0, 0.0, 1.0, 1.0);\n// fragColor = vec4(vec3(fog), 1.0);\n\n}"
+    },
+    "post-outline2": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\nfloat z = d * 2.0 - 1.0;\nreturn (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\nvec4 gradient(sampler2D tex, vec2 coord) {\nvec2 offset = vec2(1.0, 1.0) / uTexSize;\n\nvec4 xSum = vec4(0.0);\nvec4 ySum = vec4(0.0);\n\nxSum += texture(tex, coord + vec2(-offset.x, 0.0)) * -1.0;\nxSum += texture(tex, coord + vec2(+offset.x, 0.0));\n\nySum += texture(tex, coord + vec2(0.0, -offset.y)) * -1.0;\nySum += texture(tex, coord + vec2(0.0, +offset.y));\n\nreturn sqrt(xSum * xSum + ySum * ySum);\n}\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat depth = texture(uDepthTex, vTexCoord).r;\nfloat lDepth = linearDepth(depth, uNear, uFar);\n\nvec4 colGrad = gradient(uMainTex, vTexCoord);\nvec4 depthGrad = gradient(uDepthTex, vTexCoord);\n\nfloat idQ = mix(colGrad.r, 0.0, smoothstep(0.0, 0.3, lDepth));\n\nfloat idEdge = step(0.0001, colGrad.x);\n\nfloat depthQ = mix(0.0, 100.0, smoothstep(0.0, 0.01, col.g));\n\nfloat depthEdge = step(0.01, depthGrad.r);\n\nfloat normEdge = step(0.3, colGrad.g);\n\nfloat edge = max(idEdge, depthEdge);\n\nvec3 grad = vec3(idEdge, depthEdge, 0.0);\n\nfloat fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));\n\n// float surfaceId = round(col.r * 20.0);\nfragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);\n// fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);\n// fragColor.a = 1.0;\n\nfragColor.rgb = mix(col.rgb, vec3(0.1), edge);\nfragColor.a = 1.0;\n\n\n\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n// fragColor = vec4(vec3(depthEdge), 1.0);\n// fragColor = vec4(colGrad.ggg, 1.0);\n// fragColor = vec4(1.0, 0.0, 1.0, 1.0);\n// fragColor = vec4(vec3(fog), 1.0);\n\n}"
     },
     "post": {
-      "vert": "#version 300 es\n\nin vec2 aPosition;\nout vec2 vTexCoord;\n\nvoid main() {\n  vTexCoord = (aPosition + 1.0) / 2.0;\n  gl_Position = vec4(aPosition, 0.0, 1.0);\n}"
+      "vert": "#version 300 es\n\nin vec2 aPosition;\nout vec2 vTexCoord;\n\nvoid main() {\nvTexCoord = (aPosition + 1.0) / 2.0;\ngl_Position = vec4(aPosition, 0.0, 1.0);\n}"
     },
     "textured": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uTex;\n\nin vec4 vColor;\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nvoid main() {\n  fragColor.rg = vTexCoord;\n  fragColor.a = 1.0;\n\n  fragColor = texture(uTex, vTexCoord);\n}",
-      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec3 aNormal;\nin vec2 aTexCoord;\nin vec4 aColor;\nin float aSurfaceId;\n\nout vec4 vColor;\nout vec2 vTexCoord;\n\nvec3 hashId(float id) {\n  float r = fract(mod(id * 25738.32498, 456.221));\n  float g = fract(mod(id * 565612.08321, 123.1231));\n  float b = fract(mod(id * 98281.32498, 13.221));\n  return vec3(r, g, b);\n}\n\nvoid main() {\n  mat4 modelView = uView * uModel;\n  gl_Position = uProjection * uView * uModel * aPosition;\n  vColor = aColor;\n  vTexCoord = aTexCoord;\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uTex;\n\nin vec4 vColor;\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nvoid main() {\nfragColor.rg = vTexCoord;\nfragColor.a = 1.0;\n\nfragColor = texture(uTex, vTexCoord);\n// fragColor = vec4(vTexCoord, 0.0, 1.0);\n// float f = smoothstep(0.39, 0.4, distance(vTexCoord, vec2(0.5, 0.5)));\n// fragColor = vec4(vec3(f), 1.0);\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec3 aNormal;\nin vec2 aTexCoord;\nin vec4 aColor;\nin float aSurfaceId;\n\nout vec4 vColor;\nout vec2 vTexCoord;\n\nvec3 hashId(float id) {\nfloat r = fract(mod(id * 25738.32498, 456.221));\nfloat g = fract(mod(id * 565612.08321, 123.1231));\nfloat b = fract(mod(id * 98281.32498, 13.221));\nreturn vec3(r, g, b);\n}\n\nvoid main() {\nmat4 modelView = uView * uModel;\ngl_Position = uProjection * uView * uModel * aPosition;\nvColor = aColor;\nvTexCoord = aTexCoord;\n}"
     },
     "unlit": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nin vec4 vColor;\nout vec4 fragColor;\n\nvoid main() {\n  fragColor = vec4(vColor.rgb, 1.0);\n}",
-      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec3 aNormal;\nin vec4 aColor;\nin float aSurfaceId;\n\nout vec4 vColor;\n\nvec3 hashId (float id) \n{\n  float r = fract(mod(id * 25738.32498, 456.221));\n  float g = fract(mod(id * 565612.08321, 123.1231));\n  float b = fract(mod(id * 98281.32498, 13.221));\n  return vec3(r, g, b);\n}\n\nvoid main() \n{\n  mat4 modelView = uView * uModel;\n  gl_Position = uProjection * uView * uModel * aPosition;\n  \n\n  vec3 vertexColor = aColor.rgb;\n  vec3 localNormal = aNormal.rgb * 0.5 + 0.5;\n  vec3 surfaceId = hashId(uObjectId + aSurfaceId);\n\n  vColor.a = 1.0;\n  vColor.rgb = vertexColor;\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nin vec4 vColor;\nout vec4 fragColor;\n\nvoid main() {\nfragColor = vec4(vColor.rgb, 1.0);\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec3 aNormal;\nin vec4 aColor;\nin vec4 aRegister1;\nin float aSurfaceId;\n\nout vec4 vColor;\n\nvec3 hashId (float id)\n{\nfloat r = fract(mod(id * 25738.32498, 456.221));\nfloat g = fract(mod(id * 565612.08321, 123.1231));\nfloat b = fract(mod(id * 98281.32498, 13.221));\nreturn vec3(r, g, b);\n}\n\nvoid main()\n{\nmat4 modelView = uView * uModel;\nvec4 pos = aPosition;\npos.xyz += aRegister1.xyz;\n\ngl_Position = uProjection * uView * uModel * pos;\n\n\nvec3 vertexColor = aColor.rgb;\nvec3 localNormal = aNormal.rgb * 0.5 + 0.5;\nvec3 surfaceId = hashId(uObjectId + aSurfaceId);\n\nvColor.a = 1.0;\nvColor = aColor;\n}"
     }
   };
 
@@ -984,6 +884,19 @@ var gum = (function (exports) {
   /**
    * @file Provide the operations used on meshes.
    */
+
+
+  function copyVertex (vertex) {
+    const vertexCopy = {};
+    for (let attr in vertex) {
+      if (Array.isArray(vertex[attr])) {
+        vertexCopy[attr] = [...vertex[attr]];
+      } else {
+        vertexCopy[attr] = {...vertex[attr]};
+      }
+    }
+    return vertexCopy;
+  }
 
   /**
    * Triangulate a mesh. Discard any "faces" with fewer than 3 vertices. Convert 
@@ -1197,24 +1110,732 @@ var gum = (function (exports) {
       };
 
       outEdges.push(vertex2);
-
-
-
-
     }
-    console.log(outEdges);
     return outEdges;
+  }
+
+
+  function shadeFlat (vertices, faces) {
+    const outVerts = []; 
+    const outFaces = [];
+
+    let outVertIndex = 0;
+
+
+    for (let fi = 0; fi < faces.length; fi++) {
+      const face = faces[fi];
+      let avgNormal;
+
+      
+      for (let vi = 0; vi < face.length; vi++) {
+        const vertLoc = face[vi];
+        const vert = vertices[vertLoc];
+        const vertCopy = {};
+
+        for (let attr in vert) {
+          vertCopy[attr] = [...vert[attr]];
+
+          if (attr === 'normal') {
+            if (!avgNormal) {
+              avgNormal = new Vec3(...vert.normal);
+            } else {
+              avgNormal.add(new Vec3(...vert.normal));
+            }
+          }
+        }
+
+        outVerts.push(vertCopy);
+      }
+
+      const faceCopy = [];
+      for (let n = 0; n < face.length; n++) {
+        faceCopy.push(n + outVertIndex);
+        if (avgNormal) {
+          outVerts[n + outVertIndex].normal = [...avgNormal.normalize().xyz];
+        }
+      }
+
+      outVertIndex += face.length;
+      outFaces.push(faceCopy);
+    }
+
+    return { vertices: outVerts, faces: outFaces };
+  }
+
+
+
+  function shadeSmooth (vertices, faces, tolerance = 0.001) {
+    const outVerts = [];
+    const smoothNormals = new Map();
+
+    const fToS = f => Math.round(f / tolerance);
+
+    const hashVector = (v) => {
+      if (v['x']) {
+        return `${fToS(v.x)},${fToS(v.y)},${fToS(v.z)}`;    
+      }
+      return `${fToS(v[0])},${fToS(v[1])},${fToS(v[2])}`;    
+    };
+
+    for (let vi = 0; vi < vertices.length; vi++) {
+      const vert = vertices[vi];
+      const vertCopy = copyVertex(vert);
+
+      outVerts.push(vertCopy);
+
+      if (!vert.position && !vert.normal) {
+        continue;
+      }
+
+      const hash = hashVector(vert.position);
+
+      if (!smoothNormals.get(hash)) {
+        const data = {
+          normal: new Vec3(...vert.normal),
+          position: new Vec3(...vert.position),
+          replaceMap: [vi]
+        };
+        smoothNormals.set(hash, data);
+      } else {
+
+        const data = smoothNormals.get(hash);
+        data.normal.add(new Vec3(...vert.normal)).normalize();
+        data.position.add(new Vec3(...vert.position)).mult(0.5);
+        data.replaceMap.push(vi);
+      }
+    }
+    smoothNormals.forEach(data => {
+      for (let vi of data.replaceMap) {
+        outVerts[vi].normal = data.normal.xyz;
+        outVerts[vi].position = data.position.xyz;
+      }
+    });
+
+    return { vertices: outVerts, faces: faces };
   }
 
   var meshOps = /*#__PURE__*/Object.freeze({
     __proto__: null,
     applyAttribConstant: applyAttribConstant,
     applyAttribVarying: applyAttribVarying,
+    copyVertex: copyVertex,
     facesToEdges: facesToEdges,
     findGroups: findGroups,
+    shadeFlat: shadeFlat,
+    shadeSmooth: shadeSmooth,
     triangulate: triangulate,
     validate: validate,
     verticesToNormals: verticesToNormals
+  });
+
+  /**
+   * Matrix math borrowed from GlMatrix.
+   * https://github.com/toji/gl-matrix/blob/master/src/mat4.js.
+   */ 
+   
+  const EPSILON = 0.0000001;
+
+  /**
+   * Generate an Identity Matrix.
+   * @return {Float32Array} Identity Matrix 
+   */ 
+  function create () {
+
+    let out;
+    {
+      out = new Array(16).fill(0);
+    }
+
+    out[0] = 1;
+    out[5] = 1;
+    out[10] = 1;
+    out[15] = 1;
+    return out;  
+  }
+
+
+  /**
+   * Generate a view matrix.
+   * @param  {Float32Array} out Matrix to put values into. 
+   * @param  {Array} eye Position of eye [x, y, z].
+   * @param  {Array} center Look target [x, y, z]. 
+   * @param  {Array} up description 
+   * @return {Float32Array} View matrix. 
+   */ 
+  function lookAt (out, eye, center, up) {
+    let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
+    let eyex = eye[0];
+    let eyey = eye[1];
+    let eyez = eye[2];
+    let upx = up[0];
+    let upy = up[1];
+    let upz = up[2];
+    let centerx = center[0];
+    let centery = center[1];
+    let centerz = center[2];
+
+    if (
+      Math.abs(eyex - centerx) < EPSILON &&
+      Math.abs(eyey - centery) < EPSILON &&
+      Math.abs(eyez - centerz) < EPSILON
+    ) {
+      return out;
+    }
+
+    z0 = eyex - centerx;
+    z1 = eyey - centery;
+    z2 = eyez - centerz;
+
+    len = 1 / Math.hypot(z0, z1, z2);
+    z0 *= len;
+    z1 *= len;
+    z2 *= len;
+
+    x0 = upy * z2 - upz * z1;
+    x1 = upz * z0 - upx * z2;
+    x2 = upx * z1 - upy * z0;
+    len = Math.hypot(x0, x1, x2);
+    if (!len) {
+      x0 = 0;
+      x1 = 0;
+      x2 = 0;
+    } else {
+      len = 1 / len;
+      x0 *= len;
+      x1 *= len;
+      x2 *= len;
+    }
+
+    y0 = z1 * x2 - z2 * x1;
+    y1 = z2 * x0 - z0 * x2;
+    y2 = z0 * x1 - z1 * x0;
+
+    len = Math.hypot(y0, y1, y2);
+    if (!len) {
+      y0 = 0;
+      y1 = 0;
+      y2 = 0;
+    } else {
+      len = 1 / len;
+      y0 *= len;
+      y1 *= len;
+      y2 *= len;
+    }
+
+    out[0] = x0;
+    out[1] = y0;
+    out[2] = z0;
+    out[3] = 0;
+    out[4] = x1;
+    out[5] = y1;
+    out[6] = z1;
+    out[7] = 0;
+    out[8] = x2;
+    out[9] = y2;
+    out[10] = z2;
+    out[11] = 0;
+    out[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);
+    out[13] = -(y0 * eyex + y1 * eyey + y2 * eyez);
+    out[14] = -(z0 * eyex + z1 * eyey + z2 * eyez);
+    out[15] = 1;
+
+    return out;
+  }
+
+
+  /**
+   * Generate a perspective projection matrix.
+   * @param  {Float32Array} out Matrix to put values into. 
+   * @param  {Number} fovy The vertical fov.
+   * @param  {Number} aspect Aspect ratio.
+   * @param  {Number} near Near clip plane.
+   * @param  {Number} far Far clip plane.
+   * @return {Float32Array} Projection matrix. 
+   */ 
+  function perspective (out, fovy, aspect, near, far) {
+    const f = 1.0 / Math.tan(fovy / 2);
+    out[0] = f / aspect;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = f;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[11] = -1;
+    out[12] = 0;
+    out[13] = 0;
+    out[15] = 0;
+    if (far != null && far !== Infinity) {
+      const nf = 1 / (near - far);
+      out[10] = (far + near) * nf;
+      out[14] = 2 * far * near * nf;
+    } else {
+      out[10] = -1;
+      out[14] = -2 * near;
+    }
+    return out;
+  }
+
+
+  /**
+   * Translate a transform matrix by a vector.
+   * @param {Float32Array} out Matrix to put values into. 
+   * @param {Float32Array} a Input matrix.
+   * @param {Array} v [x, y, z] Vector array.
+   * @return {Float32Array} Transform matrix. 
+   */ 
+  function translate (out, a, v) {
+    let x = v[0],
+      y = v[1],
+      z = v[2];
+    let a00, a01, a02, a03;
+    let a10, a11, a12, a13;
+    let a20, a21, a22, a23;
+
+    if (a === out) {
+      out[12] = a[0] * x + a[4] * y + a[8] * z + a[12];
+      out[13] = a[1] * x + a[5] * y + a[9] * z + a[13];
+      out[14] = a[2] * x + a[6] * y + a[10] * z + a[14];
+      out[15] = a[3] * x + a[7] * y + a[11] * z + a[15];
+    } else {
+      a00 = a[0];
+      a01 = a[1];
+      a02 = a[2];
+      a03 = a[3];
+      a10 = a[4];
+      a11 = a[5];
+      a12 = a[6];
+      a13 = a[7];
+      a20 = a[8];
+      a21 = a[9];
+      a22 = a[10];
+      a23 = a[11];
+
+      out[0] = a00;
+      out[1] = a01;
+      out[2] = a02;
+      out[3] = a03;
+      out[4] = a10;
+      out[5] = a11;
+      out[6] = a12;
+      out[7] = a13;
+      out[8] = a20;
+      out[9] = a21;
+      out[10] = a22;
+      out[11] = a23;
+
+      out[12] = a00 * x + a10 * y + a20 * z + a[12];
+      out[13] = a01 * x + a11 * y + a21 * z + a[13];
+      out[14] = a02 * x + a12 * y + a22 * z + a[14];
+      out[15] = a03 * x + a13 * y + a23 * z + a[15];
+    }
+  }
+
+  /**
+   * Rotates a mat4 by the given angle around the given axis
+   * @param {mat4} out the receiving matrix
+   * @param {ReadonlyMat4} a the matrix to rotate
+   * @param {Number} rad the angle to rotate the matrix by
+   * @param {ReadonlyVec3} axis the axis to rotate around
+   * @returns {mat4} out
+   */
+  function rotate (out, a, rad, axis) {
+    let x = axis[0],
+      y = axis[1],
+      z = axis[2];
+    let len = Math.hypot(x, y, z);
+    let s, c, t;
+    let a00, a01, a02, a03;
+    let a10, a11, a12, a13;
+    let a20, a21, a22, a23;
+    let b00, b01, b02;
+    let b10, b11, b12;
+    let b20, b21, b22;
+
+    if (len < EPSILON) {
+      return null;
+    }
+
+    len = 1 / len;
+    x *= len;
+    y *= len;
+    z *= len;
+
+    s = Math.sin(rad);
+    c = Math.cos(rad);
+    t = 1 - c;
+
+    a00 = a[0];
+    a01 = a[1];
+    a02 = a[2];
+    a03 = a[3];
+    a10 = a[4];
+    a11 = a[5];
+    a12 = a[6];
+    a13 = a[7];
+    a20 = a[8];
+    a21 = a[9];
+    a22 = a[10];
+    a23 = a[11];
+
+    // Construct the elements of the rotation matrix
+    b00 = x * x * t + c;
+    b01 = y * x * t + z * s;
+    b02 = z * x * t - y * s;
+    b10 = x * y * t - z * s;
+    b11 = y * y * t + c;
+    b12 = z * y * t + x * s;
+    b20 = x * z * t + y * s;
+    b21 = y * z * t - x * s;
+    b22 = z * z * t + c;
+
+    // Perform rotation-specific matrix multiplication
+    out[0] = a00 * b00 + a10 * b01 + a20 * b02;
+    out[1] = a01 * b00 + a11 * b01 + a21 * b02;
+    out[2] = a02 * b00 + a12 * b01 + a22 * b02;
+    out[3] = a03 * b00 + a13 * b01 + a23 * b02;
+    out[4] = a00 * b10 + a10 * b11 + a20 * b12;
+    out[5] = a01 * b10 + a11 * b11 + a21 * b12;
+    out[6] = a02 * b10 + a12 * b11 + a22 * b12;
+    out[7] = a03 * b10 + a13 * b11 + a23 * b12;
+    out[8] = a00 * b20 + a10 * b21 + a20 * b22;
+    out[9] = a01 * b20 + a11 * b21 + a21 * b22;
+    out[10] = a02 * b20 + a12 * b21 + a22 * b22;
+    out[11] = a03 * b20 + a13 * b21 + a23 * b22;
+
+    if (a !== out) {
+      // If the source and destination differ, copy the unchanged last row
+      out[12] = a[12];
+      out[13] = a[13];
+      out[14] = a[14];
+      out[15] = a[15];
+    }
+    return out;
+  }
+
+
+  /**
+   * Reset a given matrix to the identity.
+   * @param {mat4} out the receiving matrix
+   * @returns {mat4} out
+   */
+  function identity (out) {
+    out[0] = 1;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = 1;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[10] = 1;
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 1;
+    return out;
+  }
+
+
+  /**
+   * Multiplies two mat4s
+   *
+   * @param {mat4} out the receiving matrix
+   * @param {ReadonlyMat4} a the first operand
+   * @param {ReadonlyMat4} b the second operand
+   * @returns {mat4} out
+   */
+  function multiply (out, a, b) {
+    let a00 = a[0],
+        a01 = a[1],
+        a02 = a[2],
+        a03 = a[3];
+    let a10 = a[4],
+        a11 = a[5],
+        a12 = a[6],
+        a13 = a[7];
+    let a20 = a[8],
+        a21 = a[9],
+        a22 = a[10],
+        a23 = a[11];
+    let a30 = a[12],
+        a31 = a[13],
+        a32 = a[14],
+        a33 = a[15];
+
+    // Cache only the current line of the second matrix
+    let b0 = b[0],
+        b1 = b[1],
+        b2 = b[2],
+        b3 = b[3];
+    out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+    out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+    out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+    out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+
+    b0 = b[4];
+    b1 = b[5];
+    b2 = b[6];
+    b3 = b[7];
+    out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+    out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+    out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+    out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+
+    b0 = b[8];
+    b1 = b[9];
+    b2 = b[10];
+    b3 = b[11];
+    out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+    out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+    out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+    out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+
+    b0 = b[12];
+    b1 = b[13];
+    b2 = b[14];
+    b3 = b[15];
+    out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+    out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+    out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+    out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+    return out;
+  }
+
+
+  /**
+   * Copy the values from one mat4 to another
+   *
+   * @param {mat4} out the receiving matrix
+   * @param {ReadonlyMat4} a the source matrix
+   * @returns {mat4} out
+   */
+  function copy (out, a) {
+    out[0] = a[0];
+    out[1] = a[1];
+    out[2] = a[2];
+    out[3] = a[3];
+    out[4] = a[4];
+    out[5] = a[5];
+    out[6] = a[6];
+    out[7] = a[7];
+    out[8] = a[8];
+    out[9] = a[9];
+    out[10] = a[10];
+    out[11] = a[11];
+    out[12] = a[12];
+    out[13] = a[13];
+    out[14] = a[14];
+    out[15] = a[15];
+    return out;
+  }
+
+
+  /**
+   * Scales the mat4 by the dimensions in the given vec3 not using vectorization
+   *
+   * @param {mat4} out the receiving matrix
+   * @param {ReadonlyMat4} a the matrix to scale
+   * @param {ReadonlyVec3} v the vec3 to scale the matrix by
+   * @returns {mat4} out
+   **/
+  function scale(out, a, v) {
+    let x = v[0],
+      y = v[1],
+      z = v[2];
+
+    out[0] = a[0] * x;
+    out[1] = a[1] * x;
+    out[2] = a[2] * x;
+    out[3] = a[3] * x;
+    out[4] = a[4] * y;
+    out[5] = a[5] * y;
+    out[6] = a[6] * y;
+    out[7] = a[7] * y;
+    out[8] = a[8] * z;
+    out[9] = a[9] * z;
+    out[10] = a[10] * z;
+    out[11] = a[11] * z;
+    out[12] = a[12];
+    out[13] = a[13];
+    out[14] = a[14];
+    out[15] = a[15];
+    return out;
+  }
+
+
+  /**
+   * Inverts a mat4
+   *
+   * @param {mat4} out the receiving matrix
+   * @param {ReadonlyMat4} a the source matrix
+   * @returns {mat4} out
+   */
+  function invert (out, a) {
+    let a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
+    let a10 = a[4],
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
+    let a20 = a[8],
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
+    let a30 = a[12],
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
+
+    let b00 = a00 * a11 - a01 * a10;
+    let b01 = a00 * a12 - a02 * a10;
+    let b02 = a00 * a13 - a03 * a10;
+    let b03 = a01 * a12 - a02 * a11;
+    let b04 = a01 * a13 - a03 * a11;
+    let b05 = a02 * a13 - a03 * a12;
+    let b06 = a20 * a31 - a21 * a30;
+    let b07 = a20 * a32 - a22 * a30;
+    let b08 = a20 * a33 - a23 * a30;
+    let b09 = a21 * a32 - a22 * a31;
+    let b10 = a21 * a33 - a23 * a31;
+    let b11 = a22 * a33 - a23 * a32;
+
+    // Calculate the determinant
+    let det =
+      b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+
+    if (!det) {
+      return null;
+    }
+    det = 1.0 / det;
+
+    out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+    out[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
+    out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+    out[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
+    out[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
+    out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+    out[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
+    out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+    out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+    out[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
+    out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+    out[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
+    out[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
+    out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
+    out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
+    out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+
+    return out;
+  }
+
+
+  /**
+   * Transforms the vec3 with a mat4.
+   * 4th vector component is implicitly '1'
+   *
+   * @param {vec3} out the receiving vector
+   * @param {ReadonlyVec3} a the vector to transform
+   * @param {ReadonlyMat4} m matrix to transform with
+   * @returns {vec3} out
+   */
+  function transformMat4(out, a, m) {
+    let x = a[0],
+      y = a[1],
+      z = a[2];
+    let w = m[3] * x + m[7] * y + m[11] * z + m[15];
+    w = w || 1.0;
+    out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
+    out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
+    out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
+    return out;
+  }
+
+
+  /**
+   * Transpose the values of a mat4
+   *
+   * @param {mat4} out the receiving matrix
+   * @param {ReadonlyMat4} a the source matrix
+   * @returns {mat4} out
+   */
+  function transpose (out, a) {
+    // If we are transposing ourselves we can skip a few steps but have to cache some values
+    if (out === a) {
+      let a01 = a[1],
+        a02 = a[2],
+        a03 = a[3];
+      let a12 = a[6],
+        a13 = a[7];
+      let a23 = a[11];
+
+      out[1] = a[4];
+      out[2] = a[8];
+      out[3] = a[12];
+      out[4] = a01;
+      out[6] = a[9];
+      out[7] = a[13];
+      out[8] = a02;
+      out[9] = a12;
+      out[11] = a[14];
+      out[12] = a03;
+      out[13] = a13;
+      out[14] = a23;
+    } else {
+      out[0] = a[0];
+      out[1] = a[4];
+      out[2] = a[8];
+      out[3] = a[12];
+      out[4] = a[1];
+      out[5] = a[5];
+      out[6] = a[9];
+      out[7] = a[13];
+      out[8] = a[2];
+      out[9] = a[6];
+      out[10] = a[10];
+      out[11] = a[14];
+      out[12] = a[3];
+      out[13] = a[7];
+      out[14] = a[11];
+      out[15] = a[15];
+    }
+
+    return out;
+  }
+
+
+  function print (a) {
+    let str = '';
+    for (let i = 0; i < 16; i++) {
+      str += a[i].toFixed(2);
+      str += i % 4 === 3 ? '\n' : ' ';
+    }
+    return str;
+  }
+
+  var m4 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    copy: copy,
+    create: create,
+    identity: identity,
+    invert: invert,
+    lookAt: lookAt,
+    multiply: multiply,
+    perspective: perspective,
+    print: print,
+    rotate: rotate,
+    scale: scale,
+    transformMat4: transformMat4,
+    translate: translate,
+    transpose: transpose
   });
 
   /**
@@ -1262,7 +1883,7 @@ var gum = (function (exports) {
        * A name for this mesh.
        */
       this.name = meta.name || 'mesh';
-  }
+    }
 
 
     /**
@@ -1283,7 +1904,7 @@ var gum = (function (exports) {
      */
     render () {
       const mode = 'TRIANGLES';
-      const triangles   = triangulate(this.faces);
+      const triangles = triangulate(this.faces);
       const vertexCount = triangles.length * 3;
       const attribs = {};
       
@@ -1418,12 +2039,79 @@ var gum = (function (exports) {
      * Fill the vetex colors for the mesh with a single vertex color.
      */
     fill (col) {
-      
       this.vertices = applyAttribConstant('color', col.rgba, this.vertices);
       return this;
     }
 
-    
+
+    /**
+     * Inflate the mesh along its normals.
+     */ 
+    inflate (amt = 0) {
+      for (let vi = 0; vi < this.vertices.length; vi++) {
+        const vertex = this.vertices[vi];
+        if (!(vertex.position && vertex.normal)) continue;
+
+        for (let i = 0; i < 3; i++) {
+          vertex.position[i] += vertex.normal[i] * amt;
+        }
+      }
+      return this;
+    }
+
+
+    getEdges () {
+      const edges = facesToEdges(this.faces);
+      const outEdges = [];
+
+      for (let ei = 0; ei < edges.length; ei++) {
+        const edge = edges[ei];
+        const pos1 = this.vertices[edge[0]].position;
+        const pos2 = this.vertices[edge[1]].position;
+        outEdges.push([pos1, pos2]);
+      }
+      return outEdges;
+    }
+
+    shadeFlat () {
+      const { vertices, faces } = shadeFlat(this.vertices, this.faces);
+      this.vertices = vertices;
+      this.faces = faces;
+      return this;
+    }
+
+    shadeSmooth (tolerance) {
+      const { vertices, faces } = shadeSmooth(this.vertices, this.faces, tolerance);
+      this.vertices = vertices;
+      this.faces = faces;
+      return this;
+    }
+
+    applyTransform (transform) {
+      for (let vi = 0; vi < this.vertices.length; vi++) {
+        const vert = this.vertices[vi];
+        if (vert.position) {
+          vert.position = transform.transformPoint(vert.position);
+        }
+        if (vert.normal) {
+          vert.normal = transform.transformNormal(vert.normal);
+        }
+      }
+      return this;
+    }
+
+    join (other) {
+      const offset = this.vertices.length;
+
+      const newFaces = other.faces.map(face => {
+        return face.map(index => index + offset);
+      });
+
+      this.vertices = this.vertices.concat(other.vertices);
+      this.faces = this.faces.concat(newFaces);
+      
+      return this;
+    }  
   }
 
   /**
@@ -1465,10 +2153,10 @@ var gum = (function (exports) {
 
     const quad = function (a, b, c, d, normal, color) {
       vertices.push(
-        {position: positions[a], normal, color, texCoord: [0, 0]},
-        {position: positions[b], normal, color, texCoord: [1, 0]},
-        {position: positions[c], normal, color, texCoord: [1, 1]},
-        {position: positions[d], normal, color, texCoord: [0, 1]},
+        {position: [...positions[a]], normal, color, texCoord: [0, 0]},
+        {position: [...positions[b]], normal, color, texCoord: [1, 0]},
+        {position: [...positions[c]], normal, color, texCoord: [1, 1]},
+        {position: [...positions[d]], normal, color, texCoord: [0, 1]},
       );
 
       faces.push([i, i + 1, i + 2, i + 3]);
@@ -1638,6 +2326,127 @@ var gum = (function (exports) {
     return new Mesh(vertices, faces, { name: 'icosphere' });
   }
 
+
+  /**
+   * 
+   */ 
+  function uvsphere (size = 1, level = 1, flat = false) {
+    const radius = size / 2;
+
+    const segments = level + 2;
+
+    const getSphericalPos = (uFac, vFac) => {
+      const r = Math.sin(Math.PI * vFac);
+      const x = Math.cos(2 * Math.PI * uFac) * r * radius;
+      const y = -Math.cos(Math.PI * vFac) * radius;
+      const z = Math.sin(2 * Math.PI * uFac) * r * radius;
+      return [x, y, z];
+    };
+
+
+    let step = size / segments;
+
+    const positions = [];
+    const texCoords = [];
+    const faces = [];
+
+    let vertIndex = 0;
+    console.log(segments);
+
+    for (let v = 0; v < segments; v++) {
+      
+      for (let u = 0; u < segments; u++) {
+
+        const uf0 = u / segments;
+        const uf1 = (u + 1) / segments;
+        
+        const vf0 = v / segments;
+        const vf1 = (v + 1) / segments;
+
+        // South pole case.
+        if (v === 0) {
+
+
+          positions.push(
+            getSphericalPos(uf0, vf0),
+            getSphericalPos(uf1, vf1),
+            getSphericalPos(uf0, vf1)
+          );
+
+          texCoords.push(
+            [uf0 + (0.5 * step), vf0],
+            [uf1, vf1],
+            [uf0, vf1]
+          );
+
+          faces.push([vertIndex, vertIndex + 2, vertIndex + 1]);
+
+          vertIndex += 3;
+          continue;
+
+
+        } 
+
+        // North pole case. 
+        if (v === segments - 1) {
+          positions.push(
+            getSphericalPos(uf0, vf0),
+            getSphericalPos(uf1, vf0),
+            getSphericalPos(uf1, vf1),
+          );
+
+          texCoords.push(
+            [uf0, vf0],
+            [uf1, vf0],
+            [uf1 - (0.5 / segments), vf1],
+          );
+
+          faces.push([vertIndex, vertIndex + 2, vertIndex + 1]);
+          vertIndex += 3;
+          continue;
+        }
+
+
+        
+
+        positions.push(
+          getSphericalPos(uf0, vf0),
+          getSphericalPos(uf1, vf0),
+          getSphericalPos(uf1, vf1),
+          getSphericalPos(uf0, vf1)
+        );
+
+
+        texCoords.push(
+          [uf0, vf0],
+          [uf1, vf0],
+          [uf1, vf1],
+          [uf0, vf1]
+        );
+
+        // texCoords.push(
+        //   [0, 1],
+        //   [1, 1],
+        //   [1, 0],
+        //   [0, 0]
+        // );
+
+
+        faces.push([vertIndex, vertIndex + 3, vertIndex + 2, vertIndex + 1]);
+        vertIndex += 4;
+
+      }
+    }
+
+    console.log(positions, faces);
+
+    const vertices = positions.map((pos, i) => {
+      return { position: pos, normal: pos, texCoord: texCoords[i]};
+    });
+
+    return new Mesh(vertices, faces, { name: 'uvsphere' });
+   
+  }
 
   /**
    * Make a quad facing up along y axis.
@@ -1833,554 +2642,149 @@ var gum = (function (exports) {
     cube: cube,
     grid: grid,
     icosphere: icosphere,
-    quad: quad
+    quad: quad,
+    uvsphere: uvsphere
   });
 
   /**
-   * Matrix math borrowed from GlMatrix.
-   * https://github.com/toji/gl-matrix/blob/master/src/mat4.js.
+   * 
    */ 
-   
-  const EPSILON = 0.0000001;
+
+  class Line {
+    constructor (points, color = [1, 1, 1, 1]) {
+      this.points = points;
+      this.color = color;
+      this.thickness = .1;
+      this.name = 'line_' + (Date.now() % 253); 
+
+    }
+
+    render () {
+      const mode = 'TRIANGLE_STRIP';
+      const vertexCount = this.points.length * 2;
+      const program = 'line';
+      const name = this.name;
+
+
+      const attribs = {
+        position: [],
+        normal: [],
+        register1: [],
+        register2: [], 
+        color: [],
+      };
+      
+      for (let i = 0; i < this.points.length; i++) {
+
+        const current = this.points[i];
+        const previous = (i === 0) ? this.points[i] : this.points[i - 1];
+        const next = (i === this.points.length - 1) ? this.points[i] : this.points[i + 1];
+
+        // Submit position twice.
+        attribs.position.push(...current, ...current);
+
+        // x component of normal is thickness. y component is direction.
+        attribs.normal.push(this.thickness, 1, 0, this.thickness, -1, 0);
+
+        attribs.register1.push(...previous, 1, ...previous, 1);
+        attribs.register2.push(...next, 1, ...next, 1);
+
+        attribs.color.push(...this.color, ...this.color);
+      }
+
+      for (let attrib in attribs) {
+        attribs[attrib] = new Float32Array(attribs[attrib]);
+      }
+
+      return { mode, vertexCount, attribs, name, program };
+
+    }
+
+
+  }
 
   /**
-   * Generate an Identity Matrix.
-   * @return {Float32Array} Identity Matrix 
+   * An edge collection is used to display any number of disjoint edges
    */ 
-  function create () {
 
-    let out;
-    {
-      out = new Array(16).fill(0);
+  class EdgeCollection {
+    constructor (edges, color) {
+      this.edges = edges;
+      this.color = color;
+      this.thickness = 0.2;
+      this.name = 'edge_collection_' + (Date.now() % 253); 
+
     }
 
-    out[0] = 1;
-    out[5] = 1;
-    out[10] = 1;
-    out[15] = 1;
-    return out;  
-  }
+    render () {
+      const mode = 'TRIANGLES';
+      const vertexCount = this.edges.length * 6;
+      const program = 'line2';
+      const name = this.name;
 
+      const attribs = {
+        position: [],
+        normal: [],
+        register1: [],
+        color: [],
+      };
+      
+      for (let i = 0; i < this.edges.length; i++) {
 
-  /**
-   * Generate a view matrix.
-   * @param  {Float32Array} out Matrix to put values into. 
-   * @param  {Array} eye Position of eye [x, y, z].
-   * @param  {Array} center Look target [x, y, z]. 
-   * @param  {Array} up description 
-   * @return {Float32Array} View matrix. 
-   */ 
-  function lookAt (out, eye, center, up) {
-    let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
-    let eyex = eye[0];
-    let eyey = eye[1];
-    let eyez = eye[2];
-    let upx = up[0];
-    let upy = up[1];
-    let upz = up[2];
-    let centerx = center[0];
-    let centery = center[1];
-    let centerz = center[2];
+        const current = this.edges[i][0];
+        const next = this.edges[i][1];
 
-    if (
-      Math.abs(eyex - centerx) < EPSILON &&
-      Math.abs(eyey - centery) < EPSILON &&
-      Math.abs(eyez - centerz) < EPSILON
-    ) {
-      return out;
+        // Submit position for each vert.
+        attribs.position.push(
+          current[0], current[1], current[2],
+          current[0], current[1], current[2],
+          current[0], current[1], current[2],
+          current[0], current[1], current[2],
+          current[0], current[1], current[2],
+          current[0], current[1], current[2],
+        );
+
+        // Submit next position for each vert.
+        attribs.register1.push(
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+        );
+
+        // Submit color for each vert.
+        attribs.color.push(
+          ...this.color, 
+          ...this.color,
+          ...this.color,
+          ...this.color,
+          ...this.color,
+          ...this.color
+        );
+
+        // Submit thickness and vert index. The vertex shader will unpack the vert index and apply 
+        // the needed transformations in screen space. 
+        attribs.normal.push(
+          this.thickness, 3, 0,
+          this.thickness, 1, 0,
+          this.thickness, 2, 0,
+          this.thickness, 0, 0,
+          this.thickness, 1, 0,
+          this.thickness, 2, 0,
+        );
+      }
+
+      for (let attrib in attribs) {
+        attribs[attrib] = new Float32Array(attribs[attrib]);
+      }
+
+      return { mode, vertexCount, attribs, name, program };
     }
 
-    z0 = eyex - centerx;
-    z1 = eyey - centery;
-    z2 = eyez - centerz;
 
-    len = 1 / Math.hypot(z0, z1, z2);
-    z0 *= len;
-    z1 *= len;
-    z2 *= len;
-
-    x0 = upy * z2 - upz * z1;
-    x1 = upz * z0 - upx * z2;
-    x2 = upx * z1 - upy * z0;
-    len = Math.hypot(x0, x1, x2);
-    if (!len) {
-      x0 = 0;
-      x1 = 0;
-      x2 = 0;
-    } else {
-      len = 1 / len;
-      x0 *= len;
-      x1 *= len;
-      x2 *= len;
-    }
-
-    y0 = z1 * x2 - z2 * x1;
-    y1 = z2 * x0 - z0 * x2;
-    y2 = z0 * x1 - z1 * x0;
-
-    len = Math.hypot(y0, y1, y2);
-    if (!len) {
-      y0 = 0;
-      y1 = 0;
-      y2 = 0;
-    } else {
-      len = 1 / len;
-      y0 *= len;
-      y1 *= len;
-      y2 *= len;
-    }
-
-    out[0] = x0;
-    out[1] = y0;
-    out[2] = z0;
-    out[3] = 0;
-    out[4] = x1;
-    out[5] = y1;
-    out[6] = z1;
-    out[7] = 0;
-    out[8] = x2;
-    out[9] = y2;
-    out[10] = z2;
-    out[11] = 0;
-    out[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);
-    out[13] = -(y0 * eyex + y1 * eyey + y2 * eyez);
-    out[14] = -(z0 * eyex + z1 * eyey + z2 * eyez);
-    out[15] = 1;
-
-    return out;
   }
-
-
-  /**
-   * Generate a perspective projection matrix.
-   * @param  {Float32Array} out Matrix to put values into. 
-   * @param  {Number} fovy The vertical fov.
-   * @param  {Number} aspect Aspect ratio.
-   * @param  {Number} near Near clip plane.
-   * @param  {Number} far Far clip plane.
-   * @return {Float32Array} Projection matrix. 
-   */ 
-  function perspective(out, fovy, aspect, near, far) {
-    const f = 1.0 / Math.tan(fovy / 2);
-    out[0] = f / aspect;
-    out[1] = 0;
-    out[2] = 0;
-    out[3] = 0;
-    out[4] = 0;
-    out[5] = f;
-    out[6] = 0;
-    out[7] = 0;
-    out[8] = 0;
-    out[9] = 0;
-    out[11] = -1;
-    out[12] = 0;
-    out[13] = 0;
-    out[15] = 0;
-    if (far != null && far !== Infinity) {
-      const nf = 1 / (near - far);
-      out[10] = (far + near) * nf;
-      out[14] = 2 * far * near * nf;
-    } else {
-      out[10] = -1;
-      out[14] = -2 * near;
-    }
-    return out;
-  }
-
-
-  /**
-   * Translate a transform matrix by a vector.
-   * @param {Float32Array} out Matrix to put values into. 
-   * @param {Float32Array} a Input matrix.
-   * @param {Array} v [x, y, z] Vector array.
-   * @return {Float32Array} Transform matrix. 
-   */ 
-  function translate(out, a, v) {
-    let x = v[0],
-      y = v[1],
-      z = v[2];
-    let a00, a01, a02, a03;
-    let a10, a11, a12, a13;
-    let a20, a21, a22, a23;
-
-    if (a === out) {
-      out[12] = a[0] * x + a[4] * y + a[8] * z + a[12];
-      out[13] = a[1] * x + a[5] * y + a[9] * z + a[13];
-      out[14] = a[2] * x + a[6] * y + a[10] * z + a[14];
-      out[15] = a[3] * x + a[7] * y + a[11] * z + a[15];
-    } else {
-      a00 = a[0];
-      a01 = a[1];
-      a02 = a[2];
-      a03 = a[3];
-      a10 = a[4];
-      a11 = a[5];
-      a12 = a[6];
-      a13 = a[7];
-      a20 = a[8];
-      a21 = a[9];
-      a22 = a[10];
-      a23 = a[11];
-
-      out[0] = a00;
-      out[1] = a01;
-      out[2] = a02;
-      out[3] = a03;
-      out[4] = a10;
-      out[5] = a11;
-      out[6] = a12;
-      out[7] = a13;
-      out[8] = a20;
-      out[9] = a21;
-      out[10] = a22;
-      out[11] = a23;
-
-      out[12] = a00 * x + a10 * y + a20 * z + a[12];
-      out[13] = a01 * x + a11 * y + a21 * z + a[13];
-      out[14] = a02 * x + a12 * y + a22 * z + a[14];
-      out[15] = a03 * x + a13 * y + a23 * z + a[15];
-    }
-  }
-
-  /**
-   * Rotates a mat4 by the given angle around the given axis
-   * @param {mat4} out the receiving matrix
-   * @param {ReadonlyMat4} a the matrix to rotate
-   * @param {Number} rad the angle to rotate the matrix by
-   * @param {ReadonlyVec3} axis the axis to rotate around
-   * @returns {mat4} out
-   */
-  function rotate(out, a, rad, axis) {
-    let x = axis[0],
-      y = axis[1],
-      z = axis[2];
-    let len = Math.hypot(x, y, z);
-    let s, c, t;
-    let a00, a01, a02, a03;
-    let a10, a11, a12, a13;
-    let a20, a21, a22, a23;
-    let b00, b01, b02;
-    let b10, b11, b12;
-    let b20, b21, b22;
-
-    if (len < EPSILON) {
-      return null;
-    }
-
-    len = 1 / len;
-    x *= len;
-    y *= len;
-    z *= len;
-
-    s = Math.sin(rad);
-    c = Math.cos(rad);
-    t = 1 - c;
-
-    a00 = a[0];
-    a01 = a[1];
-    a02 = a[2];
-    a03 = a[3];
-    a10 = a[4];
-    a11 = a[5];
-    a12 = a[6];
-    a13 = a[7];
-    a20 = a[8];
-    a21 = a[9];
-    a22 = a[10];
-    a23 = a[11];
-
-    // Construct the elements of the rotation matrix
-    b00 = x * x * t + c;
-    b01 = y * x * t + z * s;
-    b02 = z * x * t - y * s;
-    b10 = x * y * t - z * s;
-    b11 = y * y * t + c;
-    b12 = z * y * t + x * s;
-    b20 = x * z * t + y * s;
-    b21 = y * z * t - x * s;
-    b22 = z * z * t + c;
-
-    // Perform rotation-specific matrix multiplication
-    out[0] = a00 * b00 + a10 * b01 + a20 * b02;
-    out[1] = a01 * b00 + a11 * b01 + a21 * b02;
-    out[2] = a02 * b00 + a12 * b01 + a22 * b02;
-    out[3] = a03 * b00 + a13 * b01 + a23 * b02;
-    out[4] = a00 * b10 + a10 * b11 + a20 * b12;
-    out[5] = a01 * b10 + a11 * b11 + a21 * b12;
-    out[6] = a02 * b10 + a12 * b11 + a22 * b12;
-    out[7] = a03 * b10 + a13 * b11 + a23 * b12;
-    out[8] = a00 * b20 + a10 * b21 + a20 * b22;
-    out[9] = a01 * b20 + a11 * b21 + a21 * b22;
-    out[10] = a02 * b20 + a12 * b21 + a22 * b22;
-    out[11] = a03 * b20 + a13 * b21 + a23 * b22;
-
-    if (a !== out) {
-      // If the source and destination differ, copy the unchanged last row
-      out[12] = a[12];
-      out[13] = a[13];
-      out[14] = a[14];
-      out[15] = a[15];
-    }
-    return out;
-  }
-
-
-  /**
-   * Reset a given matrix to the identity.
-   * @param {mat4} out the receiving matrix
-   * @returns {mat4} out
-   */
-  function identity(out) {
-    out[0] = 1;
-    out[1] = 0;
-    out[2] = 0;
-    out[3] = 0;
-    out[4] = 0;
-    out[5] = 1;
-    out[6] = 0;
-    out[7] = 0;
-    out[8] = 0;
-    out[9] = 0;
-    out[10] = 1;
-    out[11] = 0;
-    out[12] = 0;
-    out[13] = 0;
-    out[14] = 0;
-    out[15] = 1;
-    return out;
-  }
-
-
-  /**
-   * Multiplies two mat4s
-   *
-   * @param {mat4} out the receiving matrix
-   * @param {ReadonlyMat4} a the first operand
-   * @param {ReadonlyMat4} b the second operand
-   * @returns {mat4} out
-   */
-  function multiply(out, a, b) {
-    let a00 = a[0],
-        a01 = a[1],
-        a02 = a[2],
-        a03 = a[3];
-    let a10 = a[4],
-        a11 = a[5],
-        a12 = a[6],
-        a13 = a[7];
-    let a20 = a[8],
-        a21 = a[9],
-        a22 = a[10],
-        a23 = a[11];
-    let a30 = a[12],
-        a31 = a[13],
-        a32 = a[14],
-        a33 = a[15];
-
-    // Cache only the current line of the second matrix
-    let b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3];
-    out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-    out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-    out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-    out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-
-    b0 = b[4];
-    b1 = b[5];
-    b2 = b[6];
-    b3 = b[7];
-    out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-    out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-    out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-    out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-
-    b0 = b[8];
-    b1 = b[9];
-    b2 = b[10];
-    b3 = b[11];
-    out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-    out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-    out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-    out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-
-    b0 = b[12];
-    b1 = b[13];
-    b2 = b[14];
-    b3 = b[15];
-    out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-    out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-    out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-    out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-    return out;
-  }
-
-
-  /**
-   * Copy the values from one mat4 to another
-   *
-   * @param {mat4} out the receiving matrix
-   * @param {ReadonlyMat4} a the source matrix
-   * @returns {mat4} out
-   */
-  function copy(out, a) {
-    out[0] = a[0];
-    out[1] = a[1];
-    out[2] = a[2];
-    out[3] = a[3];
-    out[4] = a[4];
-    out[5] = a[5];
-    out[6] = a[6];
-    out[7] = a[7];
-    out[8] = a[8];
-    out[9] = a[9];
-    out[10] = a[10];
-    out[11] = a[11];
-    out[12] = a[12];
-    out[13] = a[13];
-    out[14] = a[14];
-    out[15] = a[15];
-    return out;
-  }
-
-
-  /**
-   * Scales the mat4 by the dimensions in the given vec3 not using vectorization
-   *
-   * @param {mat4} out the receiving matrix
-   * @param {ReadonlyMat4} a the matrix to scale
-   * @param {ReadonlyVec3} v the vec3 to scale the matrix by
-   * @returns {mat4} out
-   **/
-  function scale(out, a, v) {
-    let x = v[0],
-      y = v[1],
-      z = v[2];
-
-    out[0] = a[0] * x;
-    out[1] = a[1] * x;
-    out[2] = a[2] * x;
-    out[3] = a[3] * x;
-    out[4] = a[4] * y;
-    out[5] = a[5] * y;
-    out[6] = a[6] * y;
-    out[7] = a[7] * y;
-    out[8] = a[8] * z;
-    out[9] = a[9] * z;
-    out[10] = a[10] * z;
-    out[11] = a[11] * z;
-    out[12] = a[12];
-    out[13] = a[13];
-    out[14] = a[14];
-    out[15] = a[15];
-    return out;
-  }
-
-
-  /**
-   * Inverts a mat4
-   *
-   * @param {mat4} out the receiving matrix
-   * @param {ReadonlyMat4} a the source matrix
-   * @returns {mat4} out
-   */
-  function invert(out, a) {
-    let a00 = a[0],
-      a01 = a[1],
-      a02 = a[2],
-      a03 = a[3];
-    let a10 = a[4],
-      a11 = a[5],
-      a12 = a[6],
-      a13 = a[7];
-    let a20 = a[8],
-      a21 = a[9],
-      a22 = a[10],
-      a23 = a[11];
-    let a30 = a[12],
-      a31 = a[13],
-      a32 = a[14],
-      a33 = a[15];
-
-    let b00 = a00 * a11 - a01 * a10;
-    let b01 = a00 * a12 - a02 * a10;
-    let b02 = a00 * a13 - a03 * a10;
-    let b03 = a01 * a12 - a02 * a11;
-    let b04 = a01 * a13 - a03 * a11;
-    let b05 = a02 * a13 - a03 * a12;
-    let b06 = a20 * a31 - a21 * a30;
-    let b07 = a20 * a32 - a22 * a30;
-    let b08 = a20 * a33 - a23 * a30;
-    let b09 = a21 * a32 - a22 * a31;
-    let b10 = a21 * a33 - a23 * a31;
-    let b11 = a22 * a33 - a23 * a32;
-
-    // Calculate the determinant
-    let det =
-      b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
-
-    if (!det) {
-      return null;
-    }
-    det = 1.0 / det;
-
-    out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
-    out[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
-    out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
-    out[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
-    out[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
-    out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
-    out[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
-    out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
-    out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
-    out[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
-    out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
-    out[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
-    out[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
-    out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
-    out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
-    out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
-
-    return out;
-  }
-
-
-  /**
-   * Transforms the vec3 with a mat4.
-   * 4th vector component is implicitly '1'
-   *
-   * @param {vec3} out the receiving vector
-   * @param {ReadonlyVec3} a the vector to transform
-   * @param {ReadonlyMat4} m matrix to transform with
-   * @returns {vec3} out
-   */
-  function transformMat4(out, a, m) {
-    let x = a[0],
-      y = a[1],
-      z = a[2];
-    let w = m[3] * x + m[7] * y + m[11] * z + m[15];
-    w = w || 1.0;
-    out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
-    out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
-    out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
-    return out;
-  }
-
-  var m4 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    copy: copy,
-    create: create,
-    identity: identity,
-    invert: invert,
-    lookAt: lookAt,
-    multiply: multiply,
-    perspective: perspective,
-    rotate: rotate,
-    scale: scale,
-    transformMat4: transformMat4,
-    translate: translate
-  });
 
   /**
    * 
@@ -2393,19 +2797,24 @@ var gum = (function (exports) {
       this.rotation = new Vec3();
       this.scale = new Vec3(1, 1, 1);
       this._matrix = create();
+      this._invTranspose = create();
+      this._updateMatrix();
       this._changed = false;
     }
 
-    _updateMatrix() {
+    _updateMatrix () {
       identity(this._matrix);
       translate(this._matrix, this._matrix, this.position.xyz);
       rotate(this._matrix, this._matrix, this.rotation.x, [1, 0, 0]);
       rotate(this._matrix, this._matrix, this.rotation.y, [0, 1, 0]);
       rotate(this._matrix, this._matrix, this.rotation.z, [0, 0, 1]);
       scale(this._matrix, this._matrix, this.scale.xyz);
+
+      invert(this._invTranspose, this._matrix);
+      transpose(this._invTranspose, this._invTranspose);
     }
 
-    get changed() {
+    get changed () {
       if (this.rotation._changed || this.position._changed || this.scale._changed) {
         this.position._changed = false;
         this.rotation._changed = false;
@@ -2415,11 +2824,42 @@ var gum = (function (exports) {
       return false;
     }
 
-    get matrix() {
+    get matrix () {
       if (this.changed) {
         this._updateMatrix();
       }
       return this._matrix;
+    }
+
+    get inverseTransposeMatrix () {
+      if (this.changed) {
+        this._updateMatrix();
+      }
+      return this._invTranspose;
+    }
+
+    transformPoint (point) {
+      const out = [0, 0, 0];
+      transformMat4(out, point, this.matrix);
+      return out;
+    }
+
+    transformPointXyz (x, y, z) {
+      const out = [x, y, z];
+      transformMat4(out, out, this.matrix);
+      return out;
+    }
+
+    transformNormal (normal) {
+      const out = [0, 0, 0];
+      transformMat4(out, normal, this.inverseTransposeMatrix);
+      return out;
+    }
+
+    transformNormalXyz (x, y, z) {
+      const out = [x, y, z];
+      transformMat4(out, out, this.inverseTransposeMatrix);
+      return out;
     }
   }
 
@@ -2444,6 +2884,7 @@ var gum = (function (exports) {
         uModel: this._worldMatrix,
         uTex: 'none',
       };
+      this.program = 'default';
     }
 
     get x ()  { return this.transform.position.x };
@@ -2600,6 +3041,7 @@ var gum = (function (exports) {
 
     get eye () { return this.worldPosition }
     set aspect (val) { this._aspect = val; }
+    get aspect () { return this._aspect; }
 
 
     updateViewProjection () {
@@ -2655,14 +3097,17 @@ var gum = (function (exports) {
     left: '1em',
     top: '1em',
     zIndex: 101,
-    overflow: 'hidden',
+    overflow: 'scroll',
     whiteSpace: 'pre',
     padding: '1em',
   };
 
   function SceneGraph () {
     let graph = tag('div#scene-graph', graphStyle);
-    document.body.append(graph);
+    let panel = select('.gum-panel');
+    if (panel) {
+      panel.append(graph);
+    }
     return graph;
   }
 
@@ -2716,10 +3161,23 @@ var gum = (function (exports) {
     },
   ];
 
+  /** 
+   * Default values for shader unfiforms.
+   */ 
+
+  const defaultUniformValues = {
+    uColorA: [0.9, 0.8, 0.9, 1],
+    uColorB: [0, 0, 0, 1],
+    uKernel: 2, 
+    uDist: 1, 
+    uWeight: 1,
+  };
+
   /**
    * @fileoverview The RenderContext class creates a helpful level of abstraction 
    *     between an app and the web gl rendering context.
    */
+
 
   class RendererGL2 {
     /**
@@ -2738,8 +3196,8 @@ var gum = (function (exports) {
        * @type {HTMLCanvasElement}
        */
       this.canvas = canvas;
-      this.canvas.width = w; 
-      this.canvas.height = h;
+      // this.canvas.width = w; 
+      // this.canvas.height = h;
       
       /**
        * The aspect ratio.
@@ -2826,6 +3284,11 @@ var gum = (function (exports) {
       this.textureUnitIndex = 0;
 
       /**
+       * The maximun number of samplers available.
+       */ 
+      this.MAX_TEX_UNIT = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+
+      /**
        * The GL uniform setter function keyed by the GL type.
        */
       this.uniformTypes = {
@@ -2864,6 +3327,16 @@ var gum = (function (exports) {
         this.attributeInfoByName[attrib.name] = attrib;
         this.attributeInfoByName[attrib.name].index = i;
       });
+
+      this.globalUniformBlock = {};
+
+      this.deleteLookup = {
+        'WebGLProgram' : 'deleteProgram',
+        'WebGLTexture' : 'deleteTexture',
+        'WebGLFramebuffer' : 'deleteFramebuffer',
+        'WebGLVertexArrayObject' : 'deleteVertexArray',
+      };
+      
     }
 
 
@@ -2968,6 +3441,7 @@ var gum = (function (exports) {
      */
     setProgram (program) {
       if (!this.shaderPrograms[program]) {
+        console.warn('No program found:', mesh.program);
         return;
       }
       
@@ -2977,6 +3451,8 @@ var gum = (function (exports) {
 
       this.gl.useProgram(this.shaderPrograms[program]);
       this.activeProgram = program;
+
+      this.setGlobalUniformBlock();
     }
 
 
@@ -3004,7 +3480,6 @@ var gum = (function (exports) {
       const rt = this.renderTargets[target];
       const frameBuffer = rt.frameBuffer;
       this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, frameBuffer);
-      
       this.renderTarget = target;
     }
 
@@ -3032,9 +3507,10 @@ var gum = (function (exports) {
 
       // Make a texture to be the color of the target.
       gl.bindTexture(gl.TEXTURE_2D, target.colorTexture);
+
+      console.log('CreateRenderTarget', this.canvas.width, this.canvas.height);
       
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.canvas.width, 
-        this.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.canvas.width, this.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
       
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S,     gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T,     gl.CLAMP_TO_EDGE);
@@ -3055,12 +3531,14 @@ var gum = (function (exports) {
           unit: target.depthTexUnit,
           texture: target.depthTexture,
         };
+        
+        this.textureUnitIndex ++;
+
 
         gl.activeTexture(gl.TEXTURE0 + target.depthTexUnit);
         gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, 
-          this.canvas.width, this.canvas.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.canvas.width, this.canvas.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
         
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -3073,21 +3551,78 @@ var gum = (function (exports) {
       this.renderTargets[name] = target;
     }
 
+    updateRenderTarget (name) {
+      const gl = this.gl;
+      const target = this.renderTargets[name];
+      if (!target) return;
+      
+      console.log('UpdateRenderTarget', this.canvas.width, this.canvas.height);
+
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target.frameBuffer);
+
+      // TODO : Someway of saving the frame buffer tex2d data to avoid flickering.
+      if (target.colorTexture) {
+        gl.bindTexture(gl.TEXTURE_2D, target.colorTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.canvas.width, this.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.colorTexture, 0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+      }
+
+      if (target.depthTexture) {
+        gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.canvas.width, this.canvas.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, target.depthTexture, 0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+      }
+
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    }
+
 
     /**
      * Draw a named mesh.
      * @param {string} mesh 
-     * @returns 
+     * @returns
      */
-    draw (mesh) {
-      if (!this.meshes[mesh]) {
-        console.warn('No mesh found:', mesh);
+    draw (meshName, uniforms = {}, program = null) {
+      let mesh;
+
+      // Check for a named mesh, which is stored in the renderer's responsobility.
+      if (typeof meshName === 'string') {
+        mesh = this.meshes[meshName];
+        if (!mesh) {
+          console.warn('No mesh found:', meshName);
+          return;
+        }
+      } else {
+        mesh = meshName;
+      }
+      
+
+      if (program && program !== this.activeProgram) {
+        this.setProgram(program);
+      }
+
+      if (mesh.program && mesh.program !== this.activeProgram) {
+        this.setProgram(mesh.program);
+      } 
+
+      for (let uniform in uniforms) {
+        this.uniform(uniform, uniforms[uniform]);
+      }
+
+      if (mesh.draw && typeof mesh.draw === 'function') {
+        mesh.draw();
         return;
       }
 
-      const call = this.meshes[mesh];
-      this.gl.bindVertexArray(call.vao);
-      this.gl.drawArrays(this.gl[call.data.mode], 0, call.data.vertexCount);
+      if (!mesh.vao) {
+        return;
+      }
+
+      this.gl.bindVertexArray(mesh.vao);
+      this.gl.drawArrays(this.gl[mesh.data.mode], 0, mesh.data.vertexCount);
       this.gl.bindVertexArray(null);
     }
     
@@ -3116,8 +3651,8 @@ var gum = (function (exports) {
     createProgram (name, vert, frag) {
 
       const program = this.gl.createProgram();
-      const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
 
+      const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
       this.gl.shaderSource(vertexShader, vert);
       this.gl.compileShader(vertexShader);
       this.gl.attachShader(program, vertexShader);
@@ -3128,7 +3663,6 @@ var gum = (function (exports) {
       this.gl.attachShader(program, fragmentShader);
 
       this.bindVertexAttributeLocations(program);
-
       this.gl.linkProgram(program);
 
       if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
@@ -3137,7 +3671,10 @@ var gum = (function (exports) {
         return;
       }
 
-      
+      // Use the program so that default uniforms can be set.
+      this.gl.useProgram(program);
+
+      // Store information on any uniforms in the program.
       const uniformBlock = {};
       const uniformCount = this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS);
       
@@ -3155,12 +3692,18 @@ var gum = (function (exports) {
           type: namedType,
           location: this.gl.getUniformLocation(program, name),
         };
+
+        // Set defaults.
+        if (defaultUniformValues[name] && this.uniformTypes[namedType]) {
+          const value = defaultUniformValues[name];
+          const location = uniformBlock[name].location;
+          const isMatrix = namedType.indexOf('MAT') > -1;
+          this._uniform(this.uniformTypes[namedType], location, value, isMatrix);
+        }
       }
-      
       
       this.shaderPrograms[name] = program;
       this.shaderProgramUniforms[name] = uniformBlock;
-
       return program;
     }
 
@@ -3174,6 +3717,33 @@ var gum = (function (exports) {
         const attrib = this.vertexAttributes[i];
         this.gl.bindAttribLocation(program, i, attrib.name);
       }
+    }
+
+    attribsToVao (attribs) {
+      const vao = this.gl.createVertexArray();
+      this.gl.bindVertexArray(vao);
+
+      for (const [attrib, data] of Object.entries(attribs)) {
+        const name = this._prefixAttribName(attrib);
+        const info = this.attributeInfoByName[name];
+
+        // If there is no attrib info, the shader stack and the renderer have no 
+        // clue about that attrib name.
+        if (!info) {
+          continue;
+        }
+
+        const buffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+
+        const { index, size, type, normalized } = info;
+        this.gl.vertexAttribPointer(index, size, this.gl[type], normalized, 0, 0);
+        this.gl.enableVertexAttribArray(index);
+      }
+
+      this.gl.bindVertexArray(null);
+      return vao;
     }
     
 
@@ -3191,9 +3761,6 @@ var gum = (function (exports) {
           continue;
         }
 
-        console.log({attrib,attribName,attribInfo,data});
-
-        
         const buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
@@ -3205,6 +3772,8 @@ var gum = (function (exports) {
 
       gl.bindVertexArray(null);
     }
+
+
 
 
     _getMeshId (name) {
@@ -3241,7 +3810,9 @@ var gum = (function (exports) {
       data.name = name;
       mesh.vao = this.gl.createVertexArray();
 
-      console.log('buffering', name, mesh);
+      mesh.program = data.program ?? null;
+
+      console.log('add mesh: ', name);
       this._bufferAttribs(mesh.vao, data.attribs);
       
       this.meshes[name] = mesh;
@@ -3255,10 +3826,10 @@ var gum = (function (exports) {
       }
 
       const mesh = this.meshes[name];
-      this.gl.deleteVertexArray(mesh.vao);
+      // this.gl.deleteVertexArray(mesh.vao);
 
       mesh.data = data;
-      mesh.vao = this.gl.createVertexArray();
+      // mesh.vao = this.gl.createVertexArray();
       
       this._bufferAttribs(mesh.vao, data.attribs);
     }
@@ -3279,18 +3850,33 @@ var gum = (function (exports) {
       const { type, location } = uniforms[name];
 
       if (type.indexOf('MAT') > -1) {
-        this.gl[this.uniformTypes[type]](location, false, value);
+        this._uniform(this.uniformTypes[type], location, value, true);
         return;
       }
 
       // Allow the user to pass the name of the texture as a uniform value.
       if (typeof value === 'string' && this.texturesByName[value] !== undefined) {
         const unit = this.texturesByName[value].unit;
-        this.gl[this.uniformTypes[type]](location, unit);
+        this._uniform(this.uniformTypes[type], location, unit);
         return;
       }
+      this._uniform(this.uniformTypes[type], location, value);
+    }
 
-      this.gl[this.uniformTypes[type]](location, value);
+
+    /**
+     * Private internal uniform setter.
+     * @param {string} fn The name of the uniform setting function. 
+     * @param {WebGLUniformLocation} location The location in the program.
+     * @param {array|float|int} value The value to set.
+     * @param {boolean} isMatrix Matrix flag.
+     */ 
+    _uniform (fn, location, value, isMatrix = false) {
+      if (isMatrix) {
+        this.gl[fn](location, false, value);
+      } else {
+        this.gl[fn](location, value);
+      }
     }
 
 
@@ -3322,8 +3908,10 @@ var gum = (function (exports) {
     addTexture (name, imageData, settings) {
       const gl = this.gl;
 
-      // No more than 8 textures per app.
-      if (this.textureUnitIndex >= 7) { return; }
+      if (this.textureUnitIndex >= this.MAX_TEX_UNIT) { 
+        console.warn('Maximum texture units exceeded.');
+        return; 
+      }
 
       let unit, texture;
       
@@ -3342,6 +3930,7 @@ var gum = (function (exports) {
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
       
       const { width, height, filter, clamp } = settings;
+
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
       
       if (clamp) {
@@ -3363,6 +3952,61 @@ var gum = (function (exports) {
       return Object.values(this.meshes).reduce((a, b) => a + b.data.vertexCount, 0);
     }
 
+
+    /**
+     * Set any uniforms in the global block.
+     */
+    setGlobalUniformBlock () {
+      for (let uniform in this.globalUniformBlock) {
+        this.uniform(uniform, this.globalUniformBlock[uniform]);
+      }
+    }
+
+
+    /**
+     * Blit from one frame buffer to another.
+     * @param {WebGLFramebuffer|null} The source buffer or null for canvas.
+     * @param {WebGLFramebuffer|null} The target buffer or null for canvas.
+     */ 
+    blitBuffer (src, target) {
+      this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, src);
+      this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, target);
+      let w = this.canvas.width;
+      let h = this.canvas.height;
+      if (w > 0 && h > 0) {
+        this.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST);      
+      }
+    }
+
+    _disposeGLEntity (entity) {
+      const constructor = entity.constructor.name;
+      if (this.deleteLookup[constructor]) {
+        console.log('DELETE:', constructor);
+        this.gl[this.deleteLookup[constructor]](entity);
+      }
+    }
+
+
+    /**
+     * Dispose of any gl resources.
+     */ 
+    dispose () {
+      const gl = this.gl;
+      console.log('disposeId', this.instanceId);
+      for (let target of Object.values(this.renderTargets)) {
+        if (!target) continue;
+        for (let prop of Object.values(target)) {
+          console.log(prop);
+        }
+      }
+      for (let name in this.texturesByName) {
+        console.log('dispose -', name);
+        gl.deleteTexture(this.texturesByName[name].texture);
+      }
+      for (let program in this.shaderPrograms) {
+
+      }
+    }
     
   }
 
@@ -3377,7 +4021,7 @@ var gum = (function (exports) {
      * Make a new Loader. A given project should only need one loader instance.
      * @param {boolean} verbose 
      */
-    constructor (verbose = false) {
+    constructor (settings = {}) {
       
       /** The queue of files to be loaded. */
       this._filesToLoad = [];
@@ -3395,7 +4039,10 @@ var gum = (function (exports) {
       this.END_HEADER = 'end_header';
 
       /** Toggle certain debugging console.logs */
-      this._verbose = verbose;
+      this._verbose = settings.verbose ?? false;
+
+      /** Whether to normalize integer data. */
+      this._normalize = settings.normalize ?? true;
 
       /** 
        * The PLY format defines data types with these strings. This object helps
@@ -3403,7 +4050,7 @@ var gum = (function (exports) {
        */
       this.PLY_TYPES = {
         'char':   { bytes: 1, getter: 'getInt8'},
-        'uchar':  { bytes: 1, getter: 'getUint8'},
+        'uchar':  { bytes: 1, getter: 'getUint8', maxValue: 255 },
         'short':  { bytes: 2, getter: 'getInt16'},
         'ushort': { bytes: 2, getter: 'getUint16'},
         'int':    { bytes: 4, getter: 'getInt32'},
@@ -3461,6 +4108,8 @@ var gum = (function (exports) {
       
       const header = this._parseHeader(buffer);
 
+      console.log(header);
+
       if (!header.valid) {
         console.error('Malformed data. Missing ply header: ' + file);
         this._finishLoading();
@@ -3482,6 +4131,8 @@ var gum = (function (exports) {
       }
 
       this._finishLoading();
+
+      return mesh;
     }
 
 
@@ -3626,14 +4277,19 @@ var gum = (function (exports) {
       const v = {};
 
       for (let i = 0; i < format.length; i++) {
-        const property = format[i].property;
+        const { type, property } = format[i];
         const { attrib, index } = this.PLY_MAPPINGS[property];
 
         if (!v[attrib]) {
           v[attrib] = [];
         }
 
-        v[attrib][index] = vertex[i];
+        let val = vertex[i];
+        if (this._normalize && this.PLY_TYPES[type].maxValue !== undefined) {
+          val /= this.PLY_TYPES[type].maxValue;
+        }
+
+        v[attrib][index] = val;
       }
       return v;
     }
@@ -3736,8 +4392,9 @@ var gum = (function (exports) {
         let byteIndex = start;
 
         for (let { type } of vertexFormat) {
-          const { bytes, getter } = this.PLY_TYPES[type];
-          vertex.push(view[getter](byteIndex, littleEndian));
+          const { bytes, getter, maxValue } = this.PLY_TYPES[type];
+          let val = view[getter](byteIndex, littleEndian);
+          vertex.push(val);
           byteIndex += bytes;
         }
 
@@ -3822,7 +4479,7 @@ var gum = (function (exports) {
       this.id = 'texer.' + generateId();
 
       this.canvas = tag('canvas.texer', this.texerStyle);
-      select('.felt-panel').append(this.canvas);
+      select('.gum-panel').append(this.canvas);
 
       this.canvas.width = size;
       this.canvas.height = size;
@@ -3877,16 +4534,388 @@ var gum = (function (exports) {
   }
 
   /**
-   * @file Index for GUM. Sets up the g name space and the Gum class.
+   * @file Manage the particle drawing 
    */
 
+
+  class Instancer {
+
+    constructor (instance, count, renderer, program) {
+      
+      /** The instance mesh */
+      this.instance = instance;
+      if (this.instance.render) {
+        this.instance = this.instance.render();
+      }
+
+      /** How many instances. */
+      this.count = count;
+
+      /** Pointer to the renderer. */
+      this.renderer = renderer;
+
+      /** The name of the shader program */
+      this.program = program;
+      
+      /** Pointer to gl context. */
+      this.gl = this.renderer.gl;
+
+      /** The total attributes. */
+      this.attrs = ['x', 'y', 'z', 'w', 'r', 'g', 'b', 'a'];
+      
+      /** The total attributes. */
+      this.stride = this.attrs.length;
+
+      /** The data is one float per attr per vert. */
+      this.data = new Float32Array(this.count * this.stride);
+
+      /** Store the index of each attr by name */
+      this.attribIndices = new Map();
+      this.attrs.forEach((attr, i) => { this.attribIndices.set(attr, i); });
+
+      /** The particle mesh for each instance. */
+      // this.particle = circle(16);
+
+      /** Bind and upload mesh to the gpu. */
+      // const verts = this.instance.attribs.position;
+      // this.vertexBuffer = this.gl.createBuffer();
+      // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+      // this.gl.bufferData(this.gl.ARRAY_BUFFER, verts, this.gl.DYNAMIC_DRAW, 0);
+
+      this.instanceVao = this.renderer.attribsToVao(this.instance.attribs);
+
+
+      /** Shader attr pointer to the position. Position of the verts per instance. */
+      this.posLoc = this.gl.getAttribLocation(this.renderer.shaderPrograms[this.program], 'aPosition');
+      
+      /** Shader attr pointer to the color. */
+      this.colorLoc = this.gl.getAttribLocation(this.renderer.shaderPrograms[this.program], 'aColor');
+
+      this.regLoc = this.gl.getAttribLocation(this.renderer.shaderPrograms[this.program], 'aRegister1');
+
+
+      /** Whether we need to re-render */
+      this.changed = true;
+
+      /** The gl buffer. */
+      this.buffer = this.gl.createBuffer();
+    }
+
+    /** 
+     * Fill the particles with randomized data.
+     */ 
+    iniitialize (data = null) {
+      if (!data) {
+        this.fillRandom();
+        this.changed = true;
+        return;
+      }
+
+      this.data = data;
+      this.count = this.data.length / this.stride;
+
+      this.changed = true;
+    }
+
+
+    /** 
+     * Fill the particles with randomized data.
+     */ 
+    fillRandom () {
+      for (let i = 0; i < this.count; i++) { 
+        this.setAttr(i, 'x', Math.random());
+        this.setAttr(i, 'y', Math.random());
+        this.setAttr(i, 'z', Math.random());
+        this.setAttr(i, 'r', 1);
+        this.setAttr(i, 'g', 0);
+        this.setAttr(i, 'b', 1);
+        this.setAttr(i, 'a', 1);
+      }
+    }
+
+    /**
+     * Set an attr. 
+     * @param {int} index The particle index.
+     * @param {string} attr The attr 
+     * @param {float} value
+     */ 
+    setAttr(index, attr, val) {
+      this.data[index * this.stride + this.attribIndices.get(attr)] = val;
+    }
+
+    /**
+     * Get an attr. 
+     * @param {int} index The particle index.
+     * @param {string} attr The attr.
+     */ 
+    getAttr(index, attr) {
+      return this.data[index * this.stride + this.attribIndices.get(attr)];
+    }
+
+    /**
+     * Copy the desired data from the main buffer into the gpu buffer.
+     */ 
+    renderPoints () {
+     
+    }
+
+    draw () {
+      this.renderer.setProgram(this.program);
+
+      // Prep the quad mesh for the particle.
+      // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+      // this.gl.enableVertexAttribArray(this.posLoc);
+      // this.gl.vertexAttribPointer(this.posLoc, 3, this.gl.FLOAT, false, 0, 0);
+
+      this.gl.bindVertexArray(this.instanceVao);
+
+      // Prep the instances.
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+      
+      // Buffer Data?
+      this.gl.bufferData(this.gl.ARRAY_BUFFER, this.data, this.gl.DYNAMIC_DRAW);
+
+      const byteSize = this.stride * 4;
+
+      this.gl.vertexAttribPointer(this.regLoc, 4, this.gl.FLOAT, false, byteSize, 0);
+      this.gl.vertexAttribDivisor(this.regLoc, 1);
+      this.gl.enableVertexAttribArray(this.regLoc);
+
+      this.gl.vertexAttribPointer(this.colorLoc, 4, this.gl.FLOAT, false, byteSize, 16);
+      this.gl.vertexAttribDivisor(this.colorLoc, 1);
+      this.gl.enableVertexAttribArray(this.colorLoc);
+
+      this.gl.drawArraysInstanced(this.gl.TRIANGLES, 0, this.instance.vertexCount, this.count);
+
+      
+
+    }
+
+
+
+    /**
+     * Hightlight one category.
+     * @param {number} categoery The category index to select.
+     * @param {number} 0->1 amount of selection.
+     * 
+     */ 
+    selectCategory (category, amt) {
+
+      if (category === -1) {
+        for (let i = 0; i < this.selectionsByGroup.length; i++) {
+          this.selectionsByGroup[i] = amt;
+        }
+      }
+
+      this.selectionsByGroup[category] = amt; 
+      this.changed = true;
+    }
+
+    addMorph (name, positions) {
+      if (this.morphPointer === this.morphLimit) {
+        console.warn(`More than ${this.morphLimit} morphs added.`);
+        return;
+      }
+
+      this.morphs[name] = positions;
+      this.morphIndicesByName[name] = this.morphPointer;
+
+      for (let i = 0; i < this.count; i++) {
+
+
+        const index = (i * 3) % positions.length;
+        const x = positions[index];
+        const y = positions[index + 1];
+        const z = positions[index + 2];
+        // console.log([x, y, z]);
+
+        const xLoc = (i * this.gpuDataStride) + 8 + (4 * this.morphPointer);
+        const yLoc = (i * this.gpuDataStride) + 8 + (4 * this.morphPointer) + 1;
+        const zLoc = (i * this.gpuDataStride) + 8 + (4 * this.morphPointer) + 2;
+
+
+        this.gpuData[xLoc] = x;
+        this.gpuData[yLoc] = y;
+        this.gpuData[zLoc] = z;
+      }
+
+      this.morphPointer ++;
+    }
+
+    addRandomMorph () {
+      const random = [];
+
+      for (let i = 0; i < this.count / 3; i++) {
+        seed = i * 49734321;
+
+        const theta = dRand() * 2 * Math.PI;
+        const lift = dRand() * 2 * Math.PI;      const rad = dRand();
+        const x = Math.cos(theta) * rad;
+        const y = Math.sin(theta) * rad;
+        const z = Math.sin(lift) * rad;
+
+        random.push(x, y, z);
+      }
+
+      this.addMorph('random', random);
+    }
+
+    morph (target, amt) {
+      if (target === 'clear') {
+        this.currentMorphTargets = {};
+        this.changed = true;
+        return;
+      }
+
+      if (!this.morphs[target]) {
+        return;
+      }
+
+      this.currentMorphTargets[target] = amt;
+      this.updateMorphs();
+    }
+
+
+    updateMorphs () {
+      for (const [name, value] of Object.entries(this.currentMorphTargets)) {
+        const morphIndex = this.morphIndicesByName[name];
+        if (morphIndex === undefined) return;
+        this.renderer.uniform('uMorphFactor' + morphIndex, value);
+      }
+    }
+
+
+    /** 
+     * Load the particles from some blob data 
+     */ 
+    async setFromFileBlob (blob) {
+      const buffer = await blob.arrayBuffer();
+      const floats = new Float32Array(buffer);
+      this.iniitialize(floats);
+    }
+
+
+    /** 
+     * Load the particles from some blob data 
+     */ 
+    saveToFileBlob () {
+      const blob = new Blob([this.data], { type: 'application/octet-stream' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'particle_buffer.blob';
+      link.click();
+    }
+
+
+    findParticleAtPosition (x, y) {
+      let minDist = Infinity;
+      let index = -1;
+
+      for (let i = 0; i < this.count; i++) {
+        let ox = this.getAttr(i, 'ox');
+        let oy = this.getAttr(i, 'oy');
+        let px = ox, py = oy;
+
+        for (let target in this.currentMorphTargets) {
+          const amt = this.currentMorphTargets[target];
+          const pts = this.morphs[target];
+
+          const ptsIndex = (i * 3) % pts.length;
+
+          const dx = pts[ptsIndex] - ox;
+          const dy = pts[ptsIndex + 1] - oy;
+
+          px += dx * amt;
+          py += dy * amt;
+        }
+
+        const dx = x - px;
+        const dy = y - py;
+        
+
+        const d2 = dx * dx + dy * dy;
+
+        if (d2 < minDist) {
+          minDist = d2;
+          index = i;
+        }
+      }
+      return index;
+    }
+
+
+    recolorGroup (groupIndex, newColor) {
+      const [r, g, b] = hexToNormalizedRGB(newColor.slice(1));
+
+      for (let i = 0; i < this.count; i++) {
+        const group = this.getAttr(i, 'cat');
+
+        if (group === groupIndex) {
+          this.setAttr(i, 'r', r);
+          this.setAttr(i, 'g', g);
+          this.setAttr(i, 'b', b);
+        }
+      }
+    }
+
+
+    getParticlePosition (index) {
+
+      const ox = this.getAttr(index, 'ox');
+      const oy = this.getAttr(index, 'oy');
+      const oz = this.getAttr(index, 'oz');
+
+      let x = ox, y = oy, z = oz;
+
+      for (let target in this.currentMorphTargets) {
+        const amt = this.currentMorphTargets[target];
+        const pts = this.morphs[target];
+
+        (index * 3) % pts.length;
+
+        const dx = pts[index] - ox;
+        const dy = pts[index + 1] - oy;
+        const dz = pts[index + 2] - oz;
+
+        x += dx * amt;
+        y += dy * amt;
+        z += dz * amt;
+
+      }
+
+      return [x, y, z];
+    }
+  }
+
+  const CHARS = 'abcdefghijfklmnopqrstuvwxyzABCDEFGHIJFKLMNOPQRSTUVWXYZ0123456789_@!';
+  const buffer = new Uint8Array(128);
+  let index = buffer.byteLength;
+
+  function fillBuffer () {
+    crypto.getRandomValues(buffer);
+    index = 0;
+  }
+
+  function uuid (length = 6) {
+    if (index + length >= buffer.byteLength) fillBuffer();
+    let id = '';
+    while(id.length < length) {
+      id += CHARS[buffer[index] % CHARS.length];
+      ++ index;
+    }
+    return id;
+  }
+
+  /**
+   * @file Index for GUM. Sets up the g name space and the Gum class.
+   */
 
   /**
    * The g (gum tools) namespace provides all the helpful ~static~ functions 
    * to do cool things inside a gum app.
    * @namespace
    */
-  const g = {
+  const globals = {
     sin: Math.sin, 
     cos: Math.cos,
     vec2: (x, y) => new Vec2(x, y),
@@ -3894,33 +4923,14 @@ var gum = (function (exports) {
     Vec2: Vec2,
     Vec3: Vec3,
     Mesh: Mesh,
+    Line: Line,
+    Instancer: Instancer,
+    EdgeCollection: EdgeCollection,
     Texer: Texer,
     m4: m4,
+    colors: ColorDict,
   };
 
-  _inlineModule(common);
-  _inlineModule(dom, 'dom');
-  _inlineModule(primitives, 'shapes');
-  _inlineModule(meshOps, 'meshops');
-
-  // window.g = g;
-
-
-
-  /**
-   * 
-   */
-  g._usedColors = {};
-  g.color = function (...args) {
-    const argString = args.join('');
-    if (this._usedColors[argString]) {
-      return this._usedColors[argString];
-    }
-    
-    const color$1 = color(...args);
-    this._usedColors[argString] = color$1;
-    return color$1;
-  }.bind(g);
 
 
 
@@ -3931,20 +4941,26 @@ var gum = (function (exports) {
     constructor (canvas, w, h, settings) {
       settings = settings || {};
 
+      this.instanceId = uuid();
+
       /**
        * The canvas.
        * @type {HTMLCanvasElement}
        */
       this.canvas = select(canvas);
+      this.canvas.classList.add('gum-main-canvas');
 
       /**
        * The renderer.
        * @type {RendererGL2}
-      */
+       */
       this.renderer = new RendererGL2(this.canvas, w, h, settings);
+      this.renderer.instanceId = this.instanceId;
       
-      const scale = settings?.scale ?? 1;
-      this.canvas.style.transform = `scale(${scale})`;
+      /**
+       * The pixel ratio for display.
+       */ 
+      this.pixelRatio = settings.pixelRatio || window.devicePixelRatio || 1;
      
       /**
        * A reference to the raw gl context.
@@ -4005,15 +5021,18 @@ var gum = (function (exports) {
       /**
        * An array of textures.
       */
-     this.texers = [];
-     
-     
+      this.texers = [];
+
+      
+      
       /**
        * The post processing stack.
        */
       this.postProcessingStack = {
-        frameBufferTex: null,
-        frameBufferDepth: null,
+        colorBufferA: null,
+        depthBufferA: null,
+        colorBufferB: null,
+        depthBufferB: null,
         effects: [],
       };
 
@@ -4026,18 +5045,51 @@ var gum = (function (exports) {
        * Keep a matrix to transform each frame for immediate mod graphics.
        */
       this._imMatrix = create();
+
+      /**
+       * Keep a clean identity to reset shaders.
+       */ 
+      this._identity = create();
      
       /**
        * The name of the default geometry pass.
        */
       this.defaultPass = 'unlit';
+
+      /**
+       * Some global uniforms.
+       */ 
+      this.globalUniforms = {
+        'uNear': 0.1,
+        'uFar': 1000,
+        'uEye': [0, 0, 0],
+        'uView': create(),
+        'uProjection': create(),
+        'uAspect': 1,
+      };
+
+      this._frameStats = {
+        frameStart: 0,
+        frameTime: 0,
+        avgFrameTime: 0,
+      };
+
+      /** 
+       * Whether do do some extra blitting to get the full buffer ~after post processing~
+       * back into the drawing buffer.
+       */ 
+      this.recycleBuffer = false;
+
+      this._usedColors = {};
+
       this._info();
+
+     
     } 
 
 
     /**
-     * Set up.
-     * @returns 
+     * Internal set up. Runs dierectly before user setup.
      */
     _setup () {
       if (this.vert && this.frag) {
@@ -4048,9 +5100,10 @@ var gum = (function (exports) {
       const { vert, frag } = shaders[this.defaultPass];
 
       this.renderer.createProgram('default', vert, frag);
+      this.renderer.setProgram('default');
       
       // Make a default magenta texture.
-      this.renderer.addTexture('none', new Uint8Array([255, 0, 255, 255]), {width: 1, height: 1, clamp: true, filter: 'NEAREST'});
+      this.renderer.addTexture('none', new Uint8Array([255, 0, 255, 255]), { width: 1, height: 1, clamp: true, filter: 'NEAREST' });
     }
 
 
@@ -4064,8 +5117,14 @@ var gum = (function (exports) {
     run (setup, draw) {
       this._setup();
 
+      // Do the pre draw routine once incase any code in setup asks to draw.
+      this._preDraw();
+
       // 1) Call the user's custom setup.
       setup();
+
+      // 2) Call one pass of post draw in case the set up fn did any drawing.
+      this._postDraw();
 
       this._info();
 
@@ -4094,21 +5153,41 @@ var gum = (function (exports) {
       }
     }
 
+    clearDepth () {
+      this.renderer.clearDepth();
+    }
+
+    /**
+     * Make or get a color.
+     */
+    color (...args) {
+      const argString = args.join('');
+      if (argString && this._usedColors[argString]) {
+        return this._usedColors[argString];
+      }
+      
+      const color$1 = color(...args);
+      this._usedColors[argString] = color$1;
+      return color$1;
+    }
+
+
 
     /** 
      * The fire once per frame animation handler. 
      */
     _tick () {
+      if (this._disposed) return;
       let now = performance.now();
       let delta = 0.001 * (now - this._lastNow) / (1 / 60);
       this._lastNow = now;
+
+      this._time = now - this._timeAtLaunch;
       
       identity(this._imMatrix);
 
       this.renderer.setProgram('default');
-      this.renderer.setRenderTarget(null);
-
-
+      this.renderer.setRenderTarget('default');
 
       if (this._loop && this._draw) {
         this._preDraw();
@@ -4116,7 +5195,6 @@ var gum = (function (exports) {
         this._postDraw();
       }
 
-      
       
       const elapsed = now - this._timeAtLastInfo;
       if (elapsed > 1000) {
@@ -4134,9 +5212,11 @@ var gum = (function (exports) {
     _info () {
       this.sceneGraph.innerHTML = '';
       const verts = (this.renderer.totalVertices() / 1000).toFixed(1);
-      this.sceneGraph.innerHTML += 'verts: ' + verts + 'k\n';   
+      const time = this._frameStats.avgFrameTime.toFixed(2);
+      const fps = (1000 / time).toFixed(2);
+      this.sceneGraph.innerHTML += 'verts: ' + verts + 'k\n';
+      this.sceneGraph.innerHTML += 'frame time: ' + time + 'ms — fps: ' + fps + '\n';
       this.sceneGraph.innerHTML += this.scene.print();
-
     }
 
 
@@ -4152,15 +5232,21 @@ var gum = (function (exports) {
      * Get the time since launch.
      * @returns {number} Milliseconds since launch.
      */
-    time () {
-     return performance.now() - this._timeAtLaunch;
+    get time () {
+      return this._time;
     }
+    set time (val) {}
+
+    get frame () {
+      return this._frame;
+    }
+    set frame (val) {}
 
 
     loadMesh (model, fn) {
-      this.plyLoader.load('/models/' + model, function (mesh) {
+      this.plyLoader.load(model, function (mesh) {
         if (fn) { mesh = fn(mesh); }
-        this.renderer.addMesh(fn(mesh));
+        this.renderer.addMesh(mesh);
       });
     } 
 
@@ -4183,38 +5269,54 @@ var gum = (function (exports) {
       return this.scene.createChildNode(name, null);
     }
 
-    addMesh (mesh) {
-      if (mesh.render) {
-        return this.renderer.addMesh(mesh.render());
+    mesh (msh) {
+      if (msh.render) {
+        return this.renderer.addMesh(msh.render());
       }
-      return this.renderer.addMesh(mesh);
+      return this.renderer.addMesh(msh);
     }
 
 
-    _preDraw () {
-      this.renderer.setProgram('default');
-      this.renderer.setRenderTarget('default');
+    _preDraw (settings = {}) {
+      this._frameStats.frameStart = performance.now();
 
-      const dWidth = this.canvas.clientWidth;
-      const dHeight = this.canvas.clientHeight;
+      const pixelRatio = this.pixelRatio;
+      let dWidth = Math.round(this.canvas.clientWidth * pixelRatio);
+      let dHeight = Math.round(this.canvas.clientHeight * pixelRatio);
+
+      if (settings.screenshot) {
+        const { width, height } = settings.screenshot;
+        dWidth = width > 0 ? width : dWidth;
+        dHeight = height > 0 ? height: dHeight;
+      }
 
       const needsResize = this.canvas.width !== dWidth || this.canvas.height !== dHeight;
 
       if (needsResize) {
         this.canvas.width = dWidth;
         this.canvas.height = dHeight;
+        for (let targetName in this.renderer.renderTargets) {
+          this.renderer.updateRenderTarget(targetName);
+        }
       }
 
-      this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-     
-      this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight; 
+      this.camera.aspect = dWidth / dHeight; 
       this.camera.updateViewProjection();
-      
-      this.renderer.uniform('uNear', this.camera.near);
-      this.renderer.uniform('uFar',  this.camera.far);
-      this.renderer.uniform('uEye', this.camera.eye);
-      this.renderer.uniform('uView', this.camera.view);
-      this.renderer.uniform('uProjection', this.camera.projection);
+
+      this.globalUniforms['uNear'] = this.camera.near;
+      this.globalUniforms['uFar'] = this.camera.far;
+      this.globalUniforms['uEye'] = this.camera.eye;
+      this.globalUniforms['uAspect'] = this.camera.aspect;
+      this.globalUniforms['uView'] = this.camera.view;
+      this.globalUniforms['uProjection'] = this.camera.projection;
+
+      this.renderer.setProgram('default');
+      this.renderer.setRenderTarget('default');
+
+      this.renderer.globalUniformBlock = this.globalUniforms;
+      this.renderer.setGlobalUniformBlock();
+
+      this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
       for (let texer of this.texers) {
         if (texer.changed()) {
@@ -4227,50 +5329,107 @@ var gum = (function (exports) {
     _postDraw () {
 
       if (this.postProcessingStack.effects.length > 0) {
-        const { frameBufferTex, frameBufferDepth } = this.postProcessingStack;
-        for (let effect of this.postProcessingStack.effects) {
+        
+        const { colorBufferA, 
+                colorBufferB, 
+                depthBufferA, 
+                depthBufferB } = this.postProcessingStack;
+        
+        this.postProcessingStack.effects.forEach((effect, i) => {
           
           this.renderer.setProgram(effect.program);
-          this.renderer.setRenderTarget('canvas');
-          this.renderer.uniform('uMainTex', frameBufferTex);
-          this.renderer.uniform('uDepthTex', frameBufferDepth);
-          this.renderer.uniform('uTexSize', [
-            this.canvas.width, this.canvas.height,
-          ]);
+
+
+          if (i % 2 === 0) {
+            this.renderer.setRenderTarget('bufferB');
+            this.renderer.uniform('uMainTex', colorBufferA);
+            this.renderer.uniform('uDepthTex', depthBufferA);
+          } else {
+            this.renderer.setRenderTarget('bufferA');
+            this.renderer.uniform('uMainTex', colorBufferB);
+            this.renderer.uniform('uDepthTex', depthBufferB);
+          }
+
+          if (i === this.postProcessingStack.effects.length - 1) {
+            this.renderer.setRenderTarget('canvas');
+          }
+
+          this.renderer.uniform('uView', this._identity);
+          this.renderer.uniform('uModel', this._identity);
+          this.renderer.uniform('uProjection', this._identity);
+          this.renderer.uniform('uTexSize', [this.canvas.width, this.canvas.height]);
           this.renderer.uniform('uNear', this.camera.near);
           this.renderer.uniform('uFar', this.camera.far);
           this.renderer.clear([1, 0, 0, 1]);
-          this.renderer.draw('effect-quad');
+
+          for (let uniform in effect.uniforms) {
+            this.renderer.uniform(uniform, effect.uniforms[uniform]);
+          }
+
+          // Pass false to draw without global uniforms.
+          this.renderer.draw('effect-quad', false);
+        });
+
+        if (this.recycleBuffer) {
+          const defaultBuffer = this.renderer.renderTargets['default'].frameBuffer;
+          this.renderer.blitBuffer(null, defaultBuffer);
         }
       }
+
+
+      this._frame ++;
+      let frameEnd = performance.now();
+      this._frameStats.frameTime = frameEnd - this._frameStats.frameStart;
+
+      this._frameStats.avgFrameTime = 
+        ((this._frameStats.avgFrameTime || this._frameStats.frameTime) + this._frameStats.frameTime) / 2;
+
     }
 
 
-    addEffect (name, type) {
+    addEffect (shader, uniforms = {}) {
       
       if (this.postProcessingStack.effects.length === 0) {
-        this.renderer.createRenderTarget('frameBuffer', true);
-        const targetInfo = this.renderer.renderTargets['frameBuffer'];
-        this.postProcessingStack.frameBufferTex = targetInfo.colorTexUnit;
-        this.postProcessingStack.frameBufferDepth = targetInfo.depthTexUnit;
+        this.renderer.createRenderTarget('bufferA', true);
+        this.renderer.createRenderTarget('bufferB', true);
+
+        const bufferA = this.renderer.renderTargets['bufferA'];
+        const bufferB = this.renderer.renderTargets['bufferB'];
+
+        this.postProcessingStack.colorBufferA = bufferA.colorTexUnit;
+        this.postProcessingStack.colorBufferB = bufferB.colorTexUnit;
+
+        this.postProcessingStack.depthBufferA = bufferA.depthTexUnit;
+        this.postProcessingStack.depthBufferB = bufferB.depthTexUnit;
+
+
         const fsQuad = _fsQuad();
         fsQuad.name = 'effect-quad';
         this.renderer.addMesh(fsQuad);
-        this.renderer.renderTargets['default'] = targetInfo;
+        this.renderer.renderTargets['default'] = bufferA;
+        this.renderer.setRenderTarget('default');
       }
 
       const effect = {
-        name: name,
-        program: name,
+        name: shader,
+        program: shader,
+        uniforms: uniforms,
       };
 
-      
-      const vert = shaders.post.vert;
-      const frag = shaders['post-chromatic'].frag;
-      
-      this.renderer.createProgram(name, vert, frag);
+      if (!this.renderer.shaderPrograms[shader]) {
+        const vert = shaders.post.vert;
+        const frag = shaders[shader].frag;
+        this.renderer.createProgram(shader, vert, frag);
+      }
 
       this.postProcessingStack.effects.push(effect);
+    }
+
+    
+    addProgram (programName) {
+      if (shaders[programName].vert && shaders[programName].frag) {
+        this.renderer.createProgram(programName, shaders[programName].vert, shaders[programName].frag);
+      }
     }
     
 
@@ -4284,10 +5443,8 @@ var gum = (function (exports) {
       this.renderer.uniform('uTex', 'none');
 
       for (let call of this.scene.drawCalls()) {
-        for (let [uniform, value] of Object.entries(call.uniforms)) {
-          this.renderer.uniform(uniform, value);
-        }
-        this.renderer.draw(call.geometry);
+        this.renderer.draw(call.geometry, call.uniforms, call.program);
+        // console.log(call);
       }
     }
 
@@ -4299,20 +5456,78 @@ var gum = (function (exports) {
       let draws = [];
       node._toDrawList(draws, children);
       for (let call of draws) {
-        for (let [uniform, value] of Object.entries(call.uniforms)) {
-          this.renderer.uniform(uniform, value);
-        }
-        this.renderer.draw(call.geometry);
+        this.renderer.draw(call.geometry, call.uniforms, call.program);
       }
     }
 
     
     /**
-     * Render one 3D node.
+     * Render one 3D mesh with the default matrix.
      */
     drawMesh (mesh) {
       this.renderer.uniform('uModel', this._imMatrix);
       this.renderer.draw(mesh);
+    }
+
+
+    /**
+     * Set up orbit in the current scene.
+     */ 
+    orbit (distance = 3) {
+      let theta = 0;
+      let lift = 30;
+      let zoom = distance;
+      let mouseDown = false;
+
+      const moveCam = (e = {}, force = false) => {
+        if (!mouseDown && !force) return;
+
+        theta += e.movementX ?? 0;
+        lift -= e.movementY ?? 0;
+
+        lift = clamp(lift, 1, 180);
+
+        const x = Math.sin(radians(lift)) * Math.cos(radians(theta));
+        const z = Math.sin(radians(lift)) * Math.sin(radians(theta));
+        const y = Math.cos(radians(lift));
+
+        let pos = new Vec3(x,y,z).normalize(zoom);
+        this.camera.move(...pos.xyz);
+      };
+
+      moveCam({}, true);
+
+      this.canvas.onpointerdown = () => mouseDown = true;
+      window.onpointerup = () => mouseDown = false;
+      window.onmousemove = (e) => moveCam(e);
+
+      canvas.onwheel = (e) => {
+
+        zoom += e.deltaY * -0.1;
+        zoom = clamp(zoom, 0.1, 30);
+        moveCam(e, true);
+      };
+    }
+
+    texture (name, imageData, settings = {}) {
+      let result = this.renderer.addTexture(name, imageData, settings);
+      return result === false ? false : result;
+    }
+
+    dispose () {
+      this._disposed = true; 
+      this.renderer.dispose();
+      this.tick = () => {};
+    }
+
+
+
+    screenshot (w = 100, h = 100) {
+      this._preDraw({ screenshot: { width: w, height: h }});
+      this._draw();
+      this._postDraw();
+      const data = this.canvas.toDataURL();
+      return data;
     }
   }
 
@@ -4322,15 +5537,16 @@ var gum = (function (exports) {
    * @param {Module} module An imported module.
    * @param {string} target An optional string location to put the module under.  
    */
-  function _inlineModule (module, target) {
-    let targetObj = g;
+  function _inlineModule (module, context, target) {
+    let targetObj = context;
+
 
     if (target) {
-      if (g[target]) {
-        targetObj = g[target];
+      if (context[target]) {
+        targetObj = context[target];
       } else {
         targetObj = {};
-        g[target] = targetObj;
+        context[target] = targetObj;
       }
     }
 
@@ -4343,8 +5559,15 @@ var gum = (function (exports) {
     }
   }
 
+
+
+  _inlineModule(common, Gum.prototype);
+  _inlineModule(globals, Gum.prototype);
+  _inlineModule(dom, Gum.prototype, 'dom');
+  _inlineModule(primitives, Gum.prototype, 'shapes');
+  _inlineModule(meshOps, Gum.prototype, 'meshops');
+
   exports.Gum = Gum;
-  exports.g = g;
 
   return exports;
 

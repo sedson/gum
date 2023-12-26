@@ -1,7 +1,7 @@
 import { g, Gum } from '/js/GUM.js';
 
 window.g = g;
-window.gum = new Gum('#canvas', 1000, 1000, { scale: 0.5 });
+window.gum = new Gum('#canvas', 1000, 1000, { scale: 1});
 
 const bg = g.color('#333');
 const col = g.color('rawsienna');
@@ -17,8 +17,8 @@ let time = 0;
 gum.background(bg); 
 gum.camera.fov = 30;
 
-gum.addEffect('post-outline'); 
-gum.addEffect('post-chromatic'); 
+// gum.addEffect('post-outline'); 
+gum.addEffect('post-chromatic2'); 
 
 
 

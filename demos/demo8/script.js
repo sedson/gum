@@ -5,7 +5,7 @@ import {g, Gum} from '/js/GUM.js'
 
 // Create a new felt app that renders to the '#canvas' element. The size 
 // is 2000 by 2000 pixels.
-window.app = new Gum('#canvas', 1000, 1000, { scale: 0.5 });
+window.app = new Gum('#canvas', 1000, 1000, { scale: 1 });
 window.g = g;
 
 // Make a background color.
@@ -13,7 +13,7 @@ const bg = g.color('#333');
 
 // Make an icosphere. Radius = 1, subdivisions = 2, and flat shading is true.
 let sphere = g.shapes.icosphere(0.5, 1, true).findGroups();
-let cube = g.shapes.icosphere(1, 2, true);
+let cube = g.shapes.icosphere(1, 2, false);
 
 let spinAngle = 0;
 
@@ -26,13 +26,19 @@ let tex = new g.Texer(64);
 // blueTex.clear();
 
 
-app.defaultPass = 'unlit';
+app.defaultPass = 'geo';
 
 
 // app.addEffect('post-dither', {
 //   uColorA: [1, 1, 1, 1],
 //   uColorB: g.color('red').rgba,
 // });
+app.addEffect('post-outline');
+
+app.addEffect('post-dither', {
+  uColorA: g.color('lime').rgba,
+  uColorB: g.color('vert').rgba,
+});
 
 
 
@@ -47,15 +53,17 @@ function setup () {
   B = app.node('B');
 
   app.orbit();
+  let C = app.node('C');
 
-  cube.shadeSmooth(0.2);
+  cube.applyTransform(C.transform);
+
+  // cube.shadeSmooth(0.);
   A.geometry = app.addMesh(cube.fill(g.color('rose')).render());
-  const edges = new g.EdgeCollection(cube.inflate(0.01).getEdges(), g.color('red').rgba);
+  const edges = new g.EdgeCollection(cube.inflate(0.1).getEdges(), g.color('black').rgba);
 
   B.geometry = app.addMesh(edges);
 
   // B.move(0, 1, 0).scale(0.5).setParent(A);
-
 
 
 
@@ -64,7 +72,8 @@ function setup () {
 
   app.plyLoader.load('/models/uvsphere.ply', mesh => {
     // console.log(mesh);
-    // B.geometry = app.addMesh(mesh);
+    C.geometry = app.addMesh(mesh.fill(g.color('vert')));
+    C.move(0, 1, 0).scale(0.2)
   }); 
 
 
@@ -107,10 +116,10 @@ function draw () {
   let s = g.radians(spinAngle);
   let x = Math.cos(s) * 5;
   let z = Math.sin(s) * 5;
-  // app.camera.transform.position.set(x, 2, z)
+  app.camera.transform.position.set(x, 2, z)
 
 
-  // spinAngle += 1;
+  spinAngle += 1;
 
   app.drawScene();
 }

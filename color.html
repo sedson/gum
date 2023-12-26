@@ -36,7 +36,7 @@
         swatch.classList.add('swatch');
         swatch.style.backgroundColor = g.colors[col];
         panel.append(swatch);
-        swatch.onpointerenter = () => colorName.innerText = col; 
+        swatch.onpointerenter = () => colorName.innerText = col + ' ' + g.colors[col]; 
       }
 
     </script>
