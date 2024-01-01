@@ -24,10 +24,16 @@
   --black: #000000;
   --gray: #b8bbb5;
   --white: #f6f2eA;
+
 }
 
 body {
   background-color: #333;
+}
+
+* {
+  scrollbar-width: none;
+  
 }
 
 
@@ -45,7 +51,7 @@ header {
 }
 
 header > * {
-  margin-right: 1em;
+/*  margin-right: 1em;*/
 }
 
  {
@@ -100,4 +106,22 @@ header > * {
 
 .cm-editor .cm-scroller {
   font-family: Victor;
+}
+
+button {
+  background: unset;
+  border: none;
+  font-family: unset;
+}
+
+.button {
+  background-color: #444;
+  color: silver;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 1em;
+  border-right: var(--line);
+}
+.underline {
+  border-bottom: 1px solid currentColor;
 }

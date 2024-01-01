@@ -45,17 +45,11 @@ function templateShader (fileContents) {
     const line = lines[i];
     if (line.startsWith('#pragma include')) {
       const path = line.split(' ')[2];
-      console.log('found', path)
       if (fs.existsSync(dir + '/' + path)) {
         lines[i] = fs.readFileSync(dir + '/' + path, {encoding : 'utf-8'});
-
       }
-
-
     }
   }
-
-
 
   return lines.join('\n');
 }

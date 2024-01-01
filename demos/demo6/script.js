@@ -1,10 +1,6 @@
-import {g, Gum} from '/js/GUM.js'
+import { Gum } from '/js/GUM.js'
 
-window.g = g;
-
-// Create a new felt app that renders to the '#canvas' element. The size 
-// is 2000 by 2000 pixels.
-window.gum = new Gum('#canvas', 1000, 1000, { scale: 0.5 });
+window.g = new Gum('#canvas', 1000, 1000, { scale: 0.5 });
 
 
 // Make an icosphere. Radius = 1, subdivisions = 2, and flat shading is true.
@@ -20,21 +16,24 @@ let spinAngle = 0;
  */
 function setup () {
   const edges = new g.EdgeCollection(sphere.getEdges(), g.color('orange').rgba);
+  edges.thickness = 20;
   const edges1 = new g.EdgeCollection(cube.getEdges(), g.color('ginger').rgba);
-
-  gum.addProgram('line2');
-  gum.addProgram('line');
-
-  gum.addEffect('post-outline2');
-
-  a = gum.node('a').setGeometry(gum.addMesh(edges.render()));
-  // a = gum.node('a').setGeometry(gum.addMesh(sphere.renderEdges()));
+  edges1.thickness = 20;
 
 
-  b = gum.node('b').setGeometry(gum.addMesh(edges1));
+  g.addProgram('line2');
+  g.addProgram('line');
 
-  gum.orbit();
-  gum.node('c').setGeometry(gum.addMesh(
+  g.addEffect('post-outline2');
+
+  a = g.node('a').setGeometry(g.mesh(edges.render()));
+  // a = g.node('a').setGeometry(g.mesh(sphere.renderEdges()));
+
+
+  b = g.node('b').setGeometry(g.mesh(edges1));
+
+  g.orbit();
+  g.node('c').setGeometry(g.mesh(
     sphere.inflate(-0.01).fill(g.color('lilac'))
   )).setParent(a);
 }
@@ -44,16 +43,16 @@ function setup () {
  * Runs each frame;
  */
 function draw () {
-  gum.background(g.color('#333'));
+  g.clear(g.color('#333'));
 
 
 
   
-  let r = g.remap(g.sin(gum.time() * 0.005), -1, 1, 0, 100);
+  let r = g.remap(g.sin(g.time * 0.005), -1, 1, 0, 100);
   let s = g.radians(spinAngle);
   let x = Math.cos(s) * 5;
   let z = Math.sin(s) * 5;
-  // gum.camera.transform.position.set(x, 2, z)
+  // g.camera.transform.position.set(x, 2, z)
 
   a.rotate(x * 0.35, z * 0.29, 0);
 
@@ -62,7 +61,7 @@ function draw () {
 
 
 
-  gum.drawScene();
+  g.drawScene();
 }
 
-gum.run(setup, draw);
+g.run(setup, draw);

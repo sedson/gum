@@ -54,5 +54,5 @@ void main() {
 
   vSurfaceId = hashId(aSurfaceId + uObjectId);
 
-  vWorldPosition = gl_Position;
+  vWorldPosition = uModel * aPosition;
 }

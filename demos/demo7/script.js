@@ -1,44 +1,40 @@
-import {g, Gum} from '/js/GUM.js'
+import {Gum} from '/js/GUM.js'
 
-window.g = g;
-
-// Create a new felt app that renders to the '#canvas' element. The size 
-// is 2000 by 2000 pixels.
-window.gum = new Gum('#canvas', 1000, 1000);
+window.g = new Gum('#canvas', 1000, 1000);
 
 let turntable, cube, sphere;
 
 
-gum.defaultPass = 'lit';
+g.defaultPass = 'lit';
 
 /**
- * Runs once at the beginning of the gum's life cycle.
+ * Runs once at the beginning of the g's life cycle.
  */
 function setup () {
 
-  turntable = gum.node('turntable');
+  turntable = g.node('turntable');
 
-  gum.orbit();
+  g.orbit();
 
-  gum.addProgram('line')
+  g.addProgram('line')
 
-  gum.addEffect('post-dither', {
+  g.addEffect('post-dither', {
     uColorA: g.color('sand').rgba,
     uColorB: g.color('burgundy').rgba,
   });
   
-  gum.node('ground')
-    .setGeometry(gum.addMesh(g.shapes.grid(2).fill(g.color('white'))))
+  g.node('ground')
+    .setGeometry(g.mesh(g.shapes.grid(2).fill(g.color('white'))))
     .setParent(turntable);
 
-  sphere = gum.node('sphere')
-    .setGeometry(gum.addMesh(g.shapes.icosphere(0.5, 3).fill(g.color('white'))))
+  sphere = g.node('sphere')
+    .setGeometry(g.mesh(g.shapes.icosphere(0.5, 3).fill(g.color('white'))))
     .move(0.5, 0.25, 0)
     .setParent(turntable);
 
 
-  cube = gum.node('cube')
-    .setGeometry(gum.addMesh(g.shapes.cube(0.5).findGroups().fill(g.color('white'))))
+  cube = g.node('cube')
+    .setGeometry(g.mesh(g.shapes.cube(0.5).findGroups().fill(g.color('white'))))
     .move(-0.5, 0.25, 0)
     .setParent(turntable);
 
@@ -46,8 +42,8 @@ function setup () {
 
   console.log(line.render());
 
-  gum.node('line')
-    .setGeometry(gum.addMesh(line.render()))
+  g.node('line')
+    .setGeometry(g.mesh(line.render()))
 }
 
 
@@ -55,14 +51,14 @@ function setup () {
  * Runs each frame;
  */
 function draw () {
-  gum.background(g.color('#333'));
+  g.clear(g.color('#333'));
 
-  // turntable.rotate(0, gum.time() * 0.001, 0);
-  cube.rotate(0, gum.time() * 0.0003, 0);
-  sphere.rotate(0, gum.time() * 0.0003, 0);
+  // turntable.rotate(0, g.time() * 0.001, 0);
+  cube.rotate(0, g.time * 0.0003, 0);
+  sphere.rotate(0, g.time * 0.0003, 0);
 
 
-  gum.drawScene();
+  g.drawScene();
 }
 
-gum.run(setup, draw);
+g.run(setup, draw);

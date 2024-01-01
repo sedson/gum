@@ -3,13 +3,17 @@
  */
 import * as m4 from './matrix.js';
 import { Transform } from './transform.js';
+import { uuid } from './id.js';
 
+// Track a hidded render node id.
+let id = 0;
 
 export class Node {
 
   constructor(name, geometry, transform) {
     this.name = name;
-    this.id = this.generateId();
+    this.id = uuid();
+    this.renderId = id++;
     this.geometry = geometry || null;
     this.transform = transform || new Transform();
     this.visible = true;
@@ -17,7 +21,7 @@ export class Node {
     this.children = [];
     this._worldMatrix = m4.create();
     this.uniforms = {
-      uObjectId: this.id,
+      uObjectId: this.renderId,
       uModel: this._worldMatrix,
       uTex: 'none',
     };
@@ -93,16 +97,6 @@ export class Node {
     return node;
   }
 
-
-  generateId () {
-    let id = '';
-    for (let i = 0; i < 4; i++) {
-      id += Math.floor(Math.random() * 10);
-    }
-    return id;
-  }
-
-
   _removeChild (node) {
     this.children = this.children.filter(n => n !== node);
   }
@@ -123,7 +117,8 @@ export class Node {
     }
 
     const geometry = this.geometry ? 'm.' + this.geometry : '';
-    output += `<em>${this.name}</em> : ${geometry}`;
+    const name = this.name ? this.name : 'id: ' + this.id;
+    output += `<em>${name}</em> : ${geometry}`;
     output += '\n';
     if (this.children) {
       output += this.children.map(c => c._print('', depth + 1)).join('');

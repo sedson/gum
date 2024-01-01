@@ -4,7 +4,7 @@ precision mediump float;
 
 uniform sampler2D uMainTex;
 uniform sampler2D uDepthTex;
-uniform vec2 uTexSize;
+uniform vec2 uScreenSize;
 uniform float uNear;
 uniform float uFar;
 
@@ -17,7 +17,7 @@ float linearDepth(float d, float near, float far) {
 }
 
 vec4 gradient(sampler2D tex, vec2 coord) {
-  vec2 offset = vec2(1.0, 1.0) / uTexSize;
+  vec2 offset = vec2(1.0, 1.0) / uScreenSize;
 
   vec4 xSum = vec4(0.0);
   vec4 ySum = vec4(0.0);

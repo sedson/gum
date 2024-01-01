@@ -1,0 +1,57 @@
+const bg = g.color('#00a');
+const box = g.shapes.cube(1.2, 2).shadeSmooth()
+const edges = new g.EdgeCollection(box.getEdges());
+
+const s = g.mesh(g.shapes.icosphere(0.06).fill(g.color('sky')))
+
+edges.color = g.color('white').rgba
+edges.thickness = 20
+
+g.pixelRatio = 2
+
+const m = g.mesh(box);
+const e = g.mesh(edges);
+g.imageScaling = 'auto';
+const texOffSet = [1.2, 1.2, 0, 0]
+
+let n1, n2, n3;
+
+function setup () {
+  g.clear(bg)
+  g.orbit()
+
+  n1 = g.node().setGeometry(e)
+  console.log(n1.id)
+  g.addProgram('line2')
+
+
+  for (v of box.vertices) {
+    g.node().setGeometry(s).move(...v.position).setParent(n1)
+  }
+
+
+  g.addEffect('post-color-overlay', {
+    uBlendColor: [bg.r, bg.g, bg.b, 0.1]
+  })
+  
+  g.addEffect('post-tex-scale', {
+    uTexOffset: texOffSet,
+  })
+
+  g.recycleBuffer = true;
+  g.clear(bg)
+  g.addEffect('post-blur')
+  g.addEffect('post-chromatic')
+  g.scene.updateSceneGraph()
+  
+  
+}
+
+function draw () {
+
+  // g.clear(bg)
+  g.clearDepth()
+  g.drawScene()
+  n1.rotate(g.time * 0.0006, g.time * 0.001, g.time * 0.00024)
+  texOffSet[1] =  texOffSet[0] = g.sin(g.time * 0.001) * 0.7 + 0.9
+}

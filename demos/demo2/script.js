@@ -1,7 +1,6 @@
-import { g, Gum } from '/js/GUM.js';
+import { Gum } from '/js/GUM.js';
 
-window.g = g;
-window.gum = new Gum('#canvas', 1000, 1000, { scale: 0.5 });
+window.g = new Gum('#canvas', 1000, 1000, { scale: 0.5 });
 
 // Make some colors.
 const bg    = g.color('#333');
@@ -18,36 +17,35 @@ let spin;
 const shapes = [];
 let time = 0;
 
-gum.background(bg); 
-gum.camera.fov = 10;
+g.background(bg); 
+g.camera.fov = 10;
 
 
-spin = gum.node('camera.root');
-gum.camera.setParent(spin);
+spin = g.node('camera.root');
+g.camera.setParent(spin);
 
 for (let i = 0; i < 50; i++) {
-  let n = gum.node('n' + i);
+  let n = g.node('n' + i);
 
   let fac = i / 49;
   let col = red.blend(blue, fac, 'hsl');
 
-  n.geometry = gum.addMesh(sphereShape.fill(col));
+  n.geometry = g.mesh(sphereShape.fill(col));
   n.move((i - 25) * 0.01, 0, 0);
   shapes.push(n);
 }
 
 
-gum.addEffect('post-chromatic2');
-gum.recycleBuffer = true;
+g.addEffect('post-chromatic2');
+g.recycleBuffer = true;
 
 
 
 function setup () {}
 
 function draw (delta) {
-  // gum.background(bg);
-  gum.clearDepth();
-  gum.drawScene();
+  g.clear(bg);
+  g.drawScene();
   
   for (let i = 0; i < shapes.length; i++) {
     const s = shapes[i];
@@ -59,7 +57,7 @@ function draw (delta) {
 
 }
 
-gum.run(setup, draw);
+g.run(setup, draw);
 
 
 

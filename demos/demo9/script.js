@@ -1,31 +1,27 @@
-import {g, Gum} from '/js/GUM.js'
+import {Gum} from '/js/GUM.js'
 
-window.g = g;
-
-// Create a new felt app that renders to the '#canvas' element. The size 
-// is 2000 by 2000 pixels.
-window.gum = new Gum('#canvas', 1000, 1000, { scale: 1 });
+window.g = new Gum('#canvas', 1000, 1000, { scale: 1 });
 
 let sphere, cube;
 
-let instanceMesh = g.shapes.icosphere(0.5, 2).fill(g.color('#00f'));
+let instanceMesh = g.shapes.icosphere(0.01, 2).fill(g.color('#00f'));
 
 let instancer;
 
 
-gum.defaultPass = 'geo';
+g.defaultPass = 'geo';
 
 /**
- * Runs once at the beginning of the gum's life cycle.
+ * Runs once at the beginning of the g's life cycle.
  */
 function setup () {
 
   const ico = g.shapes.icosphere(0.6, 2);
   const pts = ico.vertices.length;
 
-  gum.addProgram('unlit');
+  g.addProgram('unlit');
 
-  instancer = new g.Instancer(instanceMesh, pts, gum.renderer, 'unlit');
+  instancer = new g.Instancer(instanceMesh, pts, g.renderer, 'unlit');
   window.instancer = instancer;
 
   for (let i = 0; i < pts; i++) {
@@ -42,61 +38,61 @@ function setup () {
 
   // instancer.fillRandom();
 
-  gum.node('PARTICLES').setGeometry(instancer);
+  g.node('PARTICLES').setGeometry(instancer);
 
 
 
   // console.log(instancer)
 
-  gum.orbit();
+  g.orbit();
 
-  // gum.addEffect('post-dither', {
+  // g.addEffect('post-dither', {
   //   uColorA: g.color('sand').rgba,
   //   uColorB: g.color('burgundy').rgba,
   // });
   
-  // gum.node('ground')
-  //   .setGeometry(gum.addMesh(g.shapes.grid(2).fill(g.color())))
+  // g.node('ground')
+  //   .setGeometry(g.mesh(g.shapes.grid(2).fill(g.color())))
 
-  sphere = gum.node('sphere')
-    .setGeometry(gum.addMesh(g.shapes.icosphere(0.5, 3).fill(g.color())))
+  sphere = g.node('sphere')
+    .setGeometry(g.mesh(g.shapes.icosphere(0.5, 3).fill(g.color())))
     .move(0.5, 0.25, 0)
 
 
-  cube = gum.node('cube')
-    .setGeometry(gum.addMesh(g.shapes.cube(0.5).fill(g.color())))
+  cube = g.node('cube')
+    .setGeometry(g.mesh(g.shapes.cube(0.5).fill(g.color())))
     .move(-0.5, 0.25, 0)
 
   const line = new g.Line([ [0,0,0] , [3, 3, 3] ], [1, 1, 1, 1]);
 
   console.log(line.render());
 
-  // gum.addEffect('post-outline2');
-  gum.addEffect('post-blur', {
+  // g.addEffect('post-outline2');
+  g.addEffect('post-blur', {
     uKernal: 4,
     uDist: 1,
   });
 
 
-  // gum.addEffect('post-dither', {
+  // g.addEffect('post-dither', {
   //   uColorA: [0, 0, 0, 1],
   //   uColorB: [1, 1, 0, 1],
   // });
-  // gum.addEffect('post-dither');
+  // g.addEffect('post-dither');
 
 
-  gum.addEffect('post-chromatic2');
-
-
-
-  gum.background(g.color('white'));
-  // console.log(gum.scene)
-  gum.drawScene();
+  g.addEffect('post-chromatic2');
 
 
 
-  // gum.node('line')
-    // .setGeometry(gum.addMesh(line.render()))
+  g.background(g.color('white'));
+  // console.log(g.scene)
+  g.drawScene();
+
+
+
+  // g.node('line')
+    // .setGeometry(g.mesh(line.render()))
 }
 
 
@@ -106,23 +102,23 @@ let f = 0;
  */
 function draw () {
   // return;
-  gum.renderer.clearDepth();
+  g.renderer.clearDepth();
 
 
 
-  gum.gl.bindFramebuffer(gum.gl.READ_FRAMEBUFFER, null);
-  gum.gl.bindFramebuffer(gum.gl.DRAW_FRAMEBUFFER, gum.renderer.renderTargets.default.frameBuffer);
-  let w = gum.canvas.width;
-  let h = gum.canvas.height;
-  gum.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, gum.gl.COLOR_BUFFER_BIT, gum.gl.NEAREST);
+  g.gl.bindFramebuffer(g.gl.READ_FRAMEBUFFER, null);
+  g.gl.bindFramebuffer(g.gl.DRAW_FRAMEBUFFER, g.renderer.renderTargets.default.frameBuffer);
+  let w = g.canvas.width;
+  let h = g.canvas.height;
+  g.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, g.gl.COLOR_BUFFER_BIT, g.gl.NEAREST);
 
 
-  gum.drawScene();
+  g.drawScene();
 
 
 
   // turntable.rotate(0, gum.time() * 0.001, 0);
-  cube.rotate(0, gum.time() * 0.0003, 0);
+  cube.rotate(0, g.time * 0.0003, 0);
   // sphere.rotate(0, gum.time() * 0.0003, 0);
 
 
@@ -135,4 +131,4 @@ function draw () {
   // instancer.draw();
 }
 
-gum.run(setup, draw);
+g.run(setup, draw);

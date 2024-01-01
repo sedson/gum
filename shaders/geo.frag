@@ -25,6 +25,6 @@ void main() {
 
   // fragColor = vec4(vec3(light), 1.0);
 
-  // fragColor = vec4(vViewNormal * 0.5 + 0.5, 1.0);
+  fragColor = vec4(vViewNormal * 0.5 + 0.5, 1.0);
   fragColor = vec4(vSurfaceId, 1.0);
 }

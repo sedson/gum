@@ -656,8 +656,8 @@ var GUM3D = (function (exports) {
       "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nout vec4 vColor;\n\nvoid main()\n{\nmat4 modelView = uView * uModel;\ngl_Position = uProjection * uView * uModel * vec4(aPosition.xyz, 1.0);\nvColor = aColor;\n}"
     },
     "geo": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\nuniform vec4 uColor;\n\nin vec4 vWorldPosition;\nin vec4 vColor;\nin vec3 vWorldNormal;\nin vec3 vViewNormal;\nin vec3 vSurfaceId;\nin float vDepth;\nin float vId;\n\nout vec4 fragColor;\n\nvoid main() {\nvec3 lightDir = normalize(vec3(1.0, 1.0, 1.0));\nfloat nDotL = clamp(dot(vWorldNormal, lightDir), 0.0, 1.0);\nfloat light = clamp(smoothstep(0.1, 0.4, nDotL) + 0.2, 0.0, 1.0);\nfloat nDotV = dot(vViewNormal, vec3(0.0, 0.0, 1.0));\n\nfragColor = vec4(vId, nDotV, nDotL, 1.0);\n\n// fragColor = vec4(vec3(light), 1.0);\n\n// fragColor = vec4(vViewNormal * 0.5 + 0.5, 1.0);\nfragColor = vec4(vSurfaceId, 1.0);\n}",
-      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\nuniform float uNear;\nuniform float uFar;\nuniform float uObjectId;\nuniform float uAspect;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nin vec4 aNormal;\nin float aSurfaceId;\n\nout vec4 vWorldPosition;\nout vec4 vColor;\nout vec3 vWorldNormal;\nout vec3 vViewNormal;\nout vec3 vSurfaceId;\nout float vDepth;\nout float vId;\n\n/**\n*\n*/\nvec3 hashId(float id) {\nfloat r = fract(mod(id * 25738.32498, 456.221));\nfloat g = fract(mod(id * 565612.08321, 123.1231));\nfloat b = fract(mod(id * 98281.32498, 13.221));\nreturn vec3(r, g, b);\n}\n\n\n/**\n*\n*/\nvoid main() {\ngl_PointSize = 20.0;\nmat4 modelView = uView * uModel;\nmat3 normMatrix = transpose(inverse(mat3(modelView)));\nvViewNormal = normalize(normMatrix * aNormal.xyz);\nvWorldNormal = normalize(mat3(uModel) * aNormal.xyz);\nvColor = aColor;\n\ngl_Position = uProjection * uView * uModel * aPosition;\n\nvec3 rounded = round(gl_Position.xyz * 20.0) / 20.0;\n// gl_Position.xyz = rounded;\n\nfloat id = mod(aSurfaceId + uObjectId, 255.0);\nvId = id / 255.0 + (1.0 / 255.0);\n\nvSurfaceId = hashId(aSurfaceId + uObjectId);\n\nvWorldPosition = gl_Position;\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\nuniform vec4 uColor;\n\nin vec4 vWorldPosition;\nin vec4 vColor;\nin vec3 vWorldNormal;\nin vec3 vViewNormal;\nin vec3 vSurfaceId;\nin float vDepth;\nin float vId;\n\nout vec4 fragColor;\n\nvoid main() {\nvec3 lightDir = normalize(vec3(1.0, 1.0, 1.0));\nfloat nDotL = clamp(dot(vWorldNormal, lightDir), 0.0, 1.0);\nfloat light = clamp(smoothstep(0.1, 0.4, nDotL) + 0.2, 0.0, 1.0);\nfloat nDotV = dot(vViewNormal, vec3(0.0, 0.0, 1.0));\n\nfragColor = vec4(vId, nDotV, nDotL, 1.0);\n\n// fragColor = vec4(vec3(light), 1.0);\n\nfragColor = vec4(vViewNormal * 0.5 + 0.5, 1.0);\nfragColor = vec4(vSurfaceId, 1.0);\n}",
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\nuniform float uNear;\nuniform float uFar;\nuniform float uObjectId;\nuniform float uAspect;\n\nin vec4 aPosition;\nin vec4 aColor;\n\nin vec4 aNormal;\nin float aSurfaceId;\n\nout vec4 vWorldPosition;\nout vec4 vColor;\nout vec3 vWorldNormal;\nout vec3 vViewNormal;\nout vec3 vSurfaceId;\nout float vDepth;\nout float vId;\n\n/**\n*\n*/\nvec3 hashId(float id) {\nfloat r = fract(mod(id * 25738.32498, 456.221));\nfloat g = fract(mod(id * 565612.08321, 123.1231));\nfloat b = fract(mod(id * 98281.32498, 13.221));\nreturn vec3(r, g, b);\n}\n\n\n/**\n*\n*/\nvoid main() {\ngl_PointSize = 20.0;\nmat4 modelView = uView * uModel;\nmat3 normMatrix = transpose(inverse(mat3(modelView)));\nvViewNormal = normalize(normMatrix * aNormal.xyz);\nvWorldNormal = normalize(mat3(uModel) * aNormal.xyz);\nvColor = aColor;\n\ngl_Position = uProjection * uView * uModel * aPosition;\n\nvec3 rounded = round(gl_Position.xyz * 20.0) / 20.0;\n// gl_Position.xyz = rounded;\n\nfloat id = mod(aSurfaceId + uObjectId, 255.0);\nvId = id / 255.0 + (1.0 / 255.0);\n\nvSurfaceId = hashId(aSurfaceId + uObjectId);\n\nvWorldPosition = uModel * aPosition;\n}"
     },
     "line": {
       "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\n\nin vec4 vColor;\n\nout vec4 fragColor;\n\nvoid main () {\nfragColor = vColor;\n}",
@@ -665,7 +665,7 @@ var GUM3D = (function (exports) {
     },
     "line2": {
       "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform vec3 uEye;\n\nin vec4 vColor;\n\nout vec4 fragColor;\n\nvoid main () {\nfragColor = vColor;\n}",
-      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uNear;\nuniform float uFar;\nuniform float uAspect;\nuniform float uObjectId;\n\nin vec3 aPosition;\nin vec4 aColor;\nin vec4 aRegister1; // .xyz is next\nin vec3 aNormal;    // .x is thickness\n// .y is corner index\n\nout vec4 vColor;\n\n\n/**\n*\n*/\nvoid main () {\nmat4 mvp = uProjection * uView * uModel;\nvec2 aspect = vec2(uAspect, 1.0);\n\nfloat thickness = aNormal.x;\nfloat orientation = aNormal.y;\n\nfloat extension = thickness * 0.25;\n\nvec4 current = mvp * vec4(aPosition.xyz, 1.0);\nvec4 next = mvp * vec4(aRegister1.xyz, 1.0);\n\n// could use z component to scale by distance.\nvec2 currentScreen = current.xy / current.w;\nvec2 nextScreen = next.xy / next.w;\n\nvec2 lineDir = normalize(nextScreen - currentScreen);\n\n\nvec2 normal = vec2(-lineDir.y, lineDir.x) * 0.5 * thickness;\n\nnormal.x /= uAspect;\n\n\nif (aNormal.y < 1.0) {\n\ncurrent.xy -= normal;\ncurrent.xy -= lineDir * extension;\ngl_Position = current;\n\n} else if (aNormal.y < 2.0) {\n\ncurrent.xy += normal;\ncurrent.xy -= lineDir * extension;\ngl_Position = current;\n\n} else if (aNormal.y < 3.0) {\n\nnext.xy -= normal;\nnext.xy += lineDir * extension;\ngl_Position = next;\n\n} else {\n\nnext.xy += normal;\nnext.xy += lineDir * extension;\ngl_Position = next;\n\n}\n\nvColor = aColor;\n}"
+      "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uNear;\nuniform float uFar;\nuniform float uAspect;\nuniform float uObjectId;\nuniform vec2 uScreenSize;\n\nin vec3 aPosition;\nin vec4 aColor;\nin vec4 aRegister1; // .xyz is next\nin vec3 aNormal;    // .x is thickness\n// .y is corner index\n\nout vec4 vColor;\n\n\n/**\n*\n*/\nvoid main () {\nmat4 mvp = uProjection * uView * uModel;\n\nfloat thickness = aNormal.x;\nfloat orientation = aNormal.y;\n\n// Calculate the screen space\nvec4 current = mvp * vec4(aPosition.xyz, 1.0);\nvec4 next = mvp * vec4(aRegister1.xyz, 1.0);\n\nvec2 currentScreen = current.xy / current.w;\nvec2 nextScreen = next.xy / next.w;\n\nvec2 lineDir = normalize(nextScreen - currentScreen);\nvec2 normal = vec2(-lineDir.y, lineDir.x);\n\nfloat persp = current.w;\nif (orientation > 1.5) {\npersp = next.w;\n}\n\nvec2 offset = persp * thickness * normal / uScreenSize;\nvec2 extension = 0.25 * persp * thickness * lineDir / uScreenSize;\n\nif (orientation < 1.0) {\n\ncurrent.xy += -offset - extension;\ngl_Position = current;\n\n} else if (orientation < 2.0) {\n\ncurrent.xy += +offset - extension;\ngl_Position =  current;\n\n} else if (orientation < 3.0) {\n\nnext.xy += -offset + extension;\ngl_Position = next;\n\n} else {\n\nnext.xy += +offset + extension;\ngl_Position = next;\n\n}\nvColor = aColor;\n}"
     },
     "lit": {
       "frag": "#version 300 es\n\nprecision mediump float;\n\nin vec4 vColor;\nin vec3 vNormal;\n\nout vec4 fragColor;\n\nvoid main() {\nif (!gl_FrontFacing) {\nfragColor = vec4(1.0, 0.0, 0.0, 1.0);\nreturn;\n}\n\nvec3 l = normalize(vec3(1.0, 1.0, 1.0));\nfloat ndotl = dot(normalize(vNormal), l);\n\nndotl = ndotl * 0.5 + 0.5;\nndotl *= ndotl;\n\nndotl += 0.3;\nndotl = clamp(ndotl, 0.0, 1.0);\n\n\nfragColor = vec4(vColor.rgb * ndotl, 1.0);\n\n\n}",
@@ -674,23 +674,32 @@ var GUM3D = (function (exports) {
     "noise": {
       "glsl": "float rand (float n) {\nreturn fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\nreturn fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\nfloat pInt = floor(p);\nfloat pFract = fract(p);\nreturn mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\nvec2 d = vec2(0.0, 1.0);\nvec2 b = floor(p);\nvec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\nreturn mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}"
     },
+    "post-bloom": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\nuniform float uThreshold;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat brightness (vec3 col) {\n  return dot(col, vec3(0.2126, 0.7152, 0.0722));\n}\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uScreenSize;\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\n\n\nvec4 sampleCol = texture(uMainTex, sampleCoord);\nfloat mask = step(uThreshold, brightness(sampleCol.rgb));\n\n\naccum += sampleCol.rgb * mask * uWeight;\n\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\n\nfragColor = col;\nfragColor.rgb += avg;\nfloat mask = step(uThreshold, brightness(col.rgb));\n\n// fragColor = vec4(vec3(mask), 1.0);\nfragColor = vec4(avg, 1.0);\n\n\n}"
+    },
     "post-blur": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uTexSize;\n\n\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\naccum += texture(uMainTex, sampleCoord).rgb * uWeight;\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\nfragColor = vec4(avg, 1.0);\n\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uScreenSize;\n\n\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\naccum += texture(uMainTex, sampleCoord).rgb * uWeight;\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\nfragColor = vec4(avg, 1.0);\n\n}"
     },
     "post-chromatic": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec2 rOff = vec2(0.0, 4.0);\nvec2 gOff = vec2(0.0, 0.0);\nvec2 bOff = vec2(4.0, 0.0);\nvec2 pixelSize = 1.0 / uTexSize;\nvec4 col = texture(uMainTex, vTexCoord);\n\nfragColor = col;\nfloat r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\nfloat g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\nfloat b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\nfragColor.rgb = vec3(r, g, b);\n\n// vec2 uv = vTexCoord;\n// uv *= 1.0 - uv.xy;\n\n// float vig = uv.x * uv.y * 15.0;\n\n// vig = pow(vig, 0.03);\n\n// fragColor.rgb *= vig;\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec2 rOff = vec2(0.0, 4.0);\nvec2 gOff = vec2(0.0, 0.0);\nvec2 bOff = vec2(4.0, 0.0);\nvec2 pixelSize = 1.0 / uScreenSize;\nvec4 col = texture(uMainTex, vTexCoord);\n\nfragColor = col;\nfloat r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\nfloat g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\nfloat b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\nfragColor.rgb = vec3(r, g, b);\n\n// vec2 uv = vTexCoord;\n// uv *= 1.0 - uv.xy;\n\n// float vig = uv.x * uv.y * 15.0;\n\n// vig = pow(vig, 0.03);\n\n// fragColor.rgb *= vig;\n}"
     },
     "post-chromatic2": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nfloat rand (float n) {\n  return fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\n  return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\n  float pInt = floor(p);\n  float pFract = fract(p);\n  return mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\n  vec2 d = vec2(0.0, 1.0);\n  vec2 b = floor(p);\n  vec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\n  return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}\n\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec2 rOff = vec2(bnoise(col.x * 2.0), bnoise(col.y * 5.0));\nvec2 gOff = vec2(bnoise(col.y * -6.3), bnoise(col.z * 300.0));\nvec2 bOff = vec2(bnoise(col.z * -6.3), bnoise(col.x * 1.4));\nvec2 pixelSize = 1.0 / uTexSize;\n\nfragColor = col;\nfloat r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\nfloat g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\nfloat b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\nfragColor.rgb = vec3(r, g, b);\n\n// vec2 uv = vTexCoord;\n// uv *= 1.0 - uv.xy;\n\n// float vig = uv.x * uv.y * 15.0;\n\n// vig = pow(vig, 0.03);\n\n// fragColor.rgb *= vig;\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nfloat rand (float n) {\n  return fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\n  return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\n  float pInt = floor(p);\n  float pFract = fract(p);\n  return mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\n  vec2 d = vec2(0.0, 1.0);\n  vec2 b = floor(p);\n  vec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\n  return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}\n\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec2 rOff = vec2(bnoise(col.x * 2.0), bnoise(col.y * 5.0));\nvec2 gOff = vec2(bnoise(col.y * -6.3), bnoise(col.z * 300.0));\nvec2 bOff = vec2(bnoise(col.z * -6.3), bnoise(col.x * 1.4));\nvec2 pixelSize = 1.0 / uScreenSize;\n\nfragColor = col;\nfloat r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\nfloat g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\nfloat b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\nfragColor.rgb = vec3(r, g, b);\n\n// vec2 uv = vTexCoord;\n// uv *= 1.0 - uv.xy;\n\n// float vig = uv.x * uv.y * 15.0;\n\n// vig = pow(vig, 0.03);\n\n// fragColor.rgb *= vig;\n}"
+    },
+    "post-color-overlay": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform vec4 uBlendColor;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfragColor = col;\nfragColor.rgb = mix(col, uBlendColor, uBlendColor.a).rgb;\n}"
     },
     "post-dither": {
-      "frag": "#version 300 es\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\n\n// Custom uniforms.\nuniform vec4 uColorA;\nuniform vec4 uColorB;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat rand (float n) {\n  return fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\n  return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\n  float pInt = floor(p);\n  float pFract = fract(p);\n  return mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\n  vec2 d = vec2(0.0, 1.0);\n  vec2 b = floor(p);\n  vec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\n  return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}\n\nconst int[64] BAYER64 = int[](\n0, 32, 8, 40, 2, 34, 10, 42,    /* 8x8 Bayer ordered dithering */\n48, 16, 56, 24, 50, 18, 58, 26, /* pattern. Each input pixel */\n12, 44, 4, 36, 14, 46, 6, 38,   /* is scaled to the 0..63 range */\n60, 28, 52, 20, 62, 30, 54, 22, /* before looking in this table */\n3, 35, 11, 43, 1, 33, 9, 41,    /* to determine the action. */\n51, 19, 59, 27, 49, 17, 57, 25,\n15, 47, 7, 39, 13, 45, 5, 37,\n63, 31, 55, 23, 61, 29, 53, 21\n);\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat brightness = dot(col.rgb, vec3(0.2126, 0.7152, 0.0722));\n\nvec2 xy = vTexCoord * uTexSize;\n\nint x = int(mod(xy.x, 8.0));\nint y = int(mod(xy.y, 8.0));\n\nfloat n = float(BAYER64[y * 8 + x]);\n\nbrightness += (bnoise(vTexCoord * uTexSize) * 2.0 - 1.0) * 0.0;\n\nfloat pix = step(n, brightness * 63.0);\n\n\nvec3 rgb = mix(uColorB.rgb,  uColorA.rgb, pix);\nfragColor = vec4(rgb, 1.0);\n// fragColor = vec4(vec3(noise), 1.0);\n\n// fragColor = vec4(gl_FragCoord.xy / uTexSize, 0.0, 1.0);\n\n}"
+      "frag": "#version 300 es\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform vec4 uColorA;\nuniform vec4 uColorB;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat rand (float n) {\n  return fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\n  return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\n  float pInt = floor(p);\n  float pFract = fract(p);\n  return mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\n  vec2 d = vec2(0.0, 1.0);\n  vec2 b = floor(p);\n  vec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\n  return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}\n\nconst int[64] BAYER64 = int[](\n0, 32, 8, 40, 2, 34, 10, 42,    /* 8x8 Bayer ordered dithering */\n48, 16, 56, 24, 50, 18, 58, 26, /* pattern. Each input pixel */\n12, 44, 4, 36, 14, 46, 6, 38,   /* is scaled to the 0..63 range */\n60, 28, 52, 20, 62, 30, 54, 22, /* before looking in this table */\n3, 35, 11, 43, 1, 33, 9, 41,    /* to determine the action. */\n51, 19, 59, 27, 49, 17, 57, 25,\n15, 47, 7, 39, 13, 45, 5, 37,\n63, 31, 55, 23, 61, 29, 53, 21\n);\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat brightness = dot(col.rgb, vec3(0.2126, 0.7152, 0.0722));\n\nvec2 xy = vTexCoord * uScreenSize;\n\nint x = int(mod(xy.x, 8.0));\nint y = int(mod(xy.y, 8.0));\n\nfloat n = float(BAYER64[y * 8 + x]);\n\nbrightness += (bnoise(vTexCoord * uScreenSize) * 2.0 - 1.0) * 0.0;\n\nfloat pix = step(n, brightness * 63.0);\n\n\nvec3 rgb = mix(uColorB.rgb,  uColorA.rgb, pix);\nfragColor = vec4(rgb, 1.0);\n// fragColor = vec4(vec3(noise), 1.0);\n\n// fragColor = vec4(gl_FragCoord.xy / uScreenSize, 0.0, 1.0);\n\n}"
     },
     "post-outline": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\nfloat z = d * 2.0 - 1.0;\nreturn (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\nvec4 gradient(sampler2D tex, vec2 coord) {\nvec2 offset = vec2(1.0, 1.0) / uTexSize;\n\nvec4 xSum = vec4(0.0);\nvec4 ySum = vec4(0.0);\n\nxSum += texture(tex, coord + vec2(-offset.x, 0.0)) * -1.0;\nxSum += texture(tex, coord + vec2(+offset.x, 0.0));\n\nySum += texture(tex, coord + vec2(0.0, -offset.y)) * -1.0;\nySum += texture(tex, coord + vec2(0.0, +offset.y));\n\nreturn sqrt(xSum * xSum + ySum * ySum);\n}\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat depth = texture(uDepthTex, vTexCoord).r;\nfloat lDepth = linearDepth(depth, uNear, uFar);\n\nvec4 colGrad = gradient(uMainTex, vTexCoord);\nvec4 depthGrad = gradient(uDepthTex, vTexCoord);\n\nfloat idQ = mix(colGrad.r, 0.0, smoothstep(0.0, 0.3, lDepth));\n\nfloat idEdge = step(0.0001, colGrad.x);\n\nfloat depthQ = mix(0.0, 100.0, smoothstep(0.0, 0.01, col.g));\n\nfloat depthEdge = step(0.01, depthGrad.r);\n\nfloat normEdge = step(0.3, colGrad.g);\n\nfloat edge = max(idEdge, depthEdge);\n\nvec3 grad = vec3(idEdge, depthEdge, 0.0);\n\nfloat fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));\n\n// float surfaceId = round(col.r * 20.0);\nfragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);\n// fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);\n// fragColor.a = 1.0;\n\nfragColor = vec4(vec3(edge * 0.4 + 0.1), 1.0);\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n\n// fragColor = vec4(mix(vec3(1.0, 1.0, 0.2), vec3(0.1, 0.1, 0.1), edge), 1.0);\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n// fragColor = vec4(vec3(idEdge), 1.0);\n// fragColor = vec4(colGrad.ggg, 1.0);\n// fragColor = vec4(1.0, 0.0, 1.0, 1.0);\n// fragColor = vec4(vec3(fog), 1.0);\n\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\nuniform float uNear;\nuniform float uFar;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\nfloat z = d * 2.0 - 1.0;\nreturn (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\nvec4 gradient(sampler2D tex, vec2 coord) {\nvec2 offset = vec2(1.0, 1.0) / uScreenSize;\n\nvec4 xSum = vec4(0.0);\nvec4 ySum = vec4(0.0);\n\nxSum += texture(tex, coord + vec2(-offset.x, 0.0)) * -1.0;\nxSum += texture(tex, coord + vec2(+offset.x, 0.0));\n\nySum += texture(tex, coord + vec2(0.0, -offset.y)) * -1.0;\nySum += texture(tex, coord + vec2(0.0, +offset.y));\n\nreturn sqrt(xSum * xSum + ySum * ySum);\n}\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat depth = texture(uDepthTex, vTexCoord).r;\nfloat lDepth = linearDepth(depth, uNear, uFar);\n\nvec4 colGrad = gradient(uMainTex, vTexCoord);\nvec4 depthGrad = gradient(uDepthTex, vTexCoord);\n\nfloat idQ = mix(colGrad.r, 0.0, smoothstep(0.0, 0.3, lDepth));\n\nfloat idEdge = step(0.0001, colGrad.x);\n\nfloat depthQ = mix(0.0, 100.0, smoothstep(0.0, 0.01, col.g));\n\nfloat depthEdge = step(0.01, depthGrad.r);\n\nfloat normEdge = step(0.3, colGrad.g);\n\nfloat edge = max(idEdge, depthEdge);\n\nvec3 grad = vec3(idEdge, depthEdge, 0.0);\n\nfloat fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));\n\n// float surfaceId = round(col.r * 20.0);\nfragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);\n// fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);\n// fragColor.a = 1.0;\n\nfragColor = vec4(vec3(edge * 0.4 + 0.1), 1.0);\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n\n// fragColor = vec4(mix(vec3(1.0, 1.0, 0.2), vec3(0.1, 0.1, 0.1), edge), 1.0);\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n// fragColor = vec4(vec3(idEdge), 1.0);\n// fragColor = vec4(colGrad.ggg, 1.0);\n// fragColor = vec4(1.0, 0.0, 1.0, 1.0);\n// fragColor = vec4(vec3(fog), 1.0);\n\n}"
     },
     "post-outline2": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uTexSize;\nuniform float uNear;\nuniform float uFar;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\nfloat z = d * 2.0 - 1.0;\nreturn (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\nvec4 gradient(sampler2D tex, vec2 coord) {\nvec2 offset = vec2(1.0, 1.0) / uTexSize;\n\nvec4 xSum = vec4(0.0);\nvec4 ySum = vec4(0.0);\n\nxSum += texture(tex, coord + vec2(-offset.x, 0.0)) * -1.0;\nxSum += texture(tex, coord + vec2(+offset.x, 0.0));\n\nySum += texture(tex, coord + vec2(0.0, -offset.y)) * -1.0;\nySum += texture(tex, coord + vec2(0.0, +offset.y));\n\nreturn sqrt(xSum * xSum + ySum * ySum);\n}\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat depth = texture(uDepthTex, vTexCoord).r;\nfloat lDepth = linearDepth(depth, uNear, uFar);\n\nvec4 colGrad = gradient(uMainTex, vTexCoord);\nvec4 depthGrad = gradient(uDepthTex, vTexCoord);\n\nfloat idQ = mix(colGrad.r, 0.0, smoothstep(0.0, 0.3, lDepth));\n\nfloat idEdge = step(0.0001, colGrad.x);\n\nfloat depthQ = mix(0.0, 100.0, smoothstep(0.0, 0.01, col.g));\n\nfloat depthEdge = step(0.01, depthGrad.r);\n\nfloat normEdge = step(0.3, colGrad.g);\n\nfloat edge = max(idEdge, depthEdge);\n\nvec3 grad = vec3(idEdge, depthEdge, 0.0);\n\nfloat fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));\n\n// float surfaceId = round(col.r * 20.0);\nfragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);\n// fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);\n// fragColor.a = 1.0;\n\nfragColor.rgb = mix(col.rgb, vec3(0.1), edge);\nfragColor.a = 1.0;\n\n\n\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n// fragColor = vec4(vec3(depthEdge), 1.0);\n// fragColor = vec4(colGrad.ggg, 1.0);\n// fragColor = vec4(1.0, 0.0, 1.0, 1.0);\n// fragColor = vec4(vec3(fog), 1.0);\n\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\nuniform float uNear;\nuniform float uFar;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\nfloat z = d * 2.0 - 1.0;\nreturn (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\nvec4 gradient(sampler2D tex, vec2 coord) {\nvec2 offset = vec2(1.0, 1.0) / uScreenSize;\n\nvec4 xSum = vec4(0.0);\nvec4 ySum = vec4(0.0);\n\nxSum += texture(tex, coord + vec2(-offset.x, 0.0)) * -1.0;\nxSum += texture(tex, coord + vec2(+offset.x, 0.0));\n\nySum += texture(tex, coord + vec2(0.0, -offset.y)) * -1.0;\nySum += texture(tex, coord + vec2(0.0, +offset.y));\n\nreturn sqrt(xSum * xSum + ySum * ySum);\n}\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat depth = texture(uDepthTex, vTexCoord).r;\nfloat lDepth = linearDepth(depth, uNear, uFar);\n\nvec4 colGrad = gradient(uMainTex, vTexCoord);\nvec4 depthGrad = gradient(uDepthTex, vTexCoord);\n\nfloat idQ = mix(colGrad.r, 0.0, smoothstep(0.0, 0.3, lDepth));\n\nfloat idEdge = step(0.0001, colGrad.x);\n\nfloat depthQ = mix(0.0, 100.0, smoothstep(0.0, 0.01, col.g));\n\nfloat depthEdge = step(0.01, depthGrad.r);\n\nfloat normEdge = step(0.3, colGrad.g);\n\nfloat edge = max(idEdge, depthEdge);\n\nvec3 grad = vec3(idEdge, depthEdge, 0.0);\n\nfloat fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));\n\n// float surfaceId = round(col.r * 20.0);\nfragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);\n// fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);\n// fragColor.a = 1.0;\n\nfragColor.rgb = mix(col.rgb, vec3(0.1), edge);\nfragColor.a = 1.0;\n\n\n\n\n// fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n// fragColor = vec4(vec3(depthEdge), 1.0);\n// fragColor = vec4(colGrad.ggg, 1.0);\n// fragColor = vec4(1.0, 0.0, 1.0, 1.0);\n// fragColor = vec4(vec3(fog), 1.0);\n\n}"
+    },
+    "post-tex-scale": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform vec4 uTexOffset;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec2 texCoord = vTexCoord * 2.0 - 1.0;\ntexCoord = (texCoord * uTexOffset.xy) + uTexOffset.zw;\n\ntexCoord = (texCoord + 1.0) * 0.5;\n\nfragColor = texture(uMainTex, texCoord);\n}"
     },
     "post": {
       "vert": "#version 300 es\n\nin vec2 aPosition;\nout vec2 vTexCoord;\n\nvoid main() {\nvTexCoord = (aPosition + 1.0) / 2.0;\ngl_Position = vec4(aPosition, 0.0, 1.0);\n}"
@@ -702,6 +711,9 @@ var GUM3D = (function (exports) {
     "unlit": {
       "frag": "#version 300 es\n\nprecision mediump float;\n\nin vec4 vColor;\nout vec4 fragColor;\n\nvoid main() {\nfragColor = vec4(vColor.rgb, 1.0);\n}",
       "vert": "#version 300 es\n\nuniform mat4 uModel;\nuniform mat4 uView;\nuniform mat4 uProjection;\n\nuniform float uObjectId;\n\nin vec4 aPosition;\nin vec3 aNormal;\nin vec4 aColor;\nin vec4 aRegister1;\nin float aSurfaceId;\n\nout vec4 vColor;\n\nvec3 hashId (float id)\n{\nfloat r = fract(mod(id * 25738.32498, 456.221));\nfloat g = fract(mod(id * 565612.08321, 123.1231));\nfloat b = fract(mod(id * 98281.32498, 13.221));\nreturn vec3(r, g, b);\n}\n\nvoid main()\n{\nmat4 modelView = uView * uModel;\nvec4 pos = aPosition;\npos.xyz += aRegister1.xyz;\n\ngl_Position = uProjection * uView * uModel * pos;\n\n\nvec3 vertexColor = aColor.rgb;\nvec3 localNormal = aNormal.rgb * 0.5 + 0.5;\nvec3 surfaceId = hashId(uObjectId + aSurfaceId);\n\nvColor.a = 1.0;\nvColor = aColor;\n}"
+    },
+    "utils": {
+      "glsl": "float brightness (vec3 col) {\nreturn dot(col, vec3(0.2126, 0.7152, 0.0722));\n}\n"
     }
   };
 
@@ -2710,8 +2722,8 @@ var GUM3D = (function (exports) {
   class EdgeCollection {
     constructor (edges, color) {
       this.edges = edges;
-      this.color = color;
-      this.thickness = 0.2;
+      this.color = color || [1, 1, 1, 1];
+      this.thickness = 2;
       this.name = 'edge_collection_' + (Date.now() % 253); 
 
     }
@@ -2863,16 +2875,38 @@ var GUM3D = (function (exports) {
     }
   }
 
+  const CHARS = 'abcdefghijfklmnopqrstuvwxyzABCDEFGHIJFKLMNOPQRSTUVWXYZ0123456789_@!';
+  const buffer = new Uint8Array(128);
+  let index = buffer.byteLength;
+
+  function fillBuffer () {
+    crypto.getRandomValues(buffer);
+    index = 0;
+  }
+
+  function uuid (length = 6) {
+    if (index + length >= buffer.byteLength) fillBuffer();
+    let id = '';
+    while(id.length < length) {
+      id += CHARS[buffer[index] % CHARS.length];
+      ++ index;
+    }
+    return id;
+  }
+
   /**
    * A single node (gameObject).
    */
 
+  // Track a hidded render node id.
+  let id = 0;
 
   class Node {
 
     constructor(name, geometry, transform) {
       this.name = name;
-      this.id = this.generateId();
+      this.id = uuid();
+      this.renderId = id++;
       this.geometry = geometry || null;
       this.transform = transform || new Transform();
       this.visible = true;
@@ -2880,7 +2914,7 @@ var GUM3D = (function (exports) {
       this.children = [];
       this._worldMatrix = create();
       this.uniforms = {
-        uObjectId: this.id,
+        uObjectId: this.renderId,
         uModel: this._worldMatrix,
         uTex: 'none',
       };
@@ -2956,16 +2990,6 @@ var GUM3D = (function (exports) {
       return node;
     }
 
-
-    generateId () {
-      let id = '';
-      for (let i = 0; i < 4; i++) {
-        id += Math.floor(Math.random() * 10);
-      }
-      return id;
-    }
-
-
     _removeChild (node) {
       this.children = this.children.filter(n => n !== node);
     }
@@ -2986,7 +3010,8 @@ var GUM3D = (function (exports) {
       }
 
       const geometry = this.geometry ? 'm.' + this.geometry : '';
-      output += `<em>${this.name}</em> : ${geometry}`;
+      const name = this.name ? this.name : 'id: ' + this.id;
+      output += `<em>${name}</em> : ${geometry}`;
       output += '\n';
       if (this.children) {
         output += this.children.map(c => c._print('', depth + 1)).join('');
@@ -3174,8 +3199,8 @@ var GUM3D = (function (exports) {
   };
 
   /**
-   * @fileoverview The RenderContext class creates a helpful level of abstraction 
-   *     between an app and the web gl rendering context.
+   * @file The RendererGL2 class provides the main interface between the main 
+   * gum instance and the lower-level web gl calls.
    */
 
 
@@ -3190,23 +3215,36 @@ var GUM3D = (function (exports) {
      * @returns {RenderContext} The new render context instance.
      */
     constructor (canvas, w, h, config) {
-
       /**
-       * The canvas.
+       * The renderer's canvas.
        * @type {HTMLCanvasElement}
        */
       this.canvas = canvas;
-      // this.canvas.width = w; 
-      // this.canvas.height = h;
       
       /**
-       * The aspect ratio.
+       * The width of the renderer. Use the .resize(w, h) method to change.
+       * @readyonly
+       * @type {number}
+       */ 
+      this.w = w; 
+      
+      /**
+       * The height of the renderer. Use the .resize(w, h) method to change.
+       * @readyonly
+       * @type {number}
+       */ 
+      this.h = h;
+      
+      /**
+       * The aspect ratio. Use the .resize(w, h) method to change.
+       * @readyonly 
        * @type {number}
        */
-      this.aspectRatio = w / h;
+      this.aspectRatio = this.w / this.h;
 
       /**
        * Settings for the WebGl2 context.
+       * @type {object}
        */
       this.glSettings = {
         // Frame buffers do not support antialias, so skip it.
@@ -3246,6 +3284,7 @@ var GUM3D = (function (exports) {
 
       /**
        * The available shader programs.
+       * @type {object}
        */
       this.shaderPrograms = {};
 
@@ -3257,6 +3296,7 @@ var GUM3D = (function (exports) {
 
       /**
        * The render targets.
+       * @type {object}
        */
       this.renderTargets = {
         'canvas': null,
@@ -3264,32 +3304,38 @@ var GUM3D = (function (exports) {
       };
 
       /**
-       * The default clear color.
+       * The default clear color. Rgba[0,1] array.
+       * @type {arrray}
        */
       this.clearColor = [0, 0, 0, 1];
       
       /**
        * The name of the active program.
+       * @type {string}
        */
       this.activeProgram;
 
       /**
        * The name of the active render target.
+       * @type {string}
        */
       this.renderTarget;
 
       /**
        * The last used texture unit when binding frame buffer textures.
+       * @type {number}
+       * @readonly
        */
       this.textureUnitIndex = 0;
 
       /**
-       * The maximun number of samplers available.
+       * The maximun number of samplers available on the current device.
        */ 
       this.MAX_TEX_UNIT = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
       /**
        * The GL uniform setter function keyed by the GL type.
+       * @type {object}
        */
       this.uniformTypes = {
         'FLOAT'      : 'uniform1f',
@@ -3301,7 +3347,7 @@ var GUM3D = (function (exports) {
       };
       
       /**
-       * The available meshes.
+       * The available meshes keyed by id.
        */
       this.meshes = {};
 
@@ -3328,8 +3374,15 @@ var GUM3D = (function (exports) {
         this.attributeInfoByName[attrib.name].index = i;
       });
 
+      /**
+       * A hash to track a block of shared uniforms between programs. Useful 
+       * for things like view matrices, sky colors etc.
+       */ 
       this.globalUniformBlock = {};
 
+      /**
+       * Gl resource deleters by constructor name.
+       */ 
       this.deleteLookup = {
         'WebGLProgram' : 'deleteProgram',
         'WebGLTexture' : 'deleteTexture',
@@ -3359,15 +3412,33 @@ var GUM3D = (function (exports) {
 
 
     /**
+     * Resize the the renderer and any render targets (frame buffers) to match 
+     * the gum canvas size.
+     * @param {number} w The width.
+     * @param {number} h The height.
+     */ 
+    resize (w, h) {
+      if (w === this.w && h === this.h) return;
+      this.w = Math.max(w, 1);
+      this.h = Math.max(h, 1);
+      this.aspectRatio = this.w / this.h;
+      this.canvas.width = this.w;
+      this.canvas.height = this.h;
+      for (let targetName in this.renderTargets) {
+        this.updateRenderTarget(targetName);
+      }
+    }
+
+
+    /**
      * Turn depth testing on or off.
      * @param {boolean} flag Whether depth testing is enabled.
      */
     depthTest (flag) {
-      const gl = this.gl;
       this._configuration.depthTest = flag;
-      gl.disable(gl.DEPTH_TEST);
+      this.gl.disable(this.gl.DEPTH_TEST);
       if (flag) {
-        gl.enable(gl.DEPTH_TEST);
+        this.gl.enable(this.gl.DEPTH_TEST);
       }
     }
     
@@ -3377,9 +3448,8 @@ var GUM3D = (function (exports) {
      * @param {boolean} flag Whether depth writing is enabled.
      */
     depthWrite (flag) {
-      const gl = this.gl;
       this._configuration.depthWrite = flag;
-      gl.depthMask(flag);
+      this.gl.depthMask(flag);
     }
 
 
@@ -3441,7 +3511,7 @@ var GUM3D = (function (exports) {
      */
     setProgram (program) {
       if (!this.shaderPrograms[program]) {
-        console.warn('No program found:', mesh.program);
+        console.warn('No program found:', program);
         return;
       }
       
@@ -3490,7 +3560,7 @@ var GUM3D = (function (exports) {
      * @param {boolean} depth Whether to create a depth texture as well.
      */
     createRenderTarget (name, depth) {
-      const target = {};
+      const target = { w: this.w, h: this.h };
       const gl = this.gl;
 
       target.colorTexUnit = this.textureUnitIndex;
@@ -3507,10 +3577,8 @@ var GUM3D = (function (exports) {
 
       // Make a texture to be the color of the target.
       gl.bindTexture(gl.TEXTURE_2D, target.colorTexture);
-
-      console.log('CreateRenderTarget', this.canvas.width, this.canvas.height);
       
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.canvas.width, this.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.w, this.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
       
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S,     gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T,     gl.CLAMP_TO_EDGE);
@@ -3538,7 +3606,7 @@ var GUM3D = (function (exports) {
         gl.activeTexture(gl.TEXTURE0 + target.depthTexUnit);
         gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.canvas.width, this.canvas.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.w, this.h, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
         
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -3551,32 +3619,43 @@ var GUM3D = (function (exports) {
       this.renderTargets[name] = target;
     }
 
+
+    /**
+     * Update the dimensions of a render target by name. Scales it to match the 
+     * current canvas.
+     * @param 
+     */ 
     updateRenderTarget (name) {
-      const gl = this.gl;
       const target = this.renderTargets[name];
       if (!target) return;
-      
-      console.log('UpdateRenderTarget', this.canvas.width, this.canvas.height);
+
+      const gl = this.gl;
+
+      if (target.w === this.w && target.h === this.h) {
+        return;
+      }
+
+      target.w = this.w;
+      target.h = this.h;
 
       gl.bindFramebuffer(gl.FRAMEBUFFER, target.frameBuffer);
 
-      // TODO : Someway of saving the frame buffer tex2d data to avoid flickering.
+      // TODO : Option to keep the contents of the frame bufer.
       if (target.colorTexture) {
         gl.bindTexture(gl.TEXTURE_2D, target.colorTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.canvas.width, this.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.w, this.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.colorTexture, 0);
         gl.bindTexture(gl.TEXTURE_2D, null);
       }
 
       if (target.depthTexture) {
         gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.canvas.width, this.canvas.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.w, this.h, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, target.depthTexture, 0);
         gl.bindTexture(gl.TEXTURE_2D, null);
       }
 
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
     }
 
 
@@ -3710,7 +3789,7 @@ var GUM3D = (function (exports) {
 
     /**
      * Enforce an identical attribute layout across the programs.
-     * @param {*} program 
+     * @param {WebGLProgram} program 
      */
     bindVertexAttributeLocations (program) {
       for (let i = 0; i < this.vertexAttributes.length; i++) {
@@ -3719,8 +3798,23 @@ var GUM3D = (function (exports) {
       }
     }
 
-    attribsToVao (attribs) {
+
+    /**
+     * Convert attribute array to a vertex array object.
+     * @param {object} attribs An object containing vertex data in the format:
+     * @param {Float32Array} attribs.position
+     * @param {Float32Array} attribs.normal
+     *     ... any other vertex attributes.
+     * @returns {WebGLVertexArrayObject}
+     */ 
+    _createVao (attribs) {
       const vao = this.gl.createVertexArray();
+      this._bufferAttribs(vao, attribs);
+      return vao;
+    }
+    
+
+    _bufferAttribs (vao, attribs) {
       this.gl.bindVertexArray(vao);
 
       for (const [attrib, data] of Object.entries(attribs)) {
@@ -3743,34 +3837,6 @@ var GUM3D = (function (exports) {
       }
 
       this.gl.bindVertexArray(null);
-      return vao;
-    }
-    
-
-    _bufferAttribs (vao, attribs) {
-      const gl = this.gl;
-
-      gl.bindVertexArray(vao);
-
-      for (const [attrib, data] of Object.entries(attribs)) {
-
-        const attribName = this._prefixAttribName(attrib);
-        const attribInfo = this.attributeInfoByName[attribName];
-        
-        if (!attribInfo) {
-          continue;
-        }
-
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-        
-        const { index, size, type, normalized } = attribInfo;
-        gl.vertexAttribPointer(index, size, gl[type], normalized, 0, 0);
-        gl.enableVertexAttribArray(index);
-      }
-
-      gl.bindVertexArray(null);
     }
 
 
@@ -3788,9 +3854,14 @@ var GUM3D = (function (exports) {
     }
 
     
+    /**
+     * Add a retained-mode mesh to the renderer.
+     * @param {Mesh|object} 
+     */ 
     addMesh (meshData) {
       let data;
       
+      // Flatten a mesh 
       if (meshData.render) {  
         data = data.render();
       } else {
@@ -3800,7 +3871,6 @@ var GUM3D = (function (exports) {
       let name = data.name || 'mesh';
       name = this._getMeshId(name);
 
-
       if (this.meshes[name]) { 
         this.updateMesh(name, data);
         return;
@@ -3808,12 +3878,9 @@ var GUM3D = (function (exports) {
 
       const mesh = { data };
       data.name = name;
-      mesh.vao = this.gl.createVertexArray();
+      mesh.vao = this._createVao(data.attribs);
 
       mesh.program = data.program ?? null;
-
-      console.log('add mesh: ', name);
-      this._bufferAttribs(mesh.vao, data.attribs);
       
       this.meshes[name] = mesh;
       return name;
@@ -3879,7 +3946,7 @@ var GUM3D = (function (exports) {
       }
     }
 
-
+    
     clear (color) {
       this.gl.clearColor(...color);
       this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -3896,7 +3963,6 @@ var GUM3D = (function (exports) {
         if (typeof value !== 'number') {
           continue;
         }
-
         if (value === pointer) {
           console.log(key);
           return key;
@@ -3971,18 +4037,24 @@ var GUM3D = (function (exports) {
     blitBuffer (src, target) {
       this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, src);
       this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, target);
-      let w = this.canvas.width;
-      let h = this.canvas.height;
+      let w = this.w;
+      let h = this.h;
       if (w > 0 && h > 0) {
         this.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST);      
       }
     }
 
+
+    /**
+     * Free up gl (or js) memory for a single object.
+     */ 
     _disposeGLEntity (entity) {
+      if (!entity) return;
       const constructor = entity.constructor.name;
       if (this.deleteLookup[constructor]) {
-        console.log('DELETE:', constructor);
         this.gl[this.deleteLookup[constructor]](entity);
+      } else {
+        entity = null;
       }
     }
 
@@ -3991,23 +4063,30 @@ var GUM3D = (function (exports) {
      * Dispose of any gl resources.
      */ 
     dispose () {
-      const gl = this.gl;
+      this.gl;
       console.log('disposeId', this.instanceId);
       for (let target of Object.values(this.renderTargets)) {
         if (!target) continue;
         for (let prop of Object.values(target)) {
-          console.log(prop);
+          this._disposeGLEntity(prop);
         }
       }
-      for (let name in this.texturesByName) {
-        console.log('dispose -', name);
-        gl.deleteTexture(this.texturesByName[name].texture);
+      for (let tex of Object.values(this.texturesByName)) {
+        if (!tex) continue;
+        for (let prop of Object.values(tex)) {
+          this._disposeGLEntity(prop);
+        }
       }
-      for (let program in this.shaderPrograms) {
-
+      for (let prog of Object.values(this.shaderPrograms)) {
+        this._disposeGLEntity(prog);
+      }
+      for (let mesh of Object.values(this.meshes)) {
+        if (!mesh) continue;
+        for (let prop of Object.values(mesh)) {
+          this._disposeGLEntity(prop);
+        }
       }
     }
-    
   }
 
   /**
@@ -4574,16 +4653,7 @@ var GUM3D = (function (exports) {
       this.attrs.forEach((attr, i) => { this.attribIndices.set(attr, i); });
 
       /** The particle mesh for each instance. */
-      // this.particle = circle(16);
-
-      /** Bind and upload mesh to the gpu. */
-      // const verts = this.instance.attribs.position;
-      // this.vertexBuffer = this.gl.createBuffer();
-      // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
-      // this.gl.bufferData(this.gl.ARRAY_BUFFER, verts, this.gl.DYNAMIC_DRAW, 0);
-
-      this.instanceVao = this.renderer.attribsToVao(this.instance.attribs);
-
+      this.instanceVao = this.renderer._createVao(this.instance.attribs);
 
       /** Shader attr pointer to the position. Position of the verts per instance. */
       this.posLoc = this.gl.getAttribLocation(this.renderer.shaderPrograms[this.program], 'aPosition');
@@ -4592,7 +4662,6 @@ var GUM3D = (function (exports) {
       this.colorLoc = this.gl.getAttribLocation(this.renderer.shaderPrograms[this.program], 'aColor');
 
       this.regLoc = this.gl.getAttribLocation(this.renderer.shaderPrograms[this.program], 'aRegister1');
-
 
       /** Whether we need to re-render */
       this.changed = true;
@@ -4686,224 +4755,7 @@ var GUM3D = (function (exports) {
       this.gl.enableVertexAttribArray(this.colorLoc);
 
       this.gl.drawArraysInstanced(this.gl.TRIANGLES, 0, this.instance.vertexCount, this.count);
-
-      
-
     }
-
-
-
-    /**
-     * Hightlight one category.
-     * @param {number} categoery The category index to select.
-     * @param {number} 0->1 amount of selection.
-     * 
-     */ 
-    selectCategory (category, amt) {
-
-      if (category === -1) {
-        for (let i = 0; i < this.selectionsByGroup.length; i++) {
-          this.selectionsByGroup[i] = amt;
-        }
-      }
-
-      this.selectionsByGroup[category] = amt; 
-      this.changed = true;
-    }
-
-    addMorph (name, positions) {
-      if (this.morphPointer === this.morphLimit) {
-        console.warn(`More than ${this.morphLimit} morphs added.`);
-        return;
-      }
-
-      this.morphs[name] = positions;
-      this.morphIndicesByName[name] = this.morphPointer;
-
-      for (let i = 0; i < this.count; i++) {
-
-
-        const index = (i * 3) % positions.length;
-        const x = positions[index];
-        const y = positions[index + 1];
-        const z = positions[index + 2];
-        // console.log([x, y, z]);
-
-        const xLoc = (i * this.gpuDataStride) + 8 + (4 * this.morphPointer);
-        const yLoc = (i * this.gpuDataStride) + 8 + (4 * this.morphPointer) + 1;
-        const zLoc = (i * this.gpuDataStride) + 8 + (4 * this.morphPointer) + 2;
-
-
-        this.gpuData[xLoc] = x;
-        this.gpuData[yLoc] = y;
-        this.gpuData[zLoc] = z;
-      }
-
-      this.morphPointer ++;
-    }
-
-    addRandomMorph () {
-      const random = [];
-
-      for (let i = 0; i < this.count / 3; i++) {
-        seed = i * 49734321;
-
-        const theta = dRand() * 2 * Math.PI;
-        const lift = dRand() * 2 * Math.PI;      const rad = dRand();
-        const x = Math.cos(theta) * rad;
-        const y = Math.sin(theta) * rad;
-        const z = Math.sin(lift) * rad;
-
-        random.push(x, y, z);
-      }
-
-      this.addMorph('random', random);
-    }
-
-    morph (target, amt) {
-      if (target === 'clear') {
-        this.currentMorphTargets = {};
-        this.changed = true;
-        return;
-      }
-
-      if (!this.morphs[target]) {
-        return;
-      }
-
-      this.currentMorphTargets[target] = amt;
-      this.updateMorphs();
-    }
-
-
-    updateMorphs () {
-      for (const [name, value] of Object.entries(this.currentMorphTargets)) {
-        const morphIndex = this.morphIndicesByName[name];
-        if (morphIndex === undefined) return;
-        this.renderer.uniform('uMorphFactor' + morphIndex, value);
-      }
-    }
-
-
-    /** 
-     * Load the particles from some blob data 
-     */ 
-    async setFromFileBlob (blob) {
-      const buffer = await blob.arrayBuffer();
-      const floats = new Float32Array(buffer);
-      this.iniitialize(floats);
-    }
-
-
-    /** 
-     * Load the particles from some blob data 
-     */ 
-    saveToFileBlob () {
-      const blob = new Blob([this.data], { type: 'application/octet-stream' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'particle_buffer.blob';
-      link.click();
-    }
-
-
-    findParticleAtPosition (x, y) {
-      let minDist = Infinity;
-      let index = -1;
-
-      for (let i = 0; i < this.count; i++) {
-        let ox = this.getAttr(i, 'ox');
-        let oy = this.getAttr(i, 'oy');
-        let px = ox, py = oy;
-
-        for (let target in this.currentMorphTargets) {
-          const amt = this.currentMorphTargets[target];
-          const pts = this.morphs[target];
-
-          const ptsIndex = (i * 3) % pts.length;
-
-          const dx = pts[ptsIndex] - ox;
-          const dy = pts[ptsIndex + 1] - oy;
-
-          px += dx * amt;
-          py += dy * amt;
-        }
-
-        const dx = x - px;
-        const dy = y - py;
-        
-
-        const d2 = dx * dx + dy * dy;
-
-        if (d2 < minDist) {
-          minDist = d2;
-          index = i;
-        }
-      }
-      return index;
-    }
-
-
-    recolorGroup (groupIndex, newColor) {
-      const [r, g, b] = hexToNormalizedRGB(newColor.slice(1));
-
-      for (let i = 0; i < this.count; i++) {
-        const group = this.getAttr(i, 'cat');
-
-        if (group === groupIndex) {
-          this.setAttr(i, 'r', r);
-          this.setAttr(i, 'g', g);
-          this.setAttr(i, 'b', b);
-        }
-      }
-    }
-
-
-    getParticlePosition (index) {
-
-      const ox = this.getAttr(index, 'ox');
-      const oy = this.getAttr(index, 'oy');
-      const oz = this.getAttr(index, 'oz');
-
-      let x = ox, y = oy, z = oz;
-
-      for (let target in this.currentMorphTargets) {
-        const amt = this.currentMorphTargets[target];
-        const pts = this.morphs[target];
-
-        (index * 3) % pts.length;
-
-        const dx = pts[index] - ox;
-        const dy = pts[index + 1] - oy;
-        const dz = pts[index + 2] - oz;
-
-        x += dx * amt;
-        y += dy * amt;
-        z += dz * amt;
-
-      }
-
-      return [x, y, z];
-    }
-  }
-
-  const CHARS = 'abcdefghijfklmnopqrstuvwxyzABCDEFGHIJFKLMNOPQRSTUVWXYZ0123456789_@!';
-  const buffer = new Uint8Array(128);
-  let index = buffer.byteLength;
-
-  function fillBuffer () {
-    crypto.getRandomValues(buffer);
-    index = 0;
-  }
-
-  function uuid (length = 6) {
-    if (index + length >= buffer.byteLength) fillBuffer();
-    let id = '';
-    while(id.length < length) {
-      id += CHARS[buffer[index] % CHARS.length];
-      ++ index;
-    }
-    return id;
   }
 
   /**
@@ -4911,8 +4763,7 @@ var GUM3D = (function (exports) {
    */
 
   /**
-   * The g (gum tools) namespace provides all the helpful ~static~ functions 
-   * to do cool things inside a gum app.
+   * Some global helpers.
    * @namespace
    */
   const globals = {
@@ -4933,15 +4784,19 @@ var GUM3D = (function (exports) {
 
 
 
-
   /**
    * The class for one instance of Gum. It has a renderer, a scene-graph, etc.
    */
   class Gum {
-    constructor (canvas, w, h, settings) {
+    constructor (canvas, settings) {
       settings = settings || {};
 
       this.instanceId = uuid();
+
+      /**
+       * The pixel ratio for display.
+       */ 
+      this.pixelRatio = settings.pixelRatio || window.devicePixelRatio || 1;
 
       /**
        * The canvas.
@@ -4950,24 +4805,32 @@ var GUM3D = (function (exports) {
       this.canvas = select(canvas);
       this.canvas.classList.add('gum-main-canvas');
 
-      /**
+      /** 
+       * The width of the canvas.
+       */
+      this.w = 500;
+
+      /** 
+       * The height of the canvas.
+       */ 
+      this.h = 500;
+
+      /*
        * The renderer.
        * @type {RendererGL2}
        */
-      this.renderer = new RendererGL2(this.canvas, w, h, settings);
+      this.renderer = new RendererGL2(this.canvas, this.w, this.h, settings);
       this.renderer.instanceId = this.instanceId;
       
-      /**
-       * The pixel ratio for display.
-       */ 
-      this.pixelRatio = settings.pixelRatio || window.devicePixelRatio || 1;
-     
       /**
        * A reference to the raw gl context.
        * @type {WebGL2RenderingContext}
        */
       this.gl = this.renderer.gl;
       
+      // Call on resize.
+      this._onresize();
+
       /**
        * The scene.
        * @type {Scene}
@@ -5024,7 +4887,6 @@ var GUM3D = (function (exports) {
       this.texers = [];
 
       
-      
       /**
        * The post processing stack.
        */
@@ -5065,7 +4927,8 @@ var GUM3D = (function (exports) {
         'uEye': [0, 0, 0],
         'uView': create(),
         'uProjection': create(),
-        'uAspect': 1,
+        'uAspect': this.w / this.h,
+        'uScreenSize': [this.w, this.h],
       };
 
       this._frameStats = {
@@ -5082,9 +4945,7 @@ var GUM3D = (function (exports) {
 
       this._usedColors = {};
 
-      this._info();
-
-     
+      this._imageScaling = 'auto';
     } 
 
 
@@ -5115,6 +4976,8 @@ var GUM3D = (function (exports) {
      * @param {function} draw 
      */
     run (setup, draw) {
+      this._onresize();
+
       this._setup();
 
       // Do the pre draw routine once incase any code in setup asks to draw.
@@ -5133,6 +4996,8 @@ var GUM3D = (function (exports) {
 
       // 4) start animating.
       this._tick();
+
+      window.addEventListener('resize', this._onresize.bind(this));
     }
 
 
@@ -5142,7 +5007,7 @@ var GUM3D = (function (exports) {
      * @param {Color} color 
      * @returns 
      */
-    background (color) {
+    clear (color) {
       if (color instanceof Color) {
         this.renderer.clear(color.rgba);
         return;
@@ -5153,9 +5018,28 @@ var GUM3D = (function (exports) {
       }
     }
 
+    background (color) {
+      this.clear(color);
+    }
+
+
+    /**
+     * Set the size of the canvas.
+     */ 
+    size (w, h) {
+      this.canvas.style.width = w + 'px';
+      this.canvas.style.height = h + 'px';
+      this.w = w * this.pixelRatio;
+      this.h = h * this.pixelRatio;
+      this.renderer.resize(this.w, this.h);
+      this._isFixedSize = true;
+    }
+
+
     clearDepth () {
       this.renderer.clearDepth();
     }
+
 
     /**
      * Make or get a color.
@@ -5170,7 +5054,6 @@ var GUM3D = (function (exports) {
       this._usedColors[argString] = color$1;
       return color$1;
     }
-
 
 
     /** 
@@ -5195,14 +5078,13 @@ var GUM3D = (function (exports) {
         this._postDraw();
       }
 
-      
       const elapsed = now - this._timeAtLastInfo;
       if (elapsed > 1000) {
         this._info();
         this._timeAtLastInfo = now;
       }
       
-      window.requestAnimationFrame(this.tick);
+      requestAnimationFrame(this.tick);
     }
 
 
@@ -5243,6 +5125,20 @@ var GUM3D = (function (exports) {
     set frame (val) {}
 
 
+    get imageScaling () {
+      return this._imageScaling;
+    }
+    set imageScaling (val) {
+      if (val.toUpperCase() === 'PIXELATED') {
+        this.canvas.style.imageRendering = 'pixelated';
+        this._imageScaling = 'PIXELATED';
+      } else {
+        this.canvas.style.imageRendering = 'auto';
+        this._imageScaling = 'AUTO';
+      }
+    }
+
+
     loadMesh (model, fn) {
       this.plyLoader.load(model, function (mesh) {
         if (fn) { mesh = fn(mesh); }
@@ -5280,33 +5176,23 @@ var GUM3D = (function (exports) {
     _preDraw (settings = {}) {
       this._frameStats.frameStart = performance.now();
 
-      const pixelRatio = this.pixelRatio;
-      let dWidth = Math.round(this.canvas.clientWidth * pixelRatio);
-      let dHeight = Math.round(this.canvas.clientHeight * pixelRatio);
+      let w = this.w;
+      let h = this.h;
 
       if (settings.screenshot) {
         const { width, height } = settings.screenshot;
-        dWidth = width > 0 ? width : dWidth;
-        dHeight = height > 0 ? height: dHeight;
+        w = width > 0 ? width : w;
+        h = height > 0 ? height: h;
       }
 
-      const needsResize = this.canvas.width !== dWidth || this.canvas.height !== dHeight;
-
-      if (needsResize) {
-        this.canvas.width = dWidth;
-        this.canvas.height = dHeight;
-        for (let targetName in this.renderer.renderTargets) {
-          this.renderer.updateRenderTarget(targetName);
-        }
-      }
-
-      this.camera.aspect = dWidth / dHeight; 
+      this.camera.aspect = w / h; 
       this.camera.updateViewProjection();
 
       this.globalUniforms['uNear'] = this.camera.near;
       this.globalUniforms['uFar'] = this.camera.far;
       this.globalUniforms['uEye'] = this.camera.eye;
       this.globalUniforms['uAspect'] = this.camera.aspect;
+      this.globalUniforms['uScreenSize'] = [this.w, this.h];
       this.globalUniforms['uView'] = this.camera.view;
       this.globalUniforms['uProjection'] = this.camera.projection;
 
@@ -5316,7 +5202,7 @@ var GUM3D = (function (exports) {
       this.renderer.globalUniformBlock = this.globalUniforms;
       this.renderer.setGlobalUniformBlock();
 
-      this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+      this.gl.viewport(0, 0, this.w, this.h);
 
       for (let texer of this.texers) {
         if (texer.changed()) {
@@ -5327,7 +5213,7 @@ var GUM3D = (function (exports) {
 
 
     _postDraw () {
-
+      this.renderer.gl.finish();
       if (this.postProcessingStack.effects.length > 0) {
         
         const { colorBufferA, 
@@ -5357,7 +5243,7 @@ var GUM3D = (function (exports) {
           this.renderer.uniform('uView', this._identity);
           this.renderer.uniform('uModel', this._identity);
           this.renderer.uniform('uProjection', this._identity);
-          this.renderer.uniform('uTexSize', [this.canvas.width, this.canvas.height]);
+          this.renderer.uniform('uScreenSize', [this.w, this.h]);
           this.renderer.uniform('uNear', this.camera.near);
           this.renderer.uniform('uFar', this.camera.far);
           this.renderer.clear([1, 0, 0, 1]);
@@ -5378,6 +5264,8 @@ var GUM3D = (function (exports) {
 
 
       this._frame ++;
+      this.resized = false;
+
       let frameEnd = performance.now();
       this._frameStats.frameTime = frameEnd - this._frameStats.frameStart;
 
@@ -5520,8 +5408,6 @@ var GUM3D = (function (exports) {
       this.tick = () => {};
     }
 
-
-
     screenshot (w = 100, h = 100) {
       this._preDraw({ screenshot: { width: w, height: h }});
       this._draw();
@@ -5529,6 +5415,27 @@ var GUM3D = (function (exports) {
       const data = this.canvas.toDataURL();
       return data;
     }
+
+
+    _onresize () {
+      if (this._isFixedSize) {
+        return;
+      }
+      const cW = Math.floor(this.canvas.clientWidth * this.pixelRatio);
+      const cH = Math.floor(this.canvas.clientHeight * this.pixelRatio);
+      if (cW !== this.w || cH !== this.h) {
+        this.resized = true;
+        this.canvas.width = cW;
+        this.canvas.height = cH;
+        this.w = cW;
+        this.h = cH;
+        this.renderer.resize(this.w, this.h);
+        this.onresize();          
+      }
+    }
+
+    // NOOP to be overrridden.
+    onresize () {}
   }
 
 
@@ -5539,7 +5446,6 @@ var GUM3D = (function (exports) {
    */
   function _inlineModule (module, context, target) {
     let targetObj = context;
-
 
     if (target) {
       if (context[target]) {
@@ -5558,8 +5464,6 @@ var GUM3D = (function (exports) {
       }
     }
   }
-
-
 
   _inlineModule(common, Gum.prototype);
   _inlineModule(globals, Gum.prototype);

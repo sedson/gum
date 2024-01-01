@@ -3,9 +3,6 @@
 import { Project } from './project.js';
 import { Gum } from '/js/GUM.js';
 
-
-// const { Gum } = GUM3D;
-
 const getId = () => performance.now() % 2347;
 
 
@@ -65,9 +62,8 @@ async function loadCurrent (url) {
 }
 
 function saveLocal () {
-  currentProject.thumbnail = g ? g.screenshot(100, 100) : '';
+  // currentProject.thumbnail = g ? g.screenshot(100, 100) : '';
   currentProject.codeFiles.main = codeMirror.state.doc.toString();
-  console.log(currentProject.toJSON())
   localStorage.setItem('cachedProject', currentProject.toJSON());
 }
 
@@ -84,7 +80,6 @@ function run () {
   gumPanel.innerHTML = '';
 
   mainCanvas = document.createElement('canvas');
-  mainCanvas.style.imageRendering = 'pixelated';
   mainCanvas.id = 'canvas';
   gumPanel.append(mainCanvas);
 

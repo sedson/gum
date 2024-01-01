@@ -4,7 +4,7 @@ precision mediump float;
 // Defualt uniforms.
 uniform sampler2D uMainTex;
 uniform sampler2D uDepthTex;
-uniform vec2 uTexSize;
+uniform vec2 uScreenSize;
 
 // Custom uniforms.
 uniform vec4 uColorA;
@@ -31,14 +31,14 @@ void main() {
   vec4 col = texture(uMainTex, vTexCoord);
   float brightness = dot(col.rgb, vec3(0.2126, 0.7152, 0.0722));
 
-  vec2 xy = vTexCoord * uTexSize;
+  vec2 xy = vTexCoord * uScreenSize;
 
   int x = int(mod(xy.x, 8.0));
   int y = int(mod(xy.y, 8.0));
 
   float n = float(BAYER64[y * 8 + x]);
 
-  brightness += (bnoise(vTexCoord * uTexSize) * 2.0 - 1.0) * 0.0;
+  brightness += (bnoise(vTexCoord * uScreenSize) * 2.0 - 1.0) * 0.0;
 
   float pix = step(n, brightness * 63.0);
 
@@ -47,6 +47,6 @@ void main() {
   fragColor = vec4(rgb, 1.0);
   // fragColor = vec4(vec3(noise), 1.0);
 
-  // fragColor = vec4(gl_FragCoord.xy / uTexSize, 0.0, 1.0);
+  // fragColor = vec4(gl_FragCoord.xy / uScreenSize, 0.0, 1.0);
 
 }

@@ -4,7 +4,7 @@ precision mediump float;
 
 uniform sampler2D uMainTex;
 uniform sampler2D uDepthTex;
-uniform vec2 uTexSize;
+uniform vec2 uScreenSize;
 uniform float uNear;
 uniform float uFar;
 
@@ -17,7 +17,7 @@ void main() {
   vec2 rOff = vec2(0.0, 4.0);
   vec2 gOff = vec2(0.0, 0.0);
   vec2 bOff = vec2(4.0, 0.0);
-  vec2 pixelSize = 1.0 / uTexSize;
+  vec2 pixelSize = 1.0 / uScreenSize;
   vec4 col = texture(uMainTex, vTexCoord);
 
   fragColor = col;

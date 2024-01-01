@@ -8,6 +8,7 @@ uniform float uNear;
 uniform float uFar;
 uniform float uAspect;
 uniform float uObjectId;
+uniform vec2 uScreenSize;
 
 in vec3 aPosition;
 in vec4 aColor;
@@ -23,53 +24,48 @@ out vec4 vColor;
  */ 
 void main () {
   mat4 mvp = uProjection * uView * uModel;
-  vec2 aspect = vec2(uAspect, 1.0);
 
   float thickness = aNormal.x;
-  float orientation = aNormal.y;
+  float orientation = aNormal.y;  
 
-  float extension = thickness * 0.25;
-
+  // Calculate the screen space 
   vec4 current = mvp * vec4(aPosition.xyz, 1.0);
   vec4 next = mvp * vec4(aRegister1.xyz, 1.0);
 
-  // could use z component to scale by distance.
   vec2 currentScreen = current.xy / current.w;
   vec2 nextScreen = next.xy / next.w;
 
   vec2 lineDir = normalize(nextScreen - currentScreen);
+  vec2 normal = vec2(-lineDir.y, lineDir.x);
 
+  float persp = current.w;
+  if (orientation > 1.5) {
+    persp = next.w;
+  }
 
-  vec2 normal = vec2(-lineDir.y, lineDir.x) * 0.5 * thickness;
+  vec2 offset = persp * thickness * normal / uScreenSize;
+  vec2 extension = 0.25 * persp * thickness * lineDir / uScreenSize;
 
-  normal.x /= uAspect;
+  if (orientation < 1.0) {
 
-
-  if (aNormal.y < 1.0) {
-
-    current.xy -= normal;
-    current.xy -= lineDir * extension;
+    current.xy += -offset - extension;
     gl_Position = current;
 
-  } else if (aNormal.y < 2.0) {
+  } else if (orientation < 2.0) {
 
-    current.xy += normal;
-    current.xy -= lineDir * extension;
-    gl_Position = current;
+    current.xy += +offset - extension;
+    gl_Position =  current;
 
-  } else if (aNormal.y < 3.0) {
+  } else if (orientation < 3.0) {
 
-    next.xy -= normal;
-    next.xy += lineDir * extension;
+    next.xy += -offset + extension;
     gl_Position = next;
 
   } else {
 
-    next.xy += normal;
-    next.xy += lineDir * extension;
+    next.xy += +offset + extension;
     gl_Position = next;
 
   }
-
   vColor = aColor;
 }

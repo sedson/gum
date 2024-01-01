@@ -1,12 +1,9 @@
 
+import {Gum} from '/js/GUM.js'
 
-import {g, Gum} from '/js/GUM.js'
-// const { ft, FeltApp } = FELT;
 
-// Create a new felt app that renders to the '#canvas' element. The size 
-// is 2000 by 2000 pixels.
-window.app = new Gum('#canvas', 1000, 1000, { scale: 1 });
-window.g = g;
+
+window.g = new Gum('#canvas', 1000, 1000, { scale: 1 });
 
 // Make a background color.
 const bg = g.color('#333');
@@ -26,16 +23,16 @@ let tex = new g.Texer(64);
 // blueTex.clear();
 
 
-app.defaultPass = 'geo';
+g.defaultPass = 'geo';
 
 
-// app.addEffect('post-dither', {
+// g.addEffect('post-dither', {
 //   uColorA: [1, 1, 1, 1],
 //   uColorB: g.color('red').rgba,
 // });
-app.addEffect('post-outline');
+g.addEffect('post-outline');
 
-app.addEffect('post-dither', {
+g.addEffect('post-dither', {
   uColorA: g.color('lime').rgba,
   uColorB: g.color('vert').rgba,
 });
@@ -43,25 +40,26 @@ app.addEffect('post-dither', {
 
 
 /**
- * Runs once at the beginning of the app's life cycle.
+ * Runs once at the beginning of the g's life cycle.
  */
 function setup () {
 
-  app.addProgram('line2');
+  g.addProgram('line2');
 
-  A = app.node('A');
-  B = app.node('B');
+  A = g.node('A');
+  B = g.node('B');
 
-  app.orbit();
-  let C = app.node('C');
+  g.orbit();
+  let C = g.node('C');
 
   cube.applyTransform(C.transform);
 
   // cube.shadeSmooth(0.);
-  A.geometry = app.addMesh(cube.fill(g.color('rose')).render());
+  A.geometry = g.mesh(cube.fill(g.color('rose')).render());
   const edges = new g.EdgeCollection(cube.inflate(0.1).getEdges(), g.color('black').rgba);
+  edges.thickness = 0.05;
 
-  B.geometry = app.addMesh(edges);
+  B.geometry = g.mesh(edges);
 
   // B.move(0, 1, 0).scale(0.5).setParent(A);
 
@@ -70,9 +68,9 @@ function setup () {
   A.uniform('uTex', tex.id);
   B.uniform('uTex', tex.id);
 
-  app.plyLoader.load('/models/uvsphere.ply', mesh => {
+  g.plyLoader.load('/models/uvsphere.ply', mesh => {
     // console.log(mesh);
-    C.geometry = app.addMesh(mesh.fill(g.color('vert')));
+    C.geometry = g.mesh(mesh.fill(g.color('vert')));
     C.move(0, 1, 0).scale(0.2)
   }); 
 
@@ -83,7 +81,7 @@ function setup () {
   let img = g.dom.tag('img.texture');
   img.onload = () => {
     console.log(img);
-    let unit = app.texture('grid', img, {
+    let unit = g.texture('grid', img, {
       width: img.naturalWidth, 
       height: img.naturalHeight,
       filter: 'LINEAR',
@@ -96,7 +94,7 @@ function setup () {
 
   img.src = '/img/uv.jpg';
 
-  app.addTexer(tex);
+  g.addTexer(tex);
 }
 
 
@@ -104,11 +102,11 @@ function setup () {
  * Runs each frame;
  */
 function draw () {
-  app.background(bg);
-  app.axes();
+  g.clear(bg);
+  g.axes();
 
   
-  let r = g.remap(g.sin(app.time() * 0.005), -1, 1, 0, 100);
+  let r = g.remap(g.sin(g.time * 0.005), -1, 1, 0, 100);
 
   tex.fill('white').clear();
   // tex.fill(g.color('gray').rgbString()).pixels(0, 0, r, r);
@@ -116,12 +114,12 @@ function draw () {
   let s = g.radians(spinAngle);
   let x = Math.cos(s) * 5;
   let z = Math.sin(s) * 5;
-  app.camera.transform.position.set(x, 2, z)
+  g.camera.transform.position.set(x, 2, z)
 
 
   spinAngle += 1;
 
-  app.drawScene();
+  g.drawScene();
 }
 
-app.run(setup, draw);
+g.run(setup, draw);

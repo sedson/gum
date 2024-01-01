@@ -1,30 +1,25 @@
-import { g, Gum } from '/js/GUM.js';
-
-window.g = g;
-window.gum = new Gum('#canvas', 200, 200);
-console.log(gum.canvas)
+import { Gum } from '/js/GUM.js';
+window.g = new Gum('#canvas', 200, 200);
 
 const bg = g.color('#333');
 
 window.grid = g.shapes.grid(2, 5).findGroups();
 
 
-const turnTable = gum.node('turntable');
-gum.camera.setParent(turnTable);
+const turnTable = g.node('turntable');
+g.camera.setParent(turnTable);
 
-gum.camera.fov = 30;
+g.camera.fov = 30;
 
-gum.defaultPass = 'unlit';
+g.defaultPass = 'geo';
 
 
 
 let spin = 0;
 let mesh;
 
-// gum.addEffect('post-outline2');
+g.addEffect('post-outline2');
 
-gum.addEffect('post-blur');
-gum.addEffect('post-chromatic2');
 
 
 
@@ -32,30 +27,31 @@ gum.addEffect('post-chromatic2');
 
 
 function setup () {
-  gum.orbit();
-  gum.recycleBuffer = true;
+  g.size(400, 400);
+  g.orbit();
+  g.recycleBuffer = true;
 
-  gum.plyLoader.load('/models/treescene.ply', (mesh) => {
+  g.plyLoader.load('/models/treescene.ply', (mesh) => {
     window.mesh = mesh;
-    gum.node('tree').setGeometry(gum.addMesh(
+    g.node('tree').setGeometry(g.mesh(
       mesh.findGroups().render()
     ));
-    gum.node('tree2').setGeometry(
-      gum.addMesh(
-        mesh.inflate(0.002).fill(g.color('grayishlavendera')).renderEdges()
-      )
-    );
+    // g.node('tree2').setGeometry(
+    //   g.mesh(
+    //     mesh.inflate(0.001).fill(g.color('grayishlavendera')).renderEdges()
+    //   )
+    // );
 
   });
 
 }
 
 function draw (delta) {
-  // gum.background(bg);
-  gum.clearDepth();
-  gum.drawScene();
+  g.clear(bg);
+  g.clearDepth();
+  g.drawScene();
 
   spin += .005 * delta;
 }
 
-gum.run(setup, draw);
+g.run(setup, draw);

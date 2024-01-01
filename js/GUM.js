@@ -60,7 +60,6 @@ const globals = {
 
 
 
-
 /**
  * The class for one instance of Gum. It has a renderer, a scene-graph, etc.
  */
@@ -105,6 +104,9 @@ export class Gum {
      */
     this.gl = this.renderer.gl;
     
+    // Call on resize.
+    this._onresize();
+
     /**
      * The scene.
      * @type {Scene}
@@ -161,7 +163,6 @@ export class Gum {
     this.texers = [];
 
     
-    
     /**
      * The post processing stack.
      */
@@ -202,7 +203,8 @@ export class Gum {
       'uEye': [0, 0, 0],
       'uView': m4.create(),
       'uProjection': m4.create(),
-      'uAspect': 1,
+      'uAspect': this.w / this.h,
+      'uScreenSize': [this.w, this.h],
     };
 
     this._frameStats = {
@@ -219,9 +221,7 @@ export class Gum {
 
     this._usedColors = {};
 
-    this._info();
-
-   
+    this._imageScaling = 'auto';
   } 
 
 
@@ -259,7 +259,6 @@ export class Gum {
     // Do the pre draw routine once incase any code in setup asks to draw.
     this._preDraw();
 
-
     // 1) Call the user's custom setup.
     setup();
 
@@ -296,12 +295,19 @@ export class Gum {
   }
 
   background (color) {
-
+    this.clear(color);
   }
 
+
+  /**
+   * Set the size of the canvas.
+   */ 
   size (w, h) {
-    this.canvas.style.w = w;
-    this.canvas.style.h = h;
+    this.canvas.style.width = w + 'px';
+    this.canvas.style.height = h + 'px';
+    this.w = w * this.pixelRatio;
+    this.h = h * this.pixelRatio;
+    this.renderer.resize(this.w, this.h);
     this._isFixedSize = true;
   }
 
@@ -309,6 +315,7 @@ export class Gum {
   clearDepth () {
     this.renderer.clearDepth();
   }
+
 
   /**
    * Make or get a color.
@@ -323,7 +330,6 @@ export class Gum {
     this._usedColors[argString] = color;
     return color;
   }
-
 
 
   /** 
@@ -395,6 +401,20 @@ export class Gum {
   set frame (val) {}
 
 
+  get imageScaling () {
+    return this._imageScaling;
+  }
+  set imageScaling (val) {
+    if (val.toUpperCase() === 'PIXELATED') {
+      this.canvas.style.imageRendering = 'pixelated';
+      this._imageScaling = 'PIXELATED';
+    } else {
+      this.canvas.style.imageRendering = 'auto';
+      this._imageScaling = 'AUTO';
+    }
+  }
+
+
   loadMesh (model, fn) {
     this.plyLoader.load(model, function (mesh) {
       if (fn) { mesh = fn(mesh); }
@@ -432,29 +452,23 @@ export class Gum {
   _preDraw (settings = {}) {
     this._frameStats.frameStart = performance.now();
 
-    const pixelRatio = this.pixelRatio;
-    let dWidth = Math.round(this.canvas.clientWidth * pixelRatio);
-    let dHeight = Math.round(this.canvas.clientHeight * pixelRatio);
+    let w = this.w;
+    let h = this.h;
 
     if (settings.screenshot) {
       const { width, height } = settings.screenshot;
-      dWidth = width > 0 ? width : dWidth;
-      dHeight = height > 0 ? height: dHeight;
+      w = width > 0 ? width : w;
+      h = height > 0 ? height: h;
     }
 
-    // const needsResize = this._updateCanvasSize();
-    // if (needsResize) {
-    //   this.resized = true;
-    //   this.renderer.resize(this.w, this.h);
-    // }
-
-    this.camera.aspect = dWidth / dHeight; 
+    this.camera.aspect = w / h; 
     this.camera.updateViewProjection();
 
     this.globalUniforms['uNear'] = this.camera.near;
     this.globalUniforms['uFar'] = this.camera.far;
     this.globalUniforms['uEye'] = this.camera.eye;
     this.globalUniforms['uAspect'] = this.camera.aspect;
+    this.globalUniforms['uScreenSize'] = [this.w, this.h];
     this.globalUniforms['uView'] = this.camera.view;
     this.globalUniforms['uProjection'] = this.camera.projection;
 
@@ -505,7 +519,7 @@ export class Gum {
         this.renderer.uniform('uView', this._identity);
         this.renderer.uniform('uModel', this._identity);
         this.renderer.uniform('uProjection', this._identity);
-        this.renderer.uniform('uTexSize', [this.canvas.width, this.canvas.height]);
+        this.renderer.uniform('uScreenSize', [this.w, this.h]);
         this.renderer.uniform('uNear', this.camera.near);
         this.renderer.uniform('uFar', this.camera.far);
         this.renderer.clear([1, 0, 0, 1]);
@@ -709,7 +723,6 @@ export class Gum {
 function _inlineModule (module, context, target) {
   let targetObj = context;
 
-
   if (target) {
     if (context[target]) {
       targetObj = context[target];
@@ -733,5 +746,3 @@ _inlineModule(globals, Gum.prototype);
 _inlineModule(dom, Gum.prototype, 'dom');
 _inlineModule(primitives, Gum.prototype, 'shapes');
 _inlineModule(meshOps, Gum.prototype, 'meshops');
-
-
