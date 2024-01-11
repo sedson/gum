@@ -420,7 +420,7 @@ export function grid (size, subdivisions = 10, flat = false) {
 
 /**
  * Make a circle with diameter size facing up along y axis.
- * @param {number} size The size of the quad.
+ * @param {number} size The size of the circle.
  * @param {number} resolution The number of straight line segments to use.
  * @return {Mesh}
  */ 
@@ -525,4 +525,109 @@ export function _axes () {
       normal: new Float32Array(normals.flat(2)),
     }
   }
+}
+
+
+
+/**
+ * Make a circle with diameter size facing up along y axis.
+ * @param {number} size The size of the circle.
+ * @param {number} resolution The number of straight line segments to use.
+ * @return {Mesh}
+ */ 
+export function cylinder (size, resolution = 12, fill = 'ngon', flat = false) {
+  const positions = [];
+  let faces = [];
+  const normals = [];
+  let ngon = [];
+  const radius = size / 2;
+
+  // Make the top and bottom face.
+  for (let k = 0; k < 2; k ++) {
+    
+    let y = k * 2 - 1;
+    let offset = fill === 'fan' ? (resolution + 1) * k : resolution * k;
+
+    if (fill === 'fan') {
+      positions.push([0, y * radius, 0]);
+      normals.push([0, y, 0]);
+    }
+
+    for (let i = 0; i < resolution; i++) {
+      const theta = -i * Math.PI * 2 / resolution;
+      const x = Math.cos(theta) * (size / 2);
+      const z = Math.sin(theta) * (size / 2);
+
+      positions.push([x, y * radius, z]);
+      normals.push([0, y, 0]);
+
+      if (fill === 'fan') {
+        const next = ((i + 1) % (resolution));
+        if (k === 0) {
+          faces.push([offset, offset + next + 1, offset + i + 1]);
+        } else {
+          faces.push([offset, offset + i + 1, offset + next + 1]);
+        }
+      } else if (fill === 'ngon') {
+        if (k === 0) {
+          ngon.push((resolution - (i + 1)) + offset);        
+        } else {
+          ngon.push(i + offset);        
+        }
+      }
+    }
+
+    if (fill === 'ngon') {
+      faces.push(ngon);
+      ngon = [];
+    }
+  }
+
+  let offset = positions.length;
+  
+  // Make the outer wall. 
+  // TODO : This is smooth shading but with split verts. Make the smooth shading 
+  //     work with shared verts and a flat shading vertsion work with split 
+  //     verts.
+  for (let i = 0; i < resolution; i++) {
+    const theta = -i * Math.PI * 2 / resolution;
+    const x = Math.cos(theta) * (size / 2);
+    const z = Math.sin(theta) * (size / 2);
+
+    const theta2 = -(i + 1) * Math.PI * 2 / resolution;
+    const x2 = Math.cos(theta2) * (size / 2);
+    const z2 = Math.sin(theta2) * (size / 2);
+
+    positions.push(
+      [x, -radius, z],
+      [x, radius, z],
+      [x2, -radius, z2],
+      [x2, radius, z2],
+    );
+
+    normals.push(
+      new Vec3(x, 0, z).normalize().xyz,
+      new Vec3(x, 0, z).normalize().xyz,
+      new Vec3(x2, 0, z2).normalize().xyz,
+      new Vec3(x2, 0, z2).normalize().xyz,
+    );
+
+    faces.push([
+      offset + 1,
+      offset + 0,
+      offset + 2,
+      offset + 3,
+    ]);
+
+    offset += 4;
+  }
+
+
+
+  const vertices = positions.map((pos, i) => {
+    return { position: pos, normal: normals[i] };
+  });
+
+
+  return new Mesh(vertices, faces, { name: 'cylinder' });
 }

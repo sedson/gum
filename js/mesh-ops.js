@@ -337,3 +337,17 @@ export function shadeSmooth (vertices, faces, tolerance = 0.001) {
   return { vertices: outVerts, faces: faces };
 }
 
+
+export function mapFuncToAttributes (vertices, attribName, func) {
+  const outVertices = [];
+  for (let vi = 0; vi < vertices.length; vi++) {
+    const vert = vertices[vi];
+    const copy = copyVertex(vert);
+    if (copy[attribName]) {
+      copy[attribName] = func(copy[attribName]);
+    }
+    outVertices.push(copy);
+  }
+  return outVertices;
+}
+

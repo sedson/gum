@@ -307,6 +307,23 @@ var GUM3D = (function (exports) {
     blend (other, amt = 0.5, mode = 'RGB') {
       return blend(this, other, amt, mode);
     }
+
+    /**
+     * Hue shift
+     * @param {number} amt The amount of hue shift in degrees.
+     * @returns {Color} A new color object.
+     */ 
+    shiftHue (amt) {
+      return new Color(...hslToRgb(this.h + amt, this.s, this.l, this.a));
+    }
+
+    lighten (amt) {
+      return new Color(...hslToRgb(this.h, this.s, this.l + amt, this.a));
+    }
+
+    saturate (amt) {
+      return new Color(...hslToRgb(this.h, this.s + amt, this.l, this.a));
+    }
   }
 
 
@@ -605,16 +622,16 @@ var GUM3D = (function (exports) {
   function blend (src, target, amt = 0.5, mode = 'RGB') {
     switch (mode.toUpperCase()) {
       case 'RGB' : 
-        return blendRGB_(src, target, amt);
+        return _blendRgb(src, target, amt);
 
       case 'HSL' :
-        return blendHSL_(src, target, amt);
+        return _blendHSL(src, target, amt);
     }
   }
 
 
 
-  function blendRGB_ (src, target, amt = 0.5) {
+  function _blendRgb (src, target, amt = 0.5) {
     if (!isColor(src) || !isColor(target)) {
       return new Color();
     }
@@ -628,7 +645,7 @@ var GUM3D = (function (exports) {
   }
 
 
-  function blendHSL_ (src, target, amt = 0.5) {
+  function _blendHSL (src, target, amt = 0.5) {
     if (!isColor(src) || !isColor(target)) {
       return new Color();
     }
@@ -640,10 +657,6 @@ var GUM3D = (function (exports) {
     const l = lerp(src.l, target.l, amt);
     return new Color(...hslToRgb(h, s, l, src.a));
   }
-
-
-
-  window.Color = Color;
 
   /**
    * The available shaders. File created by bundleShaders.js.
@@ -688,6 +701,9 @@ var GUM3D = (function (exports) {
     },
     "post-color-overlay": {
       "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform vec4 uBlendColor;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfragColor = col;\nfragColor.rgb = mix(col, uBlendColor, uBlendColor.a).rgb;\n}"
+    },
+    "post-depth-fade": {
+      "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\nuniform float uNear;\nuniform float uFar;\nuniform float uStart;\nuniform float uEnd;\n\n\nuniform vec4 uBlendColor;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat linearDepth(float d, float near, float far) {\nfloat z = d * 2.0 - 1.0;\nreturn (2.0 * near * far) / (far + near - d * (far - near)) / far;\n}\n\n\nvoid main() {\nfloat depth = texture(uDepthTex, vTexCoord).r;\nfloat lDepth = linearDepth(depth, uNear, uFar);\nfloat m = smoothstep(uStart, uEnd, lDepth * (uFar - uNear) + uNear);\nvec4 col = texture(uMainTex, vTexCoord);\nfragColor = col;\nfragColor.rgb = mix(col.rgb, uBlendColor.rgb, m * uBlendColor.a);\n}"
     },
     "post-dither": {
       "frag": "#version 300 es\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform vec4 uColorA;\nuniform vec4 uColorB;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat rand (float n) {\n  return fract(sin(n) * 43748.5453123);\n}\n\nfloat rand (vec2 n) {\n  return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\n\nfloat bnoise (float p) {\n  float pInt = floor(p);\n  float pFract = fract(p);\n  return mix(rand(pInt), rand(pInt + 1.0), pFract);\n}\n\nfloat bnoise (vec2 p) {\n  vec2 d = vec2(0.0, 1.0);\n  vec2 b = floor(p);\n  vec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(p));\n  return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}\n\nconst int[64] BAYER64 = int[](\n0, 32, 8, 40, 2, 34, 10, 42,    /* 8x8 Bayer ordered dithering */\n48, 16, 56, 24, 50, 18, 58, 26, /* pattern. Each input pixel */\n12, 44, 4, 36, 14, 46, 6, 38,   /* is scaled to the 0..63 range */\n60, 28, 52, 20, 62, 30, 54, 22, /* before looking in this table */\n3, 35, 11, 43, 1, 33, 9, 41,    /* to determine the action. */\n51, 19, 59, 27, 49, 17, 57, 25,\n15, 47, 7, 39, 13, 45, 5, 37,\n63, 31, 55, 23, 61, 29, 53, 21\n);\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\nfloat brightness = dot(col.rgb, vec3(0.2126, 0.7152, 0.0722));\n\nvec2 xy = vTexCoord * uScreenSize;\n\nint x = int(mod(xy.x, 8.0));\nint y = int(mod(xy.y, 8.0));\n\nfloat n = float(BAYER64[y * 8 + x]);\n\nbrightness += (bnoise(vTexCoord * uScreenSize) * 2.0 - 1.0) * 0.0;\n\nfloat pix = step(n, brightness * 63.0);\n\n\nvec3 rgb = mix(uColorB.rgb,  uColorA.rgb, pix);\nfragColor = vec4(rgb, 1.0);\n// fragColor = vec4(vec3(noise), 1.0);\n\n// fragColor = vec4(gl_FragCoord.xy / uScreenSize, 0.0, 1.0);\n\n}"
@@ -1226,6 +1242,20 @@ var GUM3D = (function (exports) {
     return { vertices: outVerts, faces: faces };
   }
 
+
+  function mapFuncToAttributes (vertices, attribName, func) {
+    const outVertices = [];
+    for (let vi = 0; vi < vertices.length; vi++) {
+      const vert = vertices[vi];
+      const copy = copyVertex(vert);
+      if (copy[attribName]) {
+        copy[attribName] = func(copy[attribName]);
+      }
+      outVertices.push(copy);
+    }
+    return outVertices;
+  }
+
   var meshOps = /*#__PURE__*/Object.freeze({
     __proto__: null,
     applyAttribConstant: applyAttribConstant,
@@ -1233,6 +1263,7 @@ var GUM3D = (function (exports) {
     copyVertex: copyVertex,
     facesToEdges: facesToEdges,
     findGroups: findGroups,
+    mapFuncToAttributes: mapFuncToAttributes,
     shadeFlat: shadeFlat,
     shadeSmooth: shadeSmooth,
     triangulate: triangulate,
@@ -1850,6 +1881,25 @@ var GUM3D = (function (exports) {
     transpose: transpose
   });
 
+  const CHARS = 'abcdefghijfklmnopqrstuvwxyzABCDEFGHIJFKLMNOPQRSTUVWXYZ0123456789_@!';
+  const buffer = new Uint8Array(128);
+  let index = buffer.byteLength;
+
+  function fillBuffer () {
+    crypto.getRandomValues(buffer);
+    index = 0;
+  }
+
+  function uuid (length = 6) {
+    if (index + length >= buffer.byteLength) fillBuffer();
+    let id = '';
+    while(id.length < length) {
+      id += CHARS[buffer[index] % CHARS.length];
+      ++ index;
+    }
+    return id;
+  }
+
   /**
    * @fileoverview Provide a polygonal mesh class.
    */
@@ -1895,6 +1945,11 @@ var GUM3D = (function (exports) {
        * A name for this mesh.
        */
       this.name = meta.name || 'mesh';
+
+      /**
+       * The id for this mesh.
+       */ 
+      this.id = uuid();
     }
 
 
@@ -1940,7 +1995,7 @@ var GUM3D = (function (exports) {
         attribs[attrib] = new Float32Array(attribs[attrib]);
       }
 
-      const name = this.name;
+      const name = `${this.name}_${this.id}`;
       return { mode, vertexCount, attribs, name };
     }
 
@@ -1968,7 +2023,7 @@ var GUM3D = (function (exports) {
         attribs[attrib] = new Float32Array(attribs[attrib]);
       }
 
-      const name = this.name + '_edges';
+      const name = `${this.name}_${this.id}_edges`;
       return { mode, vertexCount, attribs, name };
     }
 
@@ -1993,7 +2048,7 @@ var GUM3D = (function (exports) {
         attribs[attrib] = new Float32Array(attribs[attrib]);
       }
 
-      const name = this.name + '_points';
+      const name = `${this.name}_${this.id}_points`;
       return { mode, vertexCount, attribs, name};
     }
 
@@ -2029,7 +2084,7 @@ var GUM3D = (function (exports) {
         attribs[attrib] = new Float32Array(attribs[attrib]);
       }
 
-      const name = this.name + '_normals';
+      const name = `${this.name}_${this.id}_normals`;
       return { mode, vertexCount, attribs, name };
     }
 
@@ -2124,6 +2179,12 @@ var GUM3D = (function (exports) {
       
       return this;
     }  
+
+    flipNormals () {
+      const flipNormal = n => n.map(x => x * -1);
+      this.vertices = mapFuncToAttributes(this.vertices, 'normal', flipNormal);
+      return this;
+    }
   }
 
   /**
@@ -2875,25 +2936,6 @@ var GUM3D = (function (exports) {
     }
   }
 
-  const CHARS = 'abcdefghijfklmnopqrstuvwxyzABCDEFGHIJFKLMNOPQRSTUVWXYZ0123456789_@!';
-  const buffer = new Uint8Array(128);
-  let index = buffer.byteLength;
-
-  function fillBuffer () {
-    crypto.getRandomValues(buffer);
-    index = 0;
-  }
-
-  function uuid (length = 6) {
-    if (index + length >= buffer.byteLength) fillBuffer();
-    let id = '';
-    while(id.length < length) {
-      id += CHARS[buffer[index] % CHARS.length];
-      ++ index;
-    }
-    return id;
-  }
-
   /**
    * A single node (gameObject).
    */
@@ -2945,8 +2987,12 @@ var GUM3D = (function (exports) {
     }
 
 
-    scale (x) {
-      this.transform.scale.set(x, x, x);
+    scale (x, y, z) {
+      if (arguments.length === 1) {
+        this.transform.scale.set(x, x, x);
+      } else {
+        this.transform.scale.set(x, y, z);    
+      }
       return this;
     }
 
@@ -3061,6 +3107,8 @@ var GUM3D = (function (exports) {
 
       this.target = new Vec3(0, 0, 0);
 
+      this.up = new Vec3(0, 1, 0);
+
       this.updateViewProjection();
     }
 
@@ -3070,7 +3118,7 @@ var GUM3D = (function (exports) {
 
 
     updateViewProjection () {
-      lookAt(this.view, this.eye, this.target.xyz, [0, 1, 0]);
+      lookAt(this.view, this.eye, this.target.xyz, this.up.xyz);
       perspective(this.projection, radians(this.fov), this._aspect, this.near, this.far);
     }
   }
@@ -3583,7 +3631,7 @@ var GUM3D = (function (exports) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S,     gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T,     gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       
       // Create the frame buffer.
       target.frameBuffer = gl.createFramebuffer();
@@ -4539,7 +4587,7 @@ var GUM3D = (function (exports) {
      * @param {number} size The size used for the width and height of the canvas.
      *     Power of 2 recommended.
      */
-    constructor (size, feltApp) {
+    constructor (w, h, app) {
 
       /**
        * Css style for the texture canvas.
@@ -4553,21 +4601,25 @@ var GUM3D = (function (exports) {
       };
 
       /** */
-      this.size = size;
+      this.w = w;
+      this.h = h;
 
       this.id = 'texer.' + generateId();
 
       this.canvas = tag('canvas.texer', this.texerStyle);
-      select('.gum-panel').append(this.canvas);
+      let panel = select('.gum-panel');
+      if (panel) {
+        panel.append(this.canvas);
+      }
 
-      this.canvas.width = size;
-      this.canvas.height = size;
+      this.canvas.width = w;
+      this.canvas.height = h;
 
       this.ctx = this.canvas.getContext('2d');
 
       this.textureSettings = {
-        width: size,
-        height: size, 
+        width: w,
+        height: h, 
         clamp: true,
         filter: 'NEAREST'
       };
@@ -4578,7 +4630,7 @@ var GUM3D = (function (exports) {
 
       this._changed = false;
       this.fill(this.style);
-      this.pixels(0, 0, size, size);
+      this.pixels(0, 0, w, h);
     }
 
     /**
@@ -4946,6 +4998,8 @@ var GUM3D = (function (exports) {
       this._usedColors = {};
 
       this._imageScaling = 'auto';
+
+      this.shaders = shaders;
     } 
 
 
@@ -5331,6 +5385,7 @@ var GUM3D = (function (exports) {
       this.renderer.uniform('uTex', 'none');
 
       for (let call of this.scene.drawCalls()) {
+        
         this.renderer.draw(call.geometry, call.uniforms, call.program);
         // console.log(call);
       }
@@ -5458,9 +5513,9 @@ var GUM3D = (function (exports) {
 
     for (const fn in module) {
       if (typeof module[fn] === 'function' && fn[0] !== '_') {
-        if (!(fn in window)) {
-          targetObj[fn] = module[fn];
-        }
+        targetObj[fn] = module[fn];
+      } else if (typeof module[fn] === 'object') {
+        targetObj[fn] = module[fn];
       }
     }
   }

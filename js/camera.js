@@ -17,6 +17,8 @@ export class Camera extends Node {
 
     this.target = new Vec3(0, 0, 0);
 
+    this.up = new Vec3(0, 1, 0);
+
     this.updateViewProjection();
   }
 
@@ -26,7 +28,7 @@ export class Camera extends Node {
 
 
   updateViewProjection () {
-    m4.lookAt(this.view, this.eye, this.target.xyz, [0, 1, 0]);
+    m4.lookAt(this.view, this.eye, this.target.xyz, this.up.xyz);
     m4.perspective(this.projection, radians(this.fov), this._aspect, this.near, this.far);
   }
 }

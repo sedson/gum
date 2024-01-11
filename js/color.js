@@ -81,6 +81,23 @@ export class Color {
   blend (other, amt = 0.5, mode = 'RGB') {
     return blend(this, other, amt, mode);
   }
+
+  /**
+   * Hue shift
+   * @param {number} amt The amount of hue shift in degrees.
+   * @returns {Color} A new color object.
+   */ 
+  shiftHue (amt) {
+    return new Color(...hslToRgb(this.h + amt, this.s, this.l, this.a));
+  }
+
+  lighten (amt) {
+    return new Color(...hslToRgb(this.h, this.s, this.l + amt, this.a));
+  }
+
+  saturate (amt) {
+    return new Color(...hslToRgb(this.h, this.s + amt, this.l, this.a));
+  }
 }
 
 
@@ -379,16 +396,16 @@ export function isColor (any) {
 export function blend (src, target, amt = 0.5, mode = 'RGB') {
   switch (mode.toUpperCase()) {
     case 'RGB' : 
-      return blendRGB_(src, target, amt);
+      return _blendRgb(src, target, amt);
 
     case 'HSL' :
-      return blendHSL_(src, target, amt);
+      return _blendHSL(src, target, amt);
   }
 }
 
 
 
-function blendRGB_ (src, target, amt = 0.5) {
+function _blendRgb (src, target, amt = 0.5) {
   if (!isColor(src) || !isColor(target)) {
     return new Color();
   }
@@ -402,7 +419,7 @@ function blendRGB_ (src, target, amt = 0.5) {
 }
 
 
-function blendHSL_ (src, target, amt = 0.5) {
+function _blendHSL (src, target, amt = 0.5) {
   if (!isColor(src) || !isColor(target)) {
     return new Color();
   }
@@ -414,7 +431,3 @@ function blendHSL_ (src, target, amt = 0.5) {
   const l = lerp(src.l, target.l, amt);
   return new Color(...hslToRgb(h, s, l, src.a));
 }
-
-
-
-window.Color = Color;

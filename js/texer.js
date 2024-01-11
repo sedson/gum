@@ -13,7 +13,7 @@ export class Texer {
    * @param {number} size The size used for the width and height of the canvas.
    *     Power of 2 recommended.
    */
-  constructor (size, feltApp) {
+  constructor (w, h, app) {
 
     /**
      * Css style for the texture canvas.
@@ -27,21 +27,25 @@ export class Texer {
     };
 
     /** */
-    this.size = size;
+    this.w = w;
+    this.h = h;
 
     this.id = 'texer.' + generateId();
 
     this.canvas = dom.tag('canvas.texer', this.texerStyle);
-    dom.select('.gum-panel').append(this.canvas);
+    let panel = dom.select('.gum-panel');
+    if (panel) {
+      panel.append(this.canvas);
+    }
 
-    this.canvas.width = size;
-    this.canvas.height = size;
+    this.canvas.width = w;
+    this.canvas.height = h;
 
     this.ctx = this.canvas.getContext('2d');
 
     this.textureSettings = {
-      width: size,
-      height: size, 
+      width: w,
+      height: h, 
       clamp: true,
       filter: 'NEAREST'
     };
@@ -52,7 +56,7 @@ export class Texer {
 
     this._changed = false;
     this.fill(this.style);
-    this.pixels(0, 0, size, size);
+    this.pixels(0, 0, w, h);
   }
 
   /**

@@ -5,6 +5,7 @@
 import * as MeshOps from './mesh-ops.js';
 import { Vec3 } from './vectors.js';
 import * as m4 from './matrix.js';
+import { uuid } from './id.js';
 
 /**
  * A single vertex. Contains 1 or more named attributes. 
@@ -47,6 +48,11 @@ export class Mesh {
      * A name for this mesh.
      */
     this.name = meta.name || 'mesh';
+
+    /**
+     * The id for this mesh.
+     */ 
+    this.id = uuid();
   }
 
 
@@ -92,7 +98,7 @@ export class Mesh {
       attribs[attrib] = new Float32Array(attribs[attrib]);
     }
 
-    const name = this.name;
+    const name = `${this.name}_${this.id}`;
     return { mode, vertexCount, attribs, name };
   }
 
@@ -120,7 +126,7 @@ export class Mesh {
       attribs[attrib] = new Float32Array(attribs[attrib]);
     }
 
-    const name = this.name + '_edges'
+    const name = `${this.name}_${this.id}_edges`;
     return { mode, vertexCount, attribs, name };
   }
 
@@ -145,7 +151,7 @@ export class Mesh {
       attribs[attrib] = new Float32Array(attribs[attrib]);
     }
 
-    const name = this.name + '_points';
+    const name = `${this.name}_${this.id}_points`;
     return { mode, vertexCount, attribs, name};
   }
 
@@ -181,7 +187,7 @@ export class Mesh {
       attribs[attrib] = new Float32Array(attribs[attrib]);
     }
 
-    const name = this.name + '_normals';
+    const name = `${this.name}_${this.id}_normals`;
     return { mode, vertexCount, attribs, name };
   }
 
@@ -276,4 +282,10 @@ export class Mesh {
     
     return this;
   }  
+
+  flipNormals () {
+    const flipNormal = n => n.map(x => x * -1);
+    this.vertices = MeshOps.mapFuncToAttributes(this.vertices, 'normal', flipNormal);
+    return this;
+  }
 }

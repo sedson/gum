@@ -52,8 +52,12 @@ export class Node {
   }
 
 
-  scale (x) {
-    this.transform.scale.set(x, x, x);
+  scale (x, y, z) {
+    if (arguments.length === 1) {
+      this.transform.scale.set(x, x, x);
+    } else {
+      this.transform.scale.set(x, y, z);    
+    }
     return this;
   }
 

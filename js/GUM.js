@@ -222,6 +222,8 @@ export class Gum {
     this._usedColors = {};
 
     this._imageScaling = 'auto';
+
+    this.shaders = shaders;
   } 
 
 
@@ -607,6 +609,7 @@ export class Gum {
     this.renderer.uniform('uTex', 'none');
 
     for (let call of this.scene.drawCalls()) {
+      
       this.renderer.draw(call.geometry, call.uniforms, call.program);
       // console.log(call);
     }
@@ -734,9 +737,9 @@ function _inlineModule (module, context, target) {
 
   for (const fn in module) {
     if (typeof module[fn] === 'function' && fn[0] !== '_') {
-      if (!(fn in window)) {
-        targetObj[fn] = module[fn];
-      }
+      targetObj[fn] = module[fn];
+    } else if (typeof module[fn] === 'object') {
+      targetObj[fn] = module[fn];
     }
   }
 }
