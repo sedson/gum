@@ -20,29 +20,35 @@ export class Color {
    * discourage calling 'new Color()' and should rely on the color() generator.
    */
   constructor (r, g, b, a) {
-    this._r = r ?? defR;
-    this._g = g ?? defG;
-    this._b = b ?? defB;
+    this._rgb = [ r ?? defR, g ?? defG, b ?? defB ];
+    this._hsl = rgbToHsl(...this._rgb);
     this._a = a ?? defA;
-    this._hsl = rgbToHsl(this._r, this._g, this._b);
-
     ColorSwatch(this.rgbString());
   }
   
-  get r    () { return this._r }; 
-  get g    () { return this._g }; 
-  get b    () { return this._b }; 
-  get a    () { return this._a }; 
-
-  get rgb  () { return [this._r, this._g, this._b]; }
-  get rgba () { return [this._r, this._g, this._b, this._a]; }
+  get r    () { return this._rgb[0]; }
+  get g    () { return this._rgb[1]; } 
+  get b    () { return this._rgb[2]; } 
   
   get h    () { return this._hsl[0]; }
   get s    () { return this._hsl[1]; }
   get l    () { return this._hsl[2]; }
 
-  get hsl  () { return this._hsl; }
+  get a    () { return this._a };
+  set a    (a) { this._a = a; }
+
+  get rgb  () { return [...this._rgb]; }
+  get rgba () { return [...this._rgb, this._a]; }
+  get hsl  () { return [...this._hsl]; }
   get hsla () { return [...this._hsl, this._a]; }
+
+  set r (r) { this._rgb[0] = r;  this._hsl = rgbToHsl(...this._rgb); }
+  set g (g) { this._rgb[1] = g;  this._hsl = rgbToHsl(...this._rgb); }
+  set b (b) { this._rgb[2] = b;  this._hsl = rgbToHsl(...this._rgb); }
+  
+  set h (h) { this._hsl[0] = h;  this._rgb = hslToRgb(...this._hsl); }
+  set s (s) { this._hsl[1] = s;  this._rgb = hslToRgb(...this._hsl); }
+  set l (l) { this._hsl[2] = l;  this._rgb = hslToRgb(...this._hsl); }
 
 
   /**
@@ -50,9 +56,9 @@ export class Color {
    * @returns {string}
    */
   rgbString () {
-    const r255 = Math.round(this._r * 255);
-    const g255 = Math.round(this._g * 255);
-    const b255 = Math.round(this._b * 255);
+    const r255 = Math.round(this._rgb[0] * 255);
+    const g255 = Math.round(this._rgb[1] * 255);
+    const b255 = Math.round(this._rgb[2] * 255);
     if (this._a === 1) {
       return `rgb(${r255}, ${g255}, ${b255})`;
     }
@@ -80,6 +86,10 @@ export class Color {
    */
   blend (other, amt = 0.5, mode = 'RGB') {
     return blend(this, other, amt, mode);
+  }
+
+  copy () {
+    return new Color(...this.rgba);
   }
 
   /**

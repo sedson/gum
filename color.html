@@ -23,7 +23,8 @@
     
   </body>
    <script type="module">
-      import { g } from '/js/GUM.js';
+      import {Gum} from '/js/GUM.js';
+      // console.log(Gum)
 
       const panel = document.querySelector('.gum-panel');
 
@@ -31,12 +32,12 @@
       colorName.classList.add('color-name');
       panel.append(colorName);
 
-      for (let col in g.colors) {
+      for (let col in Gum.prototype.colors) {
         const swatch = document.createElement('div');
         swatch.classList.add('swatch');
-        swatch.style.backgroundColor = g.colors[col];
+        swatch.style.backgroundColor = Gum.prototype.colors[col];
         panel.append(swatch);
-        swatch.onpointerenter = () => colorName.innerText = col + ' ' + g.colors[col]; 
+        swatch.onpointerenter = () => colorName.innerText = col + ' ' + Gum.prototype.colors[col]; 
       }
 
     </script>

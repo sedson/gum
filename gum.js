@@ -246,29 +246,35 @@ var GUM3D = (function (exports) {
      * discourage calling 'new Color()' and should rely on the color() generator.
      */
     constructor (r, g, b, a) {
-      this._r = r ?? defR;
-      this._g = g ?? defG;
-      this._b = b ?? defB;
+      this._rgb = [ r ?? defR, g ?? defG, b ?? defB ];
+      this._hsl = rgbToHsl(...this._rgb);
       this._a = a ?? defA;
-      this._hsl = rgbToHsl(this._r, this._g, this._b);
-
       ColorSwatch(this.rgbString());
     }
     
-    get r    () { return this._r }; 
-    get g    () { return this._g }; 
-    get b    () { return this._b }; 
-    get a    () { return this._a }; 
-
-    get rgb  () { return [this._r, this._g, this._b]; }
-    get rgba () { return [this._r, this._g, this._b, this._a]; }
+    get r    () { return this._rgb[0]; }
+    get g    () { return this._rgb[1]; } 
+    get b    () { return this._rgb[2]; } 
     
     get h    () { return this._hsl[0]; }
     get s    () { return this._hsl[1]; }
     get l    () { return this._hsl[2]; }
 
-    get hsl  () { return this._hsl; }
+    get a    () { return this._a };
+    set a    (a) { this._a = a; }
+
+    get rgb  () { return [...this._rgb]; }
+    get rgba () { return [...this._rgb, this._a]; }
+    get hsl  () { return [...this._hsl]; }
     get hsla () { return [...this._hsl, this._a]; }
+
+    set r (r) { this._rgb[0] = r;  this._hsl = rgbToHsl(...this._rgb); }
+    set g (g) { this._rgb[1] = g;  this._hsl = rgbToHsl(...this._rgb); }
+    set b (b) { this._rgb[2] = b;  this._hsl = rgbToHsl(...this._rgb); }
+    
+    set h (h) { this._hsl[0] = h;  this._rgb = hslToRgb(...this._hsl); }
+    set s (s) { this._hsl[1] = s;  this._rgb = hslToRgb(...this._hsl); }
+    set l (l) { this._hsl[2] = l;  this._rgb = hslToRgb(...this._hsl); }
 
 
     /**
@@ -276,9 +282,9 @@ var GUM3D = (function (exports) {
      * @returns {string}
      */
     rgbString () {
-      const r255 = Math.round(this._r * 255);
-      const g255 = Math.round(this._g * 255);
-      const b255 = Math.round(this._b * 255);
+      const r255 = Math.round(this._rgb[0] * 255);
+      const g255 = Math.round(this._rgb[1] * 255);
+      const b255 = Math.round(this._rgb[2] * 255);
       if (this._a === 1) {
         return `rgb(${r255}, ${g255}, ${b255})`;
       }
@@ -2605,7 +2611,7 @@ var GUM3D = (function (exports) {
 
   /**
    * Make a circle with diameter size facing up along y axis.
-   * @param {number} size The size of the quad.
+   * @param {number} size The size of the circle.
    * @param {number} resolution The number of straight line segments to use.
    * @return {Mesh}
    */ 
@@ -2707,12 +2713,118 @@ var GUM3D = (function (exports) {
     }
   }
 
+
+
+  /**
+   * Make a circle with diameter size facing up along y axis.
+   * @param {number} size The size of the circle.
+   * @param {number} resolution The number of straight line segments to use.
+   * @return {Mesh}
+   */ 
+  function cylinder (size, resolution = 12, fill = 'ngon', flat = false) {
+    const positions = [];
+    let faces = [];
+    const normals = [];
+    let ngon = [];
+    const radius = size / 2;
+
+    // Make the top and bottom face.
+    for (let k = 0; k < 2; k ++) {
+      
+      let y = k * 2 - 1;
+      let offset = fill === 'fan' ? (resolution + 1) * k : resolution * k;
+
+      if (fill === 'fan') {
+        positions.push([0, y * radius, 0]);
+        normals.push([0, y, 0]);
+      }
+
+      for (let i = 0; i < resolution; i++) {
+        const theta = -i * Math.PI * 2 / resolution;
+        const x = Math.cos(theta) * (size / 2);
+        const z = Math.sin(theta) * (size / 2);
+
+        positions.push([x, y * radius, z]);
+        normals.push([0, y, 0]);
+
+        if (fill === 'fan') {
+          const next = ((i + 1) % (resolution));
+          if (k === 0) {
+            faces.push([offset, offset + next + 1, offset + i + 1]);
+          } else {
+            faces.push([offset, offset + i + 1, offset + next + 1]);
+          }
+        } else if (fill === 'ngon') {
+          if (k === 0) {
+            ngon.push((resolution - (i + 1)) + offset);        
+          } else {
+            ngon.push(i + offset);        
+          }
+        }
+      }
+
+      if (fill === 'ngon') {
+        faces.push(ngon);
+        ngon = [];
+      }
+    }
+
+    let offset = positions.length;
+    
+    // Make the outer wall. 
+    // TODO : This is smooth shading but with split verts. Make the smooth shading 
+    //     work with shared verts and a flat shading vertsion work with split 
+    //     verts.
+    for (let i = 0; i < resolution; i++) {
+      const theta = -i * Math.PI * 2 / resolution;
+      const x = Math.cos(theta) * (size / 2);
+      const z = Math.sin(theta) * (size / 2);
+
+      const theta2 = -(i + 1) * Math.PI * 2 / resolution;
+      const x2 = Math.cos(theta2) * (size / 2);
+      const z2 = Math.sin(theta2) * (size / 2);
+
+      positions.push(
+        [x, -radius, z],
+        [x, radius, z],
+        [x2, -radius, z2],
+        [x2, radius, z2],
+      );
+
+      normals.push(
+        new Vec3(x, 0, z).normalize().xyz,
+        new Vec3(x, 0, z).normalize().xyz,
+        new Vec3(x2, 0, z2).normalize().xyz,
+        new Vec3(x2, 0, z2).normalize().xyz,
+      );
+
+      faces.push([
+        offset + 1,
+        offset + 0,
+        offset + 2,
+        offset + 3,
+      ]);
+
+      offset += 4;
+    }
+
+
+
+    const vertices = positions.map((pos, i) => {
+      return { position: pos, normal: normals[i] };
+    });
+
+
+    return new Mesh(vertices, faces, { name: 'cylinder' });
+  }
+
   var primitives = /*#__PURE__*/Object.freeze({
     __proto__: null,
     _axes: _axes,
     _fsQuad: _fsQuad,
     circle: circle,
     cube: cube,
+    cylinder: cylinder,
     grid: grid,
     icosphere: icosphere,
     quad: quad,
