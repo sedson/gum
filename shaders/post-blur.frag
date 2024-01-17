@@ -24,8 +24,6 @@ void main() {
 
   vec2 pix = vec2(uDist, uDist) / uScreenSize;
 
-
-
   for (float i = -uKernel; i <= uKernel; i++) {
     for (float j = -uKernel; j <= uKernel; j++) {
       vec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);
@@ -38,5 +36,4 @@ void main() {
 
   
   fragColor = vec4(avg, 1.0);
-
 }

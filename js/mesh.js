@@ -288,4 +288,10 @@ export class Mesh {
     this.vertices = MeshOps.mapFuncToAttributes(this.vertices, 'normal', flipNormal);
     return this;
   }
+
+  copy () {
+    const copyVertices = JSON.parse(JSON.stringify(this.vertices));
+    const copFaces = JSON.parse(JSON.stringify(this.faces));
+    return new Mesh(copyVertices, copFaces, { name: this.name });
+  }
 }

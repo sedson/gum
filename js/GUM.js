@@ -143,6 +143,11 @@ export class Gum {
     this._timeAtLaunch = performance.now();
 
     /**
+     * The current time stamp.
+     */ 
+    this._time = this._timeAtLaunch;
+
+    /**
      * The time stamp at the last info report.
      */
     this._timeAtLastInfo = performance.now();
@@ -155,7 +160,7 @@ export class Gum {
     /**
      * The time at last tick. 
      */
-    this._lastNow = 0;
+    this._lastNow = performance.now();
 
     /**
      * An array of textures.
@@ -292,7 +297,7 @@ export class Gum {
     }
 
     if (Array.isArray(color)) {
-      this.renderer(clear(color));
+      this.renderer.clear(color);
     }
   }
 
@@ -439,8 +444,12 @@ export class Gum {
     this.renderer.draw(this._axes);
   }
 
-  node (name) {
-    return this.scene.createChildNode(name, null);
+  node (name, msh) {
+    let m = null;
+    if (msh) {
+      m = this.mesh(msh);
+    }
+    return this.scene.createChildNode(name, m);
   }
 
   mesh (msh) {

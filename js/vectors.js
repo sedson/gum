@@ -113,14 +113,14 @@ export class Vec3 {
   }
 
   distance (a) {
-    const dx = this.y - a.x;
+    const dx = this.x - a.x;
     const dy = this.y - a.y;
     const dz = this.z - a.z;
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
   }
 
   distance2 (a) {
-    const dx = this.y - a.x;
+    const dx = this.x - a.x;
     const dy = this.y - a.y;
     const dz = this.z - a.z;
     return dx * dx + dy * dy + dz * dz;

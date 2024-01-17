@@ -646,7 +646,7 @@ export class RendererGL2 {
 
 
   _getMeshId (name) {
-    const n = name.toLowerCase();
+    const n = name;
     let postFix = ''
     let num = 1;
     while (this.meshes[n + postFix]) {

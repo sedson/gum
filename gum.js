@@ -314,6 +314,10 @@ var GUM3D = (function (exports) {
       return blend(this, other, amt, mode);
     }
 
+    copy () {
+      return new Color(...this.rgba);
+    }
+
     /**
      * Hue shift
      * @param {number} amt The amount of hue shift in degrees.
@@ -697,7 +701,7 @@ var GUM3D = (function (exports) {
       "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\nuniform float uThreshold;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat brightness (vec3 col) {\n  return dot(col, vec3(0.2126, 0.7152, 0.0722));\n}\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uScreenSize;\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\n\n\nvec4 sampleCol = texture(uMainTex, sampleCoord);\nfloat mask = step(uThreshold, brightness(sampleCol.rgb));\n\n\naccum += sampleCol.rgb * mask * uWeight;\n\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\n\nfragColor = col;\nfragColor.rgb += avg;\nfloat mask = step(uThreshold, brightness(col.rgb));\n\n// fragColor = vec4(vec3(mask), 1.0);\nfragColor = vec4(avg, 1.0);\n\n\n}"
     },
     "post-blur": {
-      "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uScreenSize;\n\n\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\naccum += texture(uMainTex, sampleCoord).rgb * uWeight;\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\nfragColor = vec4(avg, 1.0);\n\n}"
+      "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uScreenSize;\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\naccum += texture(uMainTex, sampleCoord).rgb * uWeight;\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\nfragColor = vec4(avg, 1.0);\n}"
     },
     "post-chromatic": {
       "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec2 rOff = vec2(0.0, 4.0);\nvec2 gOff = vec2(0.0, 0.0);\nvec2 bOff = vec2(4.0, 0.0);\nvec2 pixelSize = 1.0 / uScreenSize;\nvec4 col = texture(uMainTex, vTexCoord);\n\nfragColor = col;\nfloat r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\nfloat g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\nfloat b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\nfragColor.rgb = vec3(r, g, b);\n\n// vec2 uv = vTexCoord;\n// uv *= 1.0 - uv.xy;\n\n// float vig = uv.x * uv.y * 15.0;\n\n// vig = pow(vig, 0.03);\n\n// fragColor.rgb *= vig;\n}"
@@ -854,14 +858,14 @@ var GUM3D = (function (exports) {
     }
 
     distance (a) {
-      const dx = this.y - a.x;
+      const dx = this.x - a.x;
       const dy = this.y - a.y;
       const dz = this.z - a.z;
       return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
     distance2 (a) {
-      const dx = this.y - a.x;
+      const dx = this.x - a.x;
       const dy = this.y - a.y;
       const dz = this.z - a.z;
       return dx * dx + dy * dy + dz * dz;
@@ -2191,6 +2195,12 @@ var GUM3D = (function (exports) {
       this.vertices = mapFuncToAttributes(this.vertices, 'normal', flipNormal);
       return this;
     }
+
+    copy () {
+      const copyVertices = JSON.parse(JSON.stringify(this.vertices));
+      const copFaces = JSON.parse(JSON.stringify(this.faces));
+      return new Mesh(copyVertices, copFaces, { name: this.name });
+    }
   }
 
   /**
@@ -2835,12 +2845,13 @@ var GUM3D = (function (exports) {
    * 
    */ 
 
+
   class Line {
     constructor (points, color = [1, 1, 1, 1]) {
       this.points = points;
       this.color = color;
       this.thickness = .1;
-      this.name = 'line_' + (Date.now() % 253); 
+      this.name = 'line_' + uuid(); 
 
     }
 
@@ -4003,7 +4014,7 @@ var GUM3D = (function (exports) {
 
 
     _getMeshId (name) {
-      const n = name.toLowerCase();
+      const n = name;
       let postFix = '';
       let num = 1;
       while (this.meshes[n + postFix]) {
@@ -5031,6 +5042,11 @@ var GUM3D = (function (exports) {
       this._timeAtLaunch = performance.now();
 
       /**
+       * The current time stamp.
+       */ 
+      this._time = this._timeAtLaunch;
+
+      /**
        * The time stamp at the last info report.
        */
       this._timeAtLastInfo = performance.now();
@@ -5043,7 +5059,7 @@ var GUM3D = (function (exports) {
       /**
        * The time at last tick. 
        */
-      this._lastNow = 0;
+      this._lastNow = performance.now();
 
       /**
        * An array of textures.
@@ -5180,7 +5196,7 @@ var GUM3D = (function (exports) {
       }
 
       if (Array.isArray(color)) {
-        this.renderer(clear(color));
+        this.renderer.clear(color);
       }
     }
 
@@ -5327,8 +5343,12 @@ var GUM3D = (function (exports) {
       this.renderer.draw(this._axes);
     }
 
-    node (name) {
-      return this.scene.createChildNode(name, null);
+    node (name, msh) {
+      let m = null;
+      if (msh) {
+        m = this.mesh(msh);
+      }
+      return this.scene.createChildNode(name, m);
     }
 
     mesh (msh) {
