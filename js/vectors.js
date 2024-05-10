@@ -52,6 +52,10 @@ export class Vec2 {
     const dy = this.y - a.y;
     return dx * dx + dy * dy;
   }
+
+  vectorTo (a) {
+    return new Vec2(a.x - this.x, a.y - this.y);
+  }
   
 }
 
@@ -165,11 +169,17 @@ export class Vec3 {
     return new Vec3(x, y, z);
   }
 
+  vectorTo (a) {
+    return new Vec3(a.x - this.x, a.y - this.y, a.z - this.z);
+  }
+
   equals (a, tolerance = Number.EPSILON) {
     return Math.abs(this.x - a.x) < tolerance &&
            Math.abs(this.y - a.y) < tolerance && 
            Math.abs(this.z - a.z) < tolerance;
   }
+
+
 
 
 }

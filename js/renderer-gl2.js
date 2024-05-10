@@ -548,8 +548,8 @@ export class RendererGL2 {
     this.gl.linkProgram(program);
 
     if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
-      console.log(this.gl.getShaderInfoLog(vert));
-      console.log(this.gl.getShaderInfoLog(frag));
+      this._printShader(this.gl.getShaderInfoLog(vertexShader), vert);
+      this._printShader(this.gl.getShaderInfoLog(fragmentShader), frag);
       return;
     }
 
@@ -889,5 +889,15 @@ export class RendererGL2 {
         this._disposeGLEntity(prop);
       }
     }
+  }
+
+  _printShader (info, shaderSrc) {
+    if (info.length === 0) return;
+
+    let lines = shaderSrc.split('\n');
+    const shaderWithLines = lines.map((l, i) => {
+      return (i + '').padEnd(4) + l;
+    }).join('\n');
+    console.error(info + '\n\n\n' + shaderWithLines);
   }
 }

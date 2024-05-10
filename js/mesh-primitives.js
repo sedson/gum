@@ -10,10 +10,10 @@ import { Mesh } from "./mesh.js";
  * Make a cube. Centered on the origin with w, h, d of size.
  * @param {number} size The size of the cube.
  * @return {Mesh}
- */ 
-export function cube (size = 1) {
+ */
+export function cube(size = 1) {
   const s = size / 2;
-  
+
   //   7-----6
   //  /|    /|
   // 4-----5 |
@@ -26,7 +26,7 @@ export function cube (size = 1) {
     [+s, -s, +s],
     [+s, -s, -s],
     [-s, -s, -s],
-    
+
     [-s, +s, +s],
     [+s, +s, +s],
     [+s, +s, -s],
@@ -39,15 +39,10 @@ export function cube (size = 1) {
   let i = 0;
 
   const quad = function (a, b, c, d, normal, color) {
-    vertices.push(
-      {position: [...positions[a]], normal, color, texCoord: [0, 0]},
-      {position: [...positions[b]], normal, color, texCoord: [1, 0]},
-      {position: [...positions[c]], normal, color, texCoord: [1, 1]},
-      {position: [...positions[d]], normal, color, texCoord: [0, 1]},
-    );
+    vertices.push({ position: [...positions[a]], normal, color, texCoord: [0, 0] }, { position: [...positions[b]], normal, color, texCoord: [1, 0] }, { position: [...positions[c]], normal, color, texCoord: [1, 1] }, { position: [...positions[d]], normal, color, texCoord: [0, 1] }, );
 
     faces.push([i, i + 1, i + 2, i + 3]);
-    
+
     i += 4;
   }
 
@@ -71,9 +66,9 @@ export function cube (size = 1) {
  * @param {number} level The subdivision level to use.
  * @param {boolean} flat Whether to use flat shading. Default smooth (false).
  * @return {Mesh}
- */ 
-export function icosphere (size = 1, level = 1, flat = false) {
-  
+ */
+export function icosphere(size = 1, level = 1, flat = false) {
+
   const radius = size / 2;
 
   // Start with an icosahedron, using this aspect ratio to generate points.
@@ -81,18 +76,30 @@ export function icosphere (size = 1, level = 1, flat = false) {
   const t = (1 + Math.sqrt(5)) / 2;
 
   let positions = [
-    /**00*/ new Vec3(-t,  0, -1).normalize(radius),
-    /**01*/ new Vec3(+t,  0, -1).normalize(radius),
-    /**02*/ new Vec3(+t,  0, +1).normalize(radius),
-    /**03*/ new Vec3(-t,  0, +1).normalize(radius),
-    /**04*/ new Vec3(-1, -t,  0).normalize(radius),
-    /**05*/ new Vec3(+1, -t,  0).normalize(radius),
-    /**06*/ new Vec3(+1, +t,  0).normalize(radius),
-    /**07*/ new Vec3(-1, +t,  0).normalize(radius),
-    /**08*/ new Vec3( 0, -1, -t).normalize(radius),
-    /**09*/ new Vec3( 0, -1, +t).normalize(radius),
-    /**10*/ new Vec3( 0, +1, +t).normalize(radius),
-    /**11*/ new Vec3( 0, +1, -t).normalize(radius),
+    /**00*/
+    new Vec3(-t, 0, -1).normalize(radius),
+    /**01*/
+    new Vec3(+t, 0, -1).normalize(radius),
+    /**02*/
+    new Vec3(+t, 0, +1).normalize(radius),
+    /**03*/
+    new Vec3(-t, 0, +1).normalize(radius),
+    /**04*/
+    new Vec3(-1, -t, 0).normalize(radius),
+    /**05*/
+    new Vec3(+1, -t, 0).normalize(radius),
+    /**06*/
+    new Vec3(+1, +t, 0).normalize(radius),
+    /**07*/
+    new Vec3(-1, +t, 0).normalize(radius),
+    /**08*/
+    new Vec3(0, -1, -t).normalize(radius),
+    /**09*/
+    new Vec3(0, -1, +t).normalize(radius),
+    /**10*/
+    new Vec3(0, +1, +t).normalize(radius),
+    /**11*/
+    new Vec3(0, +1, -t).normalize(radius),
   ];
 
   let faces = [
@@ -115,7 +122,7 @@ export function icosphere (size = 1, level = 1, flat = false) {
     [1, 8, 11],
     [1, 11, 6],
     [1, 5, 8],
-    
+
     [8, 5, 4],
     [9, 4, 5],
     [10, 6, 7],
@@ -145,13 +152,13 @@ export function icosphere (size = 1, level = 1, flat = false) {
     if (foundMidPoints[key]) {
       return foundMidPoints[key];
     }
-    
+
     const posA = positions[a].copy();
     const posB = positions[b].copy();
     const midPoint = posA.copy().add(posB).div(2);
-    
+
     addPosition(midPoint);
-    
+
     const index = positions.length - 1;
     foundMidPoints[key] = index;
     return index;
@@ -160,7 +167,7 @@ export function icosphere (size = 1, level = 1, flat = false) {
 
   let faceBuffer = [];
   let vertices = [];
-  
+
   for (let i = 0; i < level; i++) {
     faceBuffer = [];
 
@@ -176,7 +183,7 @@ export function icosphere (size = 1, level = 1, flat = false) {
     }
     faces = faceBuffer;
   }
-  
+
   // For flat shading we need to split each vertex into 3 new ones and 
   // re-index the faces.
   if (flat) {
@@ -194,11 +201,7 @@ export function icosphere (size = 1, level = 1, flat = false) {
 
       const pointer = vertices.length;
 
-      vertices.push(
-        { position: a.xyz, normal: normal.xyz },
-        { position: b.xyz, normal: normal.xyz },
-        { position: c.xyz, normal: normal.xyz }
-      );
+      vertices.push({ position: a.xyz, normal: normal.xyz }, { position: b.xyz, normal: normal.xyz }, { position: c.xyz, normal: normal.xyz });
 
       faceBuffer.push([pointer, pointer + 1, pointer + 2]);
     }
@@ -216,8 +219,8 @@ export function icosphere (size = 1, level = 1, flat = false) {
 
 /**
  * 
- */ 
-export function uvsphere (size = 1, level = 1, flat = false) {
+ */
+export function uvsphere(size = 1, level = 1, flat = false) {
   const radius = size / 2;
 
   const segments = level + 2;
@@ -242,12 +245,12 @@ export function uvsphere (size = 1, level = 1, flat = false) {
   console.log(segments);
 
   for (let v = 0; v < segments; v++) {
-    
+
     for (let u = 0; u < segments; u++) {
 
       const uf0 = u / segments;
       const uf1 = (u + 1) / segments;
-      
+
       const vf0 = v / segments;
       const vf1 = (v + 1) / segments;
 
@@ -273,7 +276,7 @@ export function uvsphere (size = 1, level = 1, flat = false) {
         continue;
 
 
-      } 
+      }
 
       // North pole case. 
       if (v === segments - 1) {
@@ -295,7 +298,6 @@ export function uvsphere (size = 1, level = 1, flat = false) {
       }
 
 
-      
 
       positions.push(
         getSphericalPos(uf0, vf0),
@@ -329,19 +331,19 @@ export function uvsphere (size = 1, level = 1, flat = false) {
   console.log(positions, faces)
 
   const vertices = positions.map((pos, i) => {
-    return { position: pos, normal: pos, texCoord: texCoords[i]};
+    return { position: pos, normal: pos, texCoord: texCoords[i] };
   });
 
   return new Mesh(vertices, faces, { name: 'uvsphere' });
- 
+
 }
 
 /**
  * Make a quad facing up along y axis.
  * @param {number} size The w and d of the quad.
  * @return {Mesh}
- */ 
-export function quad (size) {
+ */
+export function quad(size) {
   const s = size / 2;
   const positions = [
     new Vec3(-s, 0, -s),
@@ -349,8 +351,10 @@ export function quad (size) {
     new Vec3(+s, 0, +s),
     new Vec3(-s, 0, +s),
   ];
-  
-  const faces = [[0, 3, 2, 1]];
+
+  const faces = [
+    [0, 3, 2, 1]
+  ];
   const vertices = positions.map(pos => {
     return { position: pos.xyz, normal: [0, 1, 0] };
   });
@@ -364,8 +368,8 @@ export function quad (size) {
  * @param {number} size The size of the quad.
  * @param {number} subdivisions The number of subdivisions.
  * @return {Mesh}
- */ 
-export function grid (size, subdivisions = 10, flat = false) {
+ */
+export function grid(size, subdivisions = 10, flat = false) {
   const s = size / 2;
   const step = size / (subdivisions + 1);
 
@@ -380,11 +384,11 @@ export function grid (size, subdivisions = 10, flat = false) {
       const z = i * step;
       for (let j = 0; j < subdivisions + 1; j++) {
         const x = j * step;
-        positions.push([-s + x,        0, -s + z]);
+        positions.push([-s + x, 0, -s + z]);
         positions.push([-s + x + step, 0, -s + z]);
         positions.push([-s + x + step, 0, -s + z + step]);
-        positions.push([-s + x       , 0, -s + z + step]);
-        
+        positions.push([-s + x, 0, -s + z + step]);
+
         faces.push([vertIndex, vertIndex + 3, vertIndex + 2, vertIndex + 1]);
         vertIndex += 4;
       }
@@ -423,8 +427,8 @@ export function grid (size, subdivisions = 10, flat = false) {
  * @param {number} size The size of the circle.
  * @param {number} resolution The number of straight line segments to use.
  * @return {Mesh}
- */ 
-export function circle (size, resolution = 12, fill = 'ngon') {
+ */
+export function circle(size, resolution = 12, fill = 'ngon') {
   const positions = [];
   const faces = [];
   const radius = size / 2;
@@ -483,33 +487,51 @@ export function _fsQuad() {
 
 /**
  * Make an axes gizmo.
- */ 
-export function _axes () {
+ */
+export function _axes() {
   const positions = [
-    [0, 0, 0], [1, 0, 0],
-    [0, 0, 0], [0, 1, 0],
-    [0, 0, 0], [0, 0, 1],
-    [0, 0, 0], [-1, 0, 0],
-    [0, 0, 0], [0, -1, 0],
-    [0, 0, 0], [0, 0, -1],
+    [0, 0, 0],
+    [1, 0, 0],
+    [0, 0, 0],
+    [0, 1, 0],
+    [0, 0, 0],
+    [0, 0, 1],
+    [0, 0, 0],
+    [-1, 0, 0],
+    [0, 0, 0],
+    [0, -1, 0],
+    [0, 0, 0],
+    [0, 0, -1],
   ];
 
   const colors = [
-    [1, 0, 0, 1], [1, 0, 0, 1],
-    [0, 1, 0, 1], [0, 1, 0, 1],
-    [0, 0, 1, 1], [0, 0, 1, 1],
-    [0, 1, 1, 1], [0, 1, 1, 1],
-    [1, 0, 1, 1], [1, 0, 1, 1],
-    [1, 1, 0, 1], [1, 1, 0, 1],
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [0, 1, 0, 1],
+    [0, 1, 0, 1],
+    [0, 0, 1, 1],
+    [0, 0, 1, 1],
+    [0, 1, 1, 1],
+    [0, 1, 1, 1],
+    [1, 0, 1, 1],
+    [1, 0, 1, 1],
+    [1, 1, 0, 1],
+    [1, 1, 0, 1],
   ];
 
   const normals = [
-    [1, 0, 0], [1, 0, 0],
-    [0, 1, 0], [0, 1, 0],
-    [0, 0, 1], [0, 0, 1],
-    [-1, 0, 0], [-1, 0, 0],
-    [0, -1, 0], [0, -1, 0],
-    [0, 0, -1], [0, 0, -1],
+    [1, 0, 0],
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 1, 0],
+    [0, 0, 1],
+    [0, 0, 1],
+    [-1, 0, 0],
+    [-1, 0, 0],
+    [0, -1, 0],
+    [0, -1, 0],
+    [0, 0, -1],
+    [0, 0, -1],
   ];
 
   const vertices = positions.map((pos, i) => {
@@ -534,8 +556,8 @@ export function _axes () {
  * @param {number} size The size of the circle.
  * @param {number} resolution The number of straight line segments to use.
  * @return {Mesh}
- */ 
-export function cylinder (size, resolution = 12, fill = 'ngon', flat = false) {
+ */
+export function cylinder(size, resolution = 12, fill = 'ngon', flat = false) {
   const positions = [];
   let faces = [];
   const normals = [];
@@ -543,8 +565,8 @@ export function cylinder (size, resolution = 12, fill = 'ngon', flat = false) {
   const radius = size / 2;
 
   // Make the top and bottom face.
-  for (let k = 0; k < 2; k ++) {
-    
+  for (let k = 0; k < 2; k++) {
+
     let y = k * 2 - 1;
     let offset = fill === 'fan' ? (resolution + 1) * k : resolution * k;
 
@@ -570,9 +592,9 @@ export function cylinder (size, resolution = 12, fill = 'ngon', flat = false) {
         }
       } else if (fill === 'ngon') {
         if (k === 0) {
-          ngon.push((resolution - (i + 1)) + offset);        
+          ngon.push((resolution - (i + 1)) + offset);
         } else {
-          ngon.push(i + offset);        
+          ngon.push(i + offset);
         }
       }
     }
@@ -584,7 +606,7 @@ export function cylinder (size, resolution = 12, fill = 'ngon', flat = false) {
   }
 
   let offset = positions.length;
-  
+
   // Make the outer wall. 
   // TODO : This is smooth shading but with split verts. Make the smooth shading 
   //     work with shared verts and a flat shading vertsion work with split 
@@ -620,6 +642,103 @@ export function cylinder (size, resolution = 12, fill = 'ngon', flat = false) {
     ]);
 
     offset += 4;
+  }
+
+
+
+  const vertices = positions.map((pos, i) => {
+    return { position: pos, normal: normals[i] };
+  });
+
+
+  return new Mesh(vertices, faces, { name: 'cylinder' });
+}
+
+
+
+/**
+ * Make a cone with diameter size facing up along y axis.
+ * https://stackoverflow.com/questions/19245363/opengl-glut-surface-normals-of-cone
+ * TODO : proper normals for the cone.
+ * @param {number} size The size of the circle.
+ * @param {number} resolution The number of straight line segments to use.
+ * @return {Mesh}
+ */
+export function cone(size, resolution = 12, fill = 'ngon', flat = false) {
+  const positions = [];
+  let faces = [];
+  const normals = [];
+  let ngon = [];
+  const radius = size / 2;
+
+  // Make the bottom face.
+
+  let y = -1;
+
+  if (fill === 'fan') {
+    positions.push([0, y * radius, 0]);
+    normals.push([0, y, 0]);
+  }
+
+  for (let i = 0; i < resolution; i++) {
+    const theta = -i * Math.PI * 2 / resolution;
+    const x = Math.cos(theta) * (size / 2);
+    const z = Math.sin(theta) * (size / 2);
+
+    positions.push([x, y * radius, z]);
+    normals.push([0, y, 0]);
+
+    if (fill === 'fan') {
+
+      const next = ((i + 1) % (resolution));
+      faces.push([0, next + 1, i + 1]);
+
+    } else if (fill === 'ngon') {
+
+      ngon.push((resolution - (i + 1)));
+
+    }
+  }
+
+  if (fill === 'ngon') {
+    faces.push(ngon);
+    ngon = [];
+  }
+
+  let offset = positions.length;
+
+  // Make the outer wall. 
+  // TODO : This is smooth shading but with split verts. Make the smooth shading 
+  //     work with shared verts and a flat shading vertsion work with split 
+  //     verts.
+  for (let i = 0; i < resolution; i++) {
+    const theta = -i * Math.PI * 2 / resolution;
+    const x = Math.cos(theta) * (size / 2);
+    const z = Math.sin(theta) * (size / 2);
+
+    const theta2 = -(i + 1) * Math.PI * 2 / resolution;
+    const x2 = Math.cos(theta2) * (size / 2);
+    const z2 = Math.sin(theta2) * (size / 2);
+
+    positions.push(
+      [x, -radius, z],
+      [0, radius, 0],
+      [x2, -radius, z2],
+    );
+
+    normals.push(
+      new Vec3(x, 0, z).normalize().xyz,
+      new Vec3(0, 1, 0).normalize().xyz,
+      new Vec3(x, 0, z).normalize().xyz,
+    );
+
+    faces.push([
+      offset + 1,
+      offset + 0,
+      offset + 2,
+    ]);
+
+    offset += 3;
   }
 
 

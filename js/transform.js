@@ -20,9 +20,11 @@ export class Transform {
   _updateMatrix () {
     m4.identity(this._matrix);
     m4.translate(this._matrix, this._matrix, this.position.xyz);
-    m4.rotate(this._matrix, this._matrix, this.rotation.x, [1, 0, 0]);
+    
     m4.rotate(this._matrix, this._matrix, this.rotation.y, [0, 1, 0]);
+    m4.rotate(this._matrix, this._matrix, this.rotation.x, [1, 0, 0]);
     m4.rotate(this._matrix, this._matrix, this.rotation.z, [0, 0, 1]);
+    
     m4.scale(this._matrix, this._matrix, this.scale.xyz);
 
     m4.invert(this._invTranspose, this._matrix);

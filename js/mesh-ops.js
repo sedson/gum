@@ -178,7 +178,16 @@ export function applyAttribVarying (attribName, attribValues, vertices) {
   return outVertices;
 }
 
-
+/**
+ * Apply a new attribute to the vertices of a mesh where the attribute is the same 
+ * at each vertex.
+ * @param {string} attribName The name of the attribute to attach to each
+ *     vertex. 
+ * @param {array<(array|number|function)>} attribValue The value to attach.
+ * @param {array<Vertex>} vertices The mesh's vertex list.
+ * @param {function} filter An optional filter function to operate 
+ * @returns 
+ */
 export function applyAttribConstant (attribName, attribValue, vertices) {
   const outVertices = [];
   for (let vi = 0; vi < vertices.length; vi++) {
@@ -187,11 +196,19 @@ export function applyAttribConstant (attribName, attribValue, vertices) {
     for (let attrib in vertex) {
       outVertex[attrib] = [...vertex[attrib]];
     }
-    if (Array.isArray(attribValue)) {
-      outVertex[attribName] = [...attribValue];
+    
+    let value = attribValue;
+
+    if (typeof value ==='function') {
+      value = attribValue(outVertex);
+    } 
+    
+    if (Array.isArray(value)) {
+      outVertex[attribName] = [...value];
     } else {
-      outVertex[attribName] = [attribValue];
+      outVertex[attribName] = [value];
     }
+
     outVertices.push(outVertex);
   }
   return outVertices;

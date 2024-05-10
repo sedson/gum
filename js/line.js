@@ -37,8 +37,11 @@ export class Line {
       // Submit position twice.
       attribs.position.push(...current, ...current);
 
+      // t value (normal.z) is progess allong the line;
+      const t = ([i % this.points.length] / (this.points.length - 1));
+
       // x component of normal is thickness. y component is direction.
-      attribs.normal.push(this.thickness, 1, 0, this.thickness, -1, 0);
+      attribs.normal.push(this.thickness, 1, t, this.thickness, -1, t);
 
       attribs.register1.push(...previous, 1, ...previous, 1);
       attribs.register2.push(...next, 1, ...next, 1);

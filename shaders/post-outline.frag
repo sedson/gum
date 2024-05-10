@@ -8,6 +8,11 @@ uniform vec2 uScreenSize;
 uniform float uNear;
 uniform float uFar;
 
+uniform vec4 uColorA;
+uniform vec4 uColorB;
+uniform float uDist;
+
+
 in vec2 vTexCoord;
 out vec4 fragColor;
 
@@ -17,7 +22,7 @@ float linearDepth(float d, float near, float far) {
 }
 
 vec4 gradient(sampler2D tex, vec2 coord) {
-  vec2 offset = vec2(1.0, 1.0) / uScreenSize;
+  vec2 offset = vec2(uDist, uDist) / uScreenSize;
 
   vec4 xSum = vec4(0.0);
   vec4 ySum = vec4(0.0);
@@ -55,12 +60,15 @@ void main() {
 
   float fog = smoothstep(4.0, 40.0, lDepth * (uFar - uNear));
 
+  fragColor.rgb = mix(uColorA.rgb, uColorB.rgb, edge);
+  fragColor.a = 1.0;
+
   // float surfaceId = round(col.r * 20.0);
-  fragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);
+  // fragColor.rgb = mix(vec3(0.2, 0.2, 0.2), vec3(0.6, 0.5, 0.5), 1.0 - fog);
   // fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);
   // fragColor.a = 1.0;
 
-  fragColor = vec4(vec3(edge * 0.4 + 0.1), 1.0);
+  // fragColor = vec4(vec3(edge * 0.4 + 0.1), 1.0);
 
   // fragColor = vec4(1.0, 0.0, 0.0, 1.0);
 

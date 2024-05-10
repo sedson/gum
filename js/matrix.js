@@ -1,16 +1,16 @@
 /**
  * Matrix math borrowed from GlMatrix.
  * https://github.com/toji/gl-matrix/blob/master/src/mat4.js.
- */ 
- 
+ */
+
 const EPSILON = 0.0000001;
 const mode = 'REG';
 
 /**
  * Generate an Identity Matrix.
  * @return {Float32Array} Identity Matrix 
- */ 
-export function create () {
+ */
+export function create() {
 
   let out;
   if (mode === 'TYPED') {
@@ -23,7 +23,7 @@ export function create () {
   out[5] = 1;
   out[10] = 1;
   out[15] = 1;
-  return out;  
+  return out;
 }
 
 
@@ -34,8 +34,8 @@ export function create () {
  * @param  {Array} center Look target [x, y, z]. 
  * @param  {Array} up description 
  * @return {Float32Array} View matrix. 
- */ 
-export function lookAt (out, eye, center, up) {
+ */
+export function lookAt(out, eye, center, up) {
   let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
   let eyex = eye[0];
   let eyey = eye[1];
@@ -124,8 +124,8 @@ export function lookAt (out, eye, center, up) {
  * @param  {Number} near Near clip plane.
  * @param  {Number} far Far clip plane.
  * @return {Float32Array} Projection matrix. 
- */ 
-export function perspective (out, fovy, aspect, near, far) {
+ */
+export function perspective(out, fovy, aspect, near, far) {
   const f = 1.0 / Math.tan(fovy / 2);
   out[0] = f / aspect;
   out[1] = 0;
@@ -159,8 +159,8 @@ export function perspective (out, fovy, aspect, near, far) {
  * @param {Float32Array} a Input matrix.
  * @param {Array} v [x, y, z] Vector array.
  * @return {Float32Array} Transform matrix. 
- */ 
-export function translate (out, a, v) {
+ */
+export function translate(out, a, v) {
   let x = v[0],
     y = v[1],
     z = v[2];
@@ -215,7 +215,7 @@ export function translate (out, a, v) {
  * @param {ReadonlyVec3} axis the axis to rotate around
  * @returns {mat4} out
  */
-export function rotate (out, a, rad, axis) {
+export function rotate(out, a, rad, axis) {
   let x = axis[0],
     y = axis[1],
     z = axis[2];
@@ -295,7 +295,7 @@ export function rotate (out, a, rad, axis) {
  * @param {mat4} out the receiving matrix
  * @returns {mat4} out
  */
-export function identity (out) {
+export function identity(out) {
   out[0] = 1;
   out[1] = 0;
   out[2] = 0;
@@ -324,29 +324,29 @@ export function identity (out) {
  * @param {ReadonlyMat4} b the second operand
  * @returns {mat4} out
  */
-export function multiply (out, a, b) {
+export function multiply(out, a, b) {
   let a00 = a[0],
-      a01 = a[1],
-      a02 = a[2],
-      a03 = a[3];
+    a01 = a[1],
+    a02 = a[2],
+    a03 = a[3];
   let a10 = a[4],
-      a11 = a[5],
-      a12 = a[6],
-      a13 = a[7];
+    a11 = a[5],
+    a12 = a[6],
+    a13 = a[7];
   let a20 = a[8],
-      a21 = a[9],
-      a22 = a[10],
-      a23 = a[11];
+    a21 = a[9],
+    a22 = a[10],
+    a23 = a[11];
   let a30 = a[12],
-      a31 = a[13],
-      a32 = a[14],
-      a33 = a[15];
+    a31 = a[13],
+    a32 = a[14],
+    a33 = a[15];
 
   // Cache only the current line of the second matrix
   let b0 = b[0],
-      b1 = b[1],
-      b2 = b[2],
-      b3 = b[3];
+    b1 = b[1],
+    b2 = b[2],
+    b3 = b[3];
   out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
   out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
   out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
@@ -389,7 +389,7 @@ export function multiply (out, a, b) {
  * @param {ReadonlyMat4} a the source matrix
  * @returns {mat4} out
  */
-export function copy (out, a) {
+export function copy(out, a) {
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -450,7 +450,7 @@ export function scale(out, a, v) {
  * @param {ReadonlyMat4} a the source matrix
  * @returns {mat4} out
  */
-export function invert (out, a) {
+export function invert(out, a) {
   let a00 = a[0],
     a01 = a[1],
     a02 = a[2],
@@ -540,7 +540,7 @@ export function transformMat4(out, a, m) {
  * @param {ReadonlyMat4} a the source matrix
  * @returns {mat4} out
  */
-export function transpose (out, a) {
+export function transpose(out, a) {
   // If we are transposing ourselves we can skip a few steps but have to cache some values
   if (out === a) {
     let a01 = a[1],
@@ -585,7 +585,7 @@ export function transpose (out, a) {
 }
 
 
-export function print (a) {
+export function print(a) {
   let str = '';
   for (let i = 0; i < 16; i++) {
     str += a[i].toFixed(2);

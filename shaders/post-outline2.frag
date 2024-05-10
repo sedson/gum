@@ -7,6 +7,7 @@ uniform sampler2D uDepthTex;
 uniform vec2 uScreenSize;
 uniform float uNear;
 uniform float uFar;
+uniform vec4 uColorA;
 
 in vec2 vTexCoord;
 out vec4 fragColor;
@@ -60,7 +61,7 @@ void main() {
   // fragColor.rgb *= 1.0 - ((1.0 - fog) * edge);
   // fragColor.a = 1.0;
 
-  fragColor.rgb = mix(col.rgb, vec3(0.1), edge);
+  fragColor.rgb = mix(col.rgb, uColorA.rgb, edge);
   fragColor.a = 1.0;
 
 

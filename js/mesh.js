@@ -26,8 +26,8 @@ export class Mesh {
    * @param {object} meta Additional meta information about the mesh. Name and 
    *     more.
    */
-  constructor (vertices, faces, meta = {}) {
-    
+  constructor(vertices, faces, meta = {}) {
+
     /** 
      * The array of vertices for this mesh. Each entry is object with with 
      * named attributes and arrays for the value.
@@ -51,7 +51,7 @@ export class Mesh {
 
     /**
      * The id for this mesh.
-     */ 
+     */
     this.id = uuid();
   }
 
@@ -60,7 +60,7 @@ export class Mesh {
    * Triangulate this mesh.
    * @chainable
    */
-  triangulate () {
+  triangulate() {
     this.faces = MeshOps.triangulate(this.faces);
     return this;
   }
@@ -72,12 +72,12 @@ export class Mesh {
    * TODO : Rename this.
    * @returns 
    */
-  render () {
+  render() {
     const mode = 'TRIANGLES';
     const triangles = MeshOps.triangulate(this.faces);
     const vertexCount = triangles.length * 3;
     const attribs = {};
-    
+
     for (let f = 0; f < triangles.length; f++) {
       const face = triangles[f];
 
@@ -92,7 +92,7 @@ export class Mesh {
           attribs[attrib].push(...data);
         }
       }
-      
+
     }
     for (let attrib in attribs) {
       attribs[attrib] = new Float32Array(attribs[attrib]);
@@ -103,7 +103,7 @@ export class Mesh {
   }
 
 
-  renderEdges () {
+  renderEdges() {
     const mode = 'LINES';
     const edges = MeshOps.facesToEdges(this.faces);
     const vertexCount = edges.length * 2;
@@ -131,7 +131,7 @@ export class Mesh {
   }
 
 
-  renderPoints () {
+  renderPoints() {
     const mode = 'POINTS';
     const vertexCount = this.vertices.length;
     const attribs = {};
@@ -146,17 +146,17 @@ export class Mesh {
         attribs[attrib].push(...data);
       }
     }
-    
+
     for (let attrib in attribs) {
       attribs[attrib] = new Float32Array(attribs[attrib]);
     }
 
     const name = `${this.name}_${this.id}_points`;
-    return { mode, vertexCount, attribs, name};
+    return { mode, vertexCount, attribs, name };
   }
 
 
-  renderNormals (length = 0.05) {
+  renderNormals(length = 0.05) {
     const mode = 'LINES';
     const vertexCount = this.vertices.length * 2;
     const attribs = {};
@@ -178,7 +178,7 @@ export class Mesh {
           position2.add(new Vec3(...normal).normalize(length));
           attribs[attrib].push(...position2.xyz);
         } else {
-            attribs[attrib].push(...data);
+          attribs[attrib].push(...data);
         }
       }
     }
@@ -198,7 +198,7 @@ export class Mesh {
    * vertices in the mesh.
    * @chainable 
    */
-  findGroups () {
+  findGroups() {
     const groups = MeshOps.findGroups(this.faces);
     this.vertices = MeshOps.applyAttribVarying('surfaceId', groups, this.vertices);
     return this;
@@ -207,17 +207,27 @@ export class Mesh {
 
   /**
    * Fill the vetex colors for the mesh with a single vertex color.
+   * @param {color|function} col The color to apply to each vertex OR a function 
+   *     to map to each vertex that returns a color.
    */
-  fill (col) {
-    this.vertices = MeshOps.applyAttribConstant('color', col.rgba, this.vertices);
+  fill(col) {
+
+    if (col.rgba) {
+      this.vertices = MeshOps.applyAttribConstant('color', col.rgba, this.vertices);
+    } else if (typeof col === 'function') {
+      this.vertices = MeshOps.applyAttribConstant('color', col, this.vertices);
+    } else {
+      console.warn(`${col} was not of type color or function.`);
+    }
+
     return this;
   }
 
 
   /**
    * Inflate the mesh along its normals.
-   */ 
-  inflate (amt = 0) {
+   */
+  inflate(amt = 0) {
     for (let vi = 0; vi < this.vertices.length; vi++) {
       const vertex = this.vertices[vi];
       if (!(vertex.position && vertex.normal)) continue;
@@ -230,7 +240,7 @@ export class Mesh {
   }
 
 
-  getEdges () {
+  getEdges() {
     const edges = MeshOps.facesToEdges(this.faces);
     const outEdges = [];
 
@@ -243,21 +253,21 @@ export class Mesh {
     return outEdges;
   }
 
-  shadeFlat () {
+  shadeFlat() {
     const { vertices, faces } = MeshOps.shadeFlat(this.vertices, this.faces);
     this.vertices = vertices;
     this.faces = faces;
     return this;
   }
 
-  shadeSmooth (tolerance) {
+  shadeSmooth(tolerance) {
     const { vertices, faces } = MeshOps.shadeSmooth(this.vertices, this.faces, tolerance);
     this.vertices = vertices;
     this.faces = faces;
     return this;
   }
 
-  applyTransform (transform) {
+  applyTransform(transform) {
     for (let vi = 0; vi < this.vertices.length; vi++) {
       const vert = this.vertices[vi];
       if (vert.position) {
@@ -270,7 +280,7 @@ export class Mesh {
     return this;
   }
 
-  join (other) {
+  join(other) {
     const offset = this.vertices.length;
 
     const newFaces = other.faces.map(face => {
@@ -279,17 +289,17 @@ export class Mesh {
 
     this.vertices = this.vertices.concat(other.vertices);
     this.faces = this.faces.concat(newFaces);
-    
-    return this;
-  }  
 
-  flipNormals () {
+    return this;
+  }
+
+  flipNormals() {
     const flipNormal = n => n.map(x => x * -1);
     this.vertices = MeshOps.mapFuncToAttributes(this.vertices, 'normal', flipNormal);
     return this;
   }
 
-  copy () {
+  copy() {
     const copyVertices = JSON.parse(JSON.stringify(this.vertices));
     const copFaces = JSON.parse(JSON.stringify(this.faces));
     return new Mesh(copyVertices, copFaces, { name: this.name });

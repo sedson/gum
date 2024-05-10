@@ -1,13 +1,15 @@
 /**
  * An edge collection is used to display any number of disjoint edges
  */ 
+import { uuid } from './id.js';
+
 
 export class EdgeCollection {
   constructor (edges, color) {
     this.edges = edges;
     this.color = color || [1, 1, 1, 1];
     this.thickness = 2;
-    this.name = 'edge_collection_' + (Date.now() % 253); 
+    this.name = 'edge_collection_' + uuid(); 
 
   }
 
