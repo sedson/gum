@@ -610,7 +610,11 @@ export class Gum {
   }
 
 
-  addProgram(programName) {
+  addProgram(programName, shaders = false) {
+    if (shaders && shaders.vert && shaders.frag) {
+      this.renderer.createProgram(programName, shaders.vert, shaders.frag);
+      return;
+    }
     if (shaders[programName].vert && shaders[programName].frag) {
       this.renderer.createProgram(programName, shaders[programName].vert, shaders[programName].frag);
     }
@@ -663,6 +667,7 @@ export class Gum {
     let lift = 30;
     let zoom = distance;
     let mouseDown = false;
+    let pos = new Vec3();
 
     const moveCam = (e = {}, force = false) => {
       if (!mouseDown && !force) return;
@@ -676,8 +681,8 @@ export class Gum {
       const z = Math.sin(common.radians(lift)) * Math.sin(common.radians(theta));
       const y = Math.cos(common.radians(lift));
 
-      let pos = new Vec3(x, y, z).normalize(zoom);
-      this.camera.move(...pos.xyz)
+      pos.set(x, y, z).normalize(zoom);
+      this.camera.move(...pos)
     }
 
     moveCam({}, true);
@@ -686,7 +691,7 @@ export class Gum {
     window.onpointerup = () => mouseDown = false;
     window.onmousemove = (e) => moveCam(e);
 
-    canvas.onwheel = (e) => {
+    this.canvas.onwheel = (e) => {
 
       zoom += e.deltaY * -0.1;
       zoom = common.clamp(zoom, 0.1, 30);

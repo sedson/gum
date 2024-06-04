@@ -4,13 +4,13 @@
 import { Vec3 } from './vectors.js';
 
 
-export function copyVertex (vertex) {
+export function copyVertex(vertex) {
   const vertexCopy = {};
   for (let attr in vertex) {
     if (Array.isArray(vertex[attr])) {
       vertexCopy[attr] = [...vertex[attr]];
     } else {
-      vertexCopy[attr] = {...vertex[attr]};
+      vertexCopy[attr] = { ...vertex[attr] };
     }
   }
   return vertexCopy;
@@ -24,7 +24,7 @@ export function copyVertex (vertex) {
  * @param {array<array>} faces The list of input faces.
  * @return {array<array>} The list of of updated faces.
  */
-export function triangulate (faces) {
+export function triangulate(faces) {
   const outFaces = [];
 
   faces.forEach(face => {
@@ -32,13 +32,13 @@ export function triangulate (faces) {
       return;
     }
 
-    if (face.length === 3 ) {
+    if (face.length === 3) {
       outFaces.push(face);
       return;
     }
 
     for (let i = 1; i < face.length - 1; i++) {
-      outFaces.push([face[0], face[i], face[i+1]]);
+      outFaces.push([face[0], face[i], face[i + 1]]);
     }
   });
 
@@ -53,10 +53,10 @@ export function triangulate (faces) {
  * @param {array<Face>} faces The list of faces.
  * @return {boolean}
  */
-export function validate (vertices, faces) { 
+export function validate(vertices, faces) {
   for (let f = 0; f < faces.length; f++) {
     const face = faces[f];
-    for (let vi = 0; vi < face.length; vi++ ){
+    for (let vi = 0; vi < face.length; vi++) {
       if (face[vi] > vertices.length) {
         return false;
       }
@@ -79,7 +79,7 @@ export function validate (vertices, faces) {
  * @returns {array<number>} A list of group IDs that can be applied to a mesh 
  *     using applyAttribVarying().
  */
-export function findGroups (faces) {
+export function findGroups(faces) {
   let groups = [];
 
   /**
@@ -94,7 +94,7 @@ export function findGroups (faces) {
         a.add(val);
       }
       return;
-    } 
+    }
     b.forEach(val => a.add(val));
   }
 
@@ -139,7 +139,7 @@ export function findGroups (faces) {
     for (let vertIndex of group.values()) {
       groupsByVertIndex[vertIndex] = groupIndex;
     }
-  }); 
+  });
 
   return groupsByVertIndex;
 }
@@ -155,7 +155,7 @@ export function findGroups (faces) {
  * @param {array<Vertex>} vertices The mesh's vertex list.
  * @returns 
  */
-export function applyAttribVarying (attribName, attribValues, vertices) {
+export function applyAttribVarying(attribName, attribValues, vertices) {
   const outVertices = [];
   if (vertices.length !== attribValues.length) {
     console.error(`Cannot apply attribute: ${attribName} Mismatched length.`);
@@ -188,7 +188,7 @@ export function applyAttribVarying (attribName, attribValues, vertices) {
  * @param {function} filter An optional filter function to operate 
  * @returns 
  */
-export function applyAttribConstant (attribName, attribValue, vertices) {
+export function applyAttribConstant(attribName, attribValue, vertices) {
   const outVertices = [];
   for (let vi = 0; vi < vertices.length; vi++) {
     const vertex = vertices[vi];
@@ -196,13 +196,13 @@ export function applyAttribConstant (attribName, attribValue, vertices) {
     for (let attrib in vertex) {
       outVertex[attrib] = [...vertex[attrib]];
     }
-    
+
     let value = attribValue;
 
-    if (typeof value ==='function') {
+    if (typeof value === 'function') {
       value = attribValue(outVertex);
-    } 
-    
+    }
+
     if (Array.isArray(value)) {
       outVertex[attribName] = [...value];
     } else {
@@ -215,11 +215,11 @@ export function applyAttribConstant (attribName, attribValue, vertices) {
 }
 
 
-export function facesToEdges (faces) {
+export function facesToEdges(faces) {
   const outEdges = [];
   for (let fi = 0; fi < faces.length; fi++) {
     const face = faces[fi];
-    for(let vi = 0; vi < face.length; vi++) {
+    for (let vi = 0; vi < face.length; vi++) {
       outEdges.push([face[vi], face[(vi + 1) % face.length]]);
     }
   }
@@ -227,7 +227,7 @@ export function facesToEdges (faces) {
 }
 
 
-export function verticesToNormals (vertices) {
+export function verticesToNormals(vertices) {
   const outEdges = [];
   for (let vi = 0; vi < vertices.length; vi++) {
     const vertex = vertices[vi];
@@ -239,7 +239,7 @@ export function verticesToNormals (vertices) {
 
     outEdges.push(vertex);
 
-    const vertex2 = { 
+    const vertex2 = {
       ...vertex,
       position: position2
     };
@@ -250,8 +250,8 @@ export function verticesToNormals (vertices) {
 }
 
 
-export function shadeFlat (vertices, faces) {
-  const outVerts = []; 
+export function shadeFlat(vertices, faces) {
+  const outVerts = [];
   const outFaces = [];
 
   let outVertIndex = 0;
@@ -262,7 +262,7 @@ export function shadeFlat (vertices, faces) {
     let avgNormal;
     let fstr = '';
 
-    
+
     for (let vi = 0; vi < face.length; vi++) {
       const vertLoc = face[vi];
       const vert = vertices[vertLoc];
@@ -301,7 +301,7 @@ export function shadeFlat (vertices, faces) {
 
 
 
-export function shadeSmooth (vertices, faces, tolerance = 0.001) {
+export function shadeSmooth(vertices, faces, tolerance = 0.001) {
   const outVerts = [];
   const smoothNormals = new Map();
 
@@ -309,9 +309,9 @@ export function shadeSmooth (vertices, faces, tolerance = 0.001) {
 
   const hashVector = (v) => {
     if (v['x']) {
-      return `${fToS(v.x)},${fToS(v.y)},${fToS(v.z)}`;    
+      return `${fToS(v.x)},${fToS(v.y)},${fToS(v.z)}`;
     }
-    return `${fToS(v[0])},${fToS(v[1])},${fToS(v[2])}`;    
+    return `${fToS(v[0])},${fToS(v[1])},${fToS(v[2])}`;
   };
 
   for (let vi = 0; vi < vertices.length; vi++) {
@@ -345,7 +345,7 @@ export function shadeSmooth (vertices, faces, tolerance = 0.001) {
   let totalVerts = 0;
   smoothNormals.forEach(data => {
     for (let vi of data.replaceMap) {
-      totalVerts ++;
+      totalVerts++;
       outVerts[vi].normal = data.normal.xyz;
       outVerts[vi].position = data.position.xyz;
     }
@@ -355,7 +355,7 @@ export function shadeSmooth (vertices, faces, tolerance = 0.001) {
 }
 
 
-export function mapFuncToAttributes (vertices, attribName, func) {
+export function mapFuncToAttributes(vertices, attribName, func) {
   const outVertices = [];
   for (let vi = 0; vi < vertices.length; vi++) {
     const vert = vertices[vi];
@@ -368,3 +368,16 @@ export function mapFuncToAttributes (vertices, attribName, func) {
   return outVertices;
 }
 
+
+
+export function attributeMap(vertices, func) {
+  const outVertices = [];
+  for (let vi = 0; vi < vertices.length; vi++) {
+    const vert = vertices[vi];
+    const copy = copyVertex(vert);
+    const attrs = func(copy);
+    Object.assign(copy, attrs);
+    outVertices.push(copy);
+  }
+  return outVertices;
+}

@@ -304,4 +304,23 @@ export class Mesh {
     const copFaces = JSON.parse(JSON.stringify(this.faces));
     return new Mesh(copyVertices, copFaces, { name: this.name });
   }
+
+  /**
+   * Maps a function over the vertices in this mesh.
+   * @param {Function} func A vertex->vertex callback.
+   * 
+   * @exmaple 
+   * function vertFunc (vert) {
+   *   const pos = g.vec3(...vert.aPosition);
+   *   pos.normalize();
+   *   return {
+   *      aNormal: [...pos]
+   *   };
+   * }
+   * 
+   * myMesh.map(vertFunc)
+   */
+  attributeMap(func) {
+    this.vertices = MeshOps.attributeMap(this.vertices, func);
+  }
 }

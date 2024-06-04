@@ -13,8 +13,8 @@ var GUM3D = (function (exports) {
    * @param {number} max The max. Default 1.
    * @returns {number} The clamped value.
    * @global
-   */
-  function clamp(x, min = 0, max = 1) {
+  */
+  function clamp (x, min = 0, max = 1) {
     return Math.min(Math.max(x, min), max);
   }
 
@@ -27,7 +27,7 @@ var GUM3D = (function (exports) {
    * @returns {number} The lerped number.
    * @global
    */
-  function lerp(a, b, fac = 0.5) {
+  function lerp (a, b, fac = 0.5) {
     fac = clamp(fac);
     return b * fac + (1 - fac) * a;
   }
@@ -43,7 +43,7 @@ var GUM3D = (function (exports) {
    * @returns {number} The remapped number.
    * @global
    */
-  function remap(x, min, max, outMin = 0, outMax = 1) {
+  function remap (x, min, max, outMin = 0, outMax = 1) {
     return clamp((x - min) / (max - min)) * (outMax - outMin) + outMin;
   }
 
@@ -69,7 +69,7 @@ var GUM3D = (function (exports) {
    * @param {number} radians 
    * @returns {number}
    */
-  function degrees(radians) {
+  function degrees (radians) {
     return 180 * radians / Math.PI;
   }
 
@@ -79,7 +79,7 @@ var GUM3D = (function (exports) {
    * @param {number} degrees 
    * @returns {number}
    */
-  function radians(degrees) {
+  function radians (degrees) {
     return Math.PI * degrees / 180;
   }
 
@@ -92,7 +92,7 @@ var GUM3D = (function (exports) {
     return id;
   }
 
-  var common = /*#__PURE__*/ Object.freeze({
+  var common = /*#__PURE__*/Object.freeze({
     __proto__: null,
     clamp: clamp,
     degrees: degrees,
@@ -113,12 +113,12 @@ var GUM3D = (function (exports) {
    * @param {string} tag A selector.
    * @returns {HTMLElement|false}
    */
-  function select(tag) {
+  function select (tag) {
     if (tag instanceof HTMLElement) {
       return tag;
     }
     const elem = document.querySelector(tag);
-    if (!elem) { return false; }
+    if (!elem) { return false;}
     return elem;
   }
 
@@ -131,7 +131,7 @@ var GUM3D = (function (exports) {
    * @param {object} styleObject 
    * @returns {HTMLElement}
    */
-  function tag(string, styleObject) {
+  function tag (string, styleObject) {
     const tag = string.split(/#|\./)[0].trim();
     const elem = document.createElement(tag);
 
@@ -147,8 +147,7 @@ var GUM3D = (function (exports) {
       classList.forEach((x) => elem.classList.add(x.replace('.', '')));
     }
 
-    if (styleObject) { style(elem, styleObject); }
-    return elem;
+    if (styleObject) { style(elem, styleObject); }  return elem;
   }
 
 
@@ -158,13 +157,13 @@ var GUM3D = (function (exports) {
    * @param {object} styleObject The style object – with keys is either js 
    *     camelCase form or string wrapped 'background-color' css form.
    */
-  function style(elem, styleObject) {
+  function style (elem, styleObject) {
     for (const property in styleObject) {
       elem.style[property] = styleObject[property];
     }
   }
 
-  var dom = /*#__PURE__*/ Object.freeze({
+  var dom = /*#__PURE__*/Object.freeze({
     __proto__: null,
     select: select,
     style: style,
@@ -204,7 +203,7 @@ var GUM3D = (function (exports) {
     backgroundColor: 'rgba(0,0,0,0.25)',
     bottom: 0,
     left: 0,
-    zIndex: 10,
+    zIndex: 10, 
   };
 
   const swatchStyle = {
@@ -212,7 +211,7 @@ var GUM3D = (function (exports) {
     height: '24px',
   };
 
-  function ColorSwatch(color) {
+  function ColorSwatch (color) {
 
     let container = select('#swatches');
     if (!container) {
@@ -234,10 +233,7 @@ var GUM3D = (function (exports) {
    */
 
   /* I like default black, but default white is arguably more useful. */
-  const defR = 0;
-  const defG = 0;
-  const defB = 0;
-  const defA = 1;
+  const defR = 0; const defG = 0; const defB = 0; const defA = 1;
 
 
   /**
@@ -249,61 +245,43 @@ var GUM3D = (function (exports) {
      * Construct a Color from normalized rgba values. In general, API usage should 
      * discourage calling 'new Color()' and should rely on the color() generator.
      */
-    constructor(r, g, b, a) {
-      this._rgb = [r ?? defR, g ?? defG, b ?? defB];
+    constructor (r, g, b, a) {
+      this._rgb = [ r ?? defR, g ?? defG, b ?? defB ];
       this._hsl = rgbToHsl(...this._rgb);
       this._a = a ?? defA;
       ColorSwatch(this.rgbString());
     }
+    
+    get r    () { return this._rgb[0]; }
+    get g    () { return this._rgb[1]; } 
+    get b    () { return this._rgb[2]; } 
+    
+    get h    () { return this._hsl[0]; }
+    get s    () { return this._hsl[1]; }
+    get l    () { return this._hsl[2]; }
 
-    get r() { return this._rgb[0]; }
-    get g() { return this._rgb[1]; }
-    get b() { return this._rgb[2]; }
+    get a    () { return this._a };
+    set a    (a) { this._a = a; }
 
-    get h() { return this._hsl[0]; }
-    get s() { return this._hsl[1]; }
-    get l() { return this._hsl[2]; }
+    get rgb  () { return [...this._rgb]; }
+    get rgba () { return [...this._rgb, this._a]; }
+    get hsl  () { return [...this._hsl]; }
+    get hsla () { return [...this._hsl, this._a]; }
 
-    get a() { return this._a };
-    set a(a) { this._a = a; }
-
-    get rgb() { return [...this._rgb]; }
-    get rgba() { return [...this._rgb, this._a]; }
-    get hsl() { return [...this._hsl]; }
-    get hsla() { return [...this._hsl, this._a]; }
-
-    set r(r) {
-      this._rgb[0] = r;
-      this._hsl = rgbToHsl(...this._rgb);
-    }
-    set g(g) {
-      this._rgb[1] = g;
-      this._hsl = rgbToHsl(...this._rgb);
-    }
-    set b(b) {
-      this._rgb[2] = b;
-      this._hsl = rgbToHsl(...this._rgb);
-    }
-
-    set h(h) {
-      this._hsl[0] = h;
-      this._rgb = hslToRgb(...this._hsl);
-    }
-    set s(s) {
-      this._hsl[1] = s;
-      this._rgb = hslToRgb(...this._hsl);
-    }
-    set l(l) {
-      this._hsl[2] = l;
-      this._rgb = hslToRgb(...this._hsl);
-    }
+    set r (r) { this._rgb[0] = r;  this._hsl = rgbToHsl(...this._rgb); }
+    set g (g) { this._rgb[1] = g;  this._hsl = rgbToHsl(...this._rgb); }
+    set b (b) { this._rgb[2] = b;  this._hsl = rgbToHsl(...this._rgb); }
+    
+    set h (h) { this._hsl[0] = h;  this._rgb = hslToRgb(...this._hsl); }
+    set s (s) { this._hsl[1] = s;  this._rgb = hslToRgb(...this._hsl); }
+    set l (l) { this._hsl[2] = l;  this._rgb = hslToRgb(...this._hsl); }
 
 
     /**
      * Get the CSS-ready rgb or rgba string representation of this color.
      * @returns {string}
      */
-    rgbString() {
+    rgbString () {
       const r255 = Math.round(this._rgb[0] * 255);
       const g255 = Math.round(this._rgb[1] * 255);
       const b255 = Math.round(this._rgb[2] * 255);
@@ -318,7 +296,7 @@ var GUM3D = (function (exports) {
      * Get the CSS-ready hsl or hsla string representation of this color.
      * @returns {string}
      */
-    hslString() {
+    hslString () {
       const h360 = Math.round(this.h);
       const s100 = Math.round(this.s * 100);
       const l100 = Math.round(this.s * 100);
@@ -332,11 +310,11 @@ var GUM3D = (function (exports) {
      * Blend this color with other by amount using mode. 
      * 
      */
-    blend(other, amt = 0.5, mode = 'RGB') {
+    blend (other, amt = 0.5, mode = 'RGB') {
       return blend(this, other, amt, mode);
     }
 
-    copy() {
+    copy () {
       return new Color(...this.rgba);
     }
 
@@ -344,16 +322,16 @@ var GUM3D = (function (exports) {
      * Hue shift
      * @param {number} amt The amount of hue shift in degrees.
      * @returns {Color} A new color object.
-     */
-    shiftHue(amt) {
+     */ 
+    shiftHue (amt) {
       return new Color(...hslToRgb(this.h + amt, this.s, this.l, this.a));
     }
 
-    lighten(amt) {
+    lighten (amt) {
       return new Color(...hslToRgb(this.h, this.s, this.l + amt, this.a));
     }
 
-    saturate(amt) {
+    saturate (amt) {
       return new Color(...hslToRgb(this.h, this.s + amt, this.l, this.a));
     }
   }
@@ -367,12 +345,12 @@ var GUM3D = (function (exports) {
    * @param {string} color The color.
    * @returns {Color}
    */
-  function color(...args) {
+  function color (...args) {
 
     if (args.length === 0) {
       return new Color(Math.random(), Math.random(), Math.random());
     }
-
+    
     // 3 or more numbers were passed.
     if (validColorArray(args)) {
       return new Color(...args);
@@ -392,14 +370,14 @@ var GUM3D = (function (exports) {
     if (ColorDict[col]) { col = ColorDict[col]; }
 
     switch (colorFormat(col)) {
-    case 'HEX':
-      return new Color(...hexToRgb(col, true));
-
-    case 'RGB':
-      return new Color(...strToRgb(col, true));
-
-    case 'HSL':
-      return new Color(hslToRgb(...strToHsl(col, true)));
+      case 'HEX' :
+        return new Color(...hexToRgb(col, true));
+      
+      case 'RGB' : 
+        return new Color(...strToRgb(col, true));
+      
+      case 'HSL' :
+        return new Color(hslToRgb(...strToHsl(col, true)));
     }
 
     return new Color(Math.random(), Math.random(), Math.random());
@@ -413,8 +391,8 @@ var GUM3D = (function (exports) {
    * @param {array} arr An array of potential color values. 
    * @returns {boolean} Whether the array is valid.
    */
-  function validColorArray(arr) {
-    if (Array.isArray(arr) && arr.length >= 3) {
+  function validColorArray (arr) {
+    if (Array.isArray(arr) && arr.length >= 3 ) {
       return arr.every(x => x !== '' && !isNaN(Number(x)));
     }
     return false;
@@ -426,7 +404,7 @@ var GUM3D = (function (exports) {
    * @param {string} str The input color string. 
    * @returns {string} 'HEX' | 'RGB' | 'HSL'.
    */
-  function colorFormat(str) {
+  function colorFormat (str) {
     if (str.indexOf('#') === 0) {
       return 'HEX';
     } else if (str.indexOf('rgb') === 0) {
@@ -442,8 +420,8 @@ var GUM3D = (function (exports) {
    * @param {string} str An rgb or hsl string.
    * @returns {array<number>}
    */
-  function extractNumbers(str) {
-    const parts = str.replace(/[^0-9|\.]+/g, '-').split('-');
+  function extractNumbers (str) {
+    const parts =  str.replace(/[^0-9|\.]+/g, '-').split('-');
     const numbers = [];
     for (let part of parts) {
       if (part === '') continue;
@@ -461,13 +439,13 @@ var GUM3D = (function (exports) {
    *     not leave them in rgb[0->255].
    * @returns {array<number>}
    */
-  function strToRgb(str, normalized = true) {
+  function strToRgb (str, normalized = true) {
     if (str.indexOf('rgb') === -1) { return [defR, defG, defB]; }
-
+    
     const numbers = extractNumbers(str);
     if (numbers.length < 3) { return [defR, defG, defB]; }
 
-    const m = normalized ? 1 / 255 : 1;
+    const m = normalized ? 1 / 255  : 1;
     const color = [
       numbers[0] * m,
       numbers[1] * m,
@@ -487,14 +465,14 @@ var GUM3D = (function (exports) {
    *     range. If not leave them in h[0->360] sl[0->100].
    * @returns {array<number>}
    */
-  function strToHsl(str, normalized = true) {
+  function strToHsl (str, normalized = true) {
     if (str.indexOf('hsl') === -1) { return [0, 0, 0]; }
-
+    
     const numbers = extractNumbers(str);
     if (numbers.length < 3) { return [0, 0, 0]; }
 
-    const m = normalized ? 1 / 100 : 1;
-    const color = [
+    const m = normalized ? 1 / 100  : 1;
+    const color = [ 
       numbers[0],
       numbers[1] * m,
       numbers[2] * m,
@@ -513,9 +491,9 @@ var GUM3D = (function (exports) {
    *     not leave them in rgb[0->255].
    * @returns {array<number>}
    */
-  function hexToRgb(hex, normalized = true) {
+  function hexToRgb (hex, normalized = true) {
     const h = hex.slice(1);
-    const m = normalized ? (1 / 255) : 1;
+    const m = normalized ? (1/ 255) : 1;
     const parse = v => m * parseInt(v, 16);
 
     if (h.length === 3) {
@@ -554,7 +532,7 @@ var GUM3D = (function (exports) {
    * @param {number} l Lightness in the 0->1 range.
    * @return {array} Normalized RGB color array.
    */
-  function hslToRgb(h = 0, s = 0, l = 0, a = 1) {
+  function hslToRgb (h = 0, s = 0, l = 0, a = 1) {
     // Validate hsv.
     h = (h + 360) % 360;
     s = Math.max(Math.min(s, 1), 0);
@@ -571,31 +549,19 @@ var GUM3D = (function (exports) {
     let r, g, b;
 
     if (h1 < 1) {
-      r = c;
-      g = x;
-      b = 0;
+      r = c; g = x; b = 0;
     } else if (h1 < 2) {
-      r = x;
-      g = c;
-      b = 0;
+      r = x; g = c; b = 0;
     } else if (h1 < 3) {
-      r = 0;
-      g = c;
-      b = x;
+      r = 0; g = c; b = x;
     } else if (h1 < 4) {
-      r = 0;
-      g = x;
-      b = c;
+      r = 0; g = x; b = c;
     } else if (h1 < 5) {
-      r = x;
-      g = 0;
-      b = c;
+      r = x; g = 0; b = c;
     } else if (h1 <= 6) {
-      r = c;
-      g = 0;
-      b = x;
+      r = c; g = 0; b = x;
     }
-
+    
     // Apply the lightness 
     const m = l - (c / 2);
     return [r + m, g + m, b + m, a];
@@ -609,7 +575,7 @@ var GUM3D = (function (exports) {
    * @param {number} b blue in the 0->1 range.
    * @return {array} HSL color array.
    */
-  function rgbToHsl(r = 0, g = 0, b = 0, a = 1) {
+  function rgbToHsl (r = 0, g = 0, b = 0, a = 1) {
     // Validate rgb.
     r = Math.min(Math.max(r, 0), 1);
     g = Math.min(Math.max(g, 0), 1);
@@ -621,7 +587,7 @@ var GUM3D = (function (exports) {
 
     // Value.
     const v = xMax;
-
+    
     // Chroma.
     const c = xMax - xMin;
 
@@ -650,8 +616,8 @@ var GUM3D = (function (exports) {
 
   /**
    * Check if an object is an instance of Color.
-   */
-  function isColor(any) {
+   */ 
+  function isColor (any) {
     return (any instanceof Color);
   }
 
@@ -663,19 +629,19 @@ var GUM3D = (function (exports) {
    * @param {string} mode The blend space. 'RGB' or 'HSL'.
    * @return {Color}
    */
-  function blend(src, target, amt = 0.5, mode = 'RGB') {
+  function blend (src, target, amt = 0.5, mode = 'RGB') {
     switch (mode.toUpperCase()) {
-    case 'RGB':
-      return _blendRgb(src, target, amt);
+      case 'RGB' : 
+        return _blendRgb(src, target, amt);
 
-    case 'HSL':
-      return _blendHSL(src, target, amt);
+      case 'HSL' :
+        return _blendHSL(src, target, amt);
     }
   }
 
 
 
-  function _blendRgb(src, target, amt = 0.5) {
+  function _blendRgb (src, target, amt = 0.5) {
     if (!isColor(src) || !isColor(target)) {
       return new Color();
     }
@@ -689,14 +655,14 @@ var GUM3D = (function (exports) {
   }
 
 
-  function _blendHSL(src, target, amt = 0.5) {
+  function _blendHSL (src, target, amt = 0.5) {
     if (!isColor(src) || !isColor(target)) {
       return new Color();
     }
 
     amt *= target.a;
 
-    const h = lerp(src.h, target.h, amt);
+    const h= lerp(src.h, target.h, amt);
     const s = lerp(src.s, target.s, amt);
     const l = lerp(src.l, target.l, amt);
     return new Color(...hslToRgb(h, s, l, src.a));
@@ -780,21 +746,22 @@ var GUM3D = (function (exports) {
   /**
    * 2 element vector class.
    */
-  class Vec2 {
-    constructor(x, y, z) {
-      this._x = x || 0;
-      this._y = y || 0;
+  class Vec2 extends Array {
+    constructor(x = 0, y = 0) {
+      super();
+      this[0] = x;
+      this[1] = y;
       this._changed = false;
     }
 
-    get x() { return this._x; }
+    get x() { return this[0]; }
     set x(val) {
-      this._x = val;
+      this[0] = val;
       this._changed = true;
     }
-    get y() { return this._y; }
+    get y() { return this[1]; }
     set y(val) {
-      this._y = val;
+      this[1] = val;
       this._changed = true;
     }
 
@@ -810,8 +777,8 @@ var GUM3D = (function (exports) {
     }
 
     set(x, y) {
-      this._x = x;
-      this._y = y;
+      this[0] = x;
+      this[1] = y;
       this._changed = true;
       return this;
     }
@@ -848,27 +815,28 @@ var GUM3D = (function (exports) {
   /**
    * 3 element vector class.
    */
-  class Vec3 {
-    constructor(x, y, z) {
-      this._x = x || 0;
-      this._y = y || 0;
-      this._z = z || 0;
+  class Vec3 extends Array {
+    constructor(x = 0, y = 0, z = 0) {
+      super();
+      this[0] = x;
+      this[1] = y;
+      this[2] = z;
       this._changed = false;
     }
 
-    get x() { return this._x; }
+    get x() { return this[0]; }
     set x(val) {
-      this._x = val;
+      this[0] = val;
       this._changed = true;
     }
-    get y() { return this._y; }
+    get y() { return this[1]; }
     set y(val) {
-      this._y = val;
+      this[1] = val;
       this._changed = true;
     }
-    get z() { return this._z; }
+    get z() { return this[2]; }
     set z(val) {
-      this._z = val;
+      this[2] = val;
       this._changed = true;
     }
 
@@ -885,9 +853,9 @@ var GUM3D = (function (exports) {
     }
 
     set(x, y, z) {
-      this._x = x;
-      this._y = y;
-      this._z = z;
+      this[0] = x;
+      this[1] = y;
+      this[2] = z;
       this._changed = true;
       return this;
     }
@@ -972,9 +940,6 @@ var GUM3D = (function (exports) {
         Math.abs(this.y - a.y) < tolerance &&
         Math.abs(this.z - a.z) < tolerance;
     }
-
-
-
   }
 
   /**
@@ -1341,10 +1306,25 @@ var GUM3D = (function (exports) {
     return outVertices;
   }
 
-  var meshOps = /*#__PURE__*/ Object.freeze({
+
+
+  function attributeMap(vertices, func) {
+    const outVertices = [];
+    for (let vi = 0; vi < vertices.length; vi++) {
+      const vert = vertices[vi];
+      const copy = copyVertex(vert);
+      const attrs = func(copy);
+      Object.assign(copy, attrs);
+      outVertices.push(copy);
+    }
+    return outVertices;
+  }
+
+  var meshOps = /*#__PURE__*/Object.freeze({
     __proto__: null,
     applyAttribConstant: applyAttribConstant,
     applyAttribVarying: applyAttribVarying,
+    attributeMap: attributeMap,
     copyVertex: copyVertex,
     facesToEdges: facesToEdges,
     findGroups: findGroups,
@@ -1369,7 +1349,8 @@ var GUM3D = (function (exports) {
    */
   function create() {
 
-    let out; {
+    let out;
+    {
       out = new Array(16).fill(0);
     }
 
@@ -1948,7 +1929,7 @@ var GUM3D = (function (exports) {
     return str;
   }
 
-  var m4 = /*#__PURE__*/ Object.freeze({
+  var m4 = /*#__PURE__*/Object.freeze({
     __proto__: null,
     copy: copy,
     create: create,
@@ -1969,17 +1950,17 @@ var GUM3D = (function (exports) {
   const buffer = new Uint8Array(128);
   let index = buffer.byteLength;
 
-  function fillBuffer() {
+  function fillBuffer () {
     crypto.getRandomValues(buffer);
     index = 0;
   }
 
-  function uuid(length = 6) {
+  function uuid (length = 6) {
     if (index + length >= buffer.byteLength) fillBuffer();
     let id = '';
-    while (id.length < length) {
+    while(id.length < length) {
       id += CHARS[buffer[index] % CHARS.length];
-      ++index;
+      ++ index;
     }
     return id;
   }
@@ -2284,6 +2265,25 @@ var GUM3D = (function (exports) {
       const copyVertices = JSON.parse(JSON.stringify(this.vertices));
       const copFaces = JSON.parse(JSON.stringify(this.faces));
       return new Mesh(copyVertices, copFaces, { name: this.name });
+    }
+
+    /**
+     * Maps a function over the vertices in this mesh.
+     * @param {Function} func A vertex->vertex callback.
+     * 
+     * @exmaple 
+     * function vertFunc (vert) {
+     *   const pos = g.vec3(...vert.aPosition);
+     *   pos.normalize();
+     *   return {
+     *      aNormal: [...pos]
+     *   };
+     * }
+     * 
+     * myMesh.map(vertFunc)
+     */
+    attributeMap(func) {
+      this.vertices = attributeMap(this.vertices, func);
     }
   }
 
@@ -3031,7 +3031,7 @@ var GUM3D = (function (exports) {
     return new Mesh(vertices, faces, { name: 'cylinder' });
   }
 
-  var primitives = /*#__PURE__*/ Object.freeze({
+  var primitives = /*#__PURE__*/Object.freeze({
     __proto__: null,
     _axes: _axes,
     _fsQuad: _fsQuad,
@@ -3047,19 +3047,19 @@ var GUM3D = (function (exports) {
 
   /**
    * 
-   */
+   */ 
 
 
   class Line {
-    constructor(points, color = [1, 1, 1, 1]) {
+    constructor (points, color = [1, 1, 1, 1]) {
       this.points = points;
       this.color = color;
       this.thickness = .1;
-      this.name = 'line_' + uuid();
+      this.name = 'line_' + uuid(); 
 
     }
 
-    render() {
+    render () {
       const mode = 'TRIANGLE_STRIP';
       const vertexCount = this.points.length * 2;
       const program = 'line';
@@ -3070,10 +3070,10 @@ var GUM3D = (function (exports) {
         position: [],
         normal: [],
         register1: [],
-        register2: [],
+        register2: [], 
         color: [],
       };
-
+      
       for (let i = 0; i < this.points.length; i++) {
 
         const current = this.points[i];
@@ -3108,19 +3108,19 @@ var GUM3D = (function (exports) {
 
   /**
    * An edge collection is used to display any number of disjoint edges
-   */
+   */ 
 
 
   class EdgeCollection {
-    constructor(edges, color) {
+    constructor (edges, color) {
       this.edges = edges;
       this.color = color || [1, 1, 1, 1];
       this.thickness = 2;
-      this.name = 'edge_collection_' + uuid();
+      this.name = 'edge_collection_' + uuid(); 
 
     }
 
-    render() {
+    render () {
       const mode = 'TRIANGLES';
       const vertexCount = this.edges.length * 6;
       const program = 'line2';
@@ -3132,7 +3132,7 @@ var GUM3D = (function (exports) {
         register1: [],
         color: [],
       };
-
+      
       for (let i = 0; i < this.edges.length; i++) {
 
         const current = this.edges[i][0];
@@ -3150,17 +3150,17 @@ var GUM3D = (function (exports) {
 
         // Submit next position for each vert.
         attribs.register1.push(
-          next[0], next[1], next[2], 1,
-          next[0], next[1], next[2], 1,
-          next[0], next[1], next[2], 1,
-          next[0], next[1], next[2], 1,
-          next[0], next[1], next[2], 1,
-          next[0], next[1], next[2], 1,
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
+          next[0], next[1], next[2], 1, 
         );
 
         // Submit color for each vert.
         attribs.color.push(
-          ...this.color,
+          ...this.color, 
           ...this.color,
           ...this.color,
           ...this.color,
@@ -3196,7 +3196,7 @@ var GUM3D = (function (exports) {
 
 
   class Transform {
-    constructor() {
+    constructor () {
       this.position = new Vec3();
       this.rotation = new Vec3();
       this.scale = new Vec3(1, 1, 1);
@@ -3206,21 +3206,21 @@ var GUM3D = (function (exports) {
       this._changed = false;
     }
 
-    _updateMatrix() {
+    _updateMatrix () {
       identity(this._matrix);
       translate(this._matrix, this._matrix, this.position.xyz);
-
+      
       rotate(this._matrix, this._matrix, this.rotation.y, [0, 1, 0]);
       rotate(this._matrix, this._matrix, this.rotation.x, [1, 0, 0]);
       rotate(this._matrix, this._matrix, this.rotation.z, [0, 0, 1]);
-
+      
       scale(this._matrix, this._matrix, this.scale.xyz);
 
       invert(this._invTranspose, this._matrix);
       transpose(this._invTranspose, this._invTranspose);
     }
 
-    get changed() {
+    get changed () {
       if (this.rotation._changed || this.position._changed || this.scale._changed) {
         this.position._changed = false;
         this.rotation._changed = false;
@@ -3230,39 +3230,39 @@ var GUM3D = (function (exports) {
       return false;
     }
 
-    get matrix() {
+    get matrix () {
       if (this.changed) {
         this._updateMatrix();
       }
       return this._matrix;
     }
 
-    get inverseTransposeMatrix() {
+    get inverseTransposeMatrix () {
       if (this.changed) {
         this._updateMatrix();
       }
       return this._invTranspose;
     }
 
-    transformPoint(point) {
+    transformPoint (point) {
       const out = [0, 0, 0];
       transformMat4(out, point, this.matrix);
       return out;
     }
 
-    transformPointXyz(x, y, z) {
+    transformPointXyz (x, y, z) {
       const out = [x, y, z];
       transformMat4(out, out, this.matrix);
       return out;
     }
 
-    transformNormal(normal) {
+    transformNormal (normal) {
       const out = [0, 0, 0];
       transformMat4(out, normal, this.inverseTransposeMatrix);
       return out;
     }
 
-    transformNormalXyz(x, y, z) {
+    transformNormalXyz (x, y, z) {
       const out = [x, y, z];
       transformMat4(out, out, this.inverseTransposeMatrix);
       return out;
@@ -3296,45 +3296,45 @@ var GUM3D = (function (exports) {
       this.program = 'default';
     }
 
-    get x() { return this.transform.position.x };
-    get y() { return this.transform.position.y };
-    get z() { return this.transform.position.z };
-
-    get rx() { return this.transform.rotation.x };
-    get ry() { return this.transform.rotation.y };
-    get rz() { return this.transform.rotation.z };
+    get x ()  { return this.transform.position.x };
+    get y ()  { return this.transform.position.y };
+    get z ()  { return this.transform.position.z };
+    
+    get rx () { return this.transform.rotation.x };
+    get ry () { return this.transform.rotation.y };
+    get rz () { return this.transform.rotation.z };
 
 
     /** 
      * Move this node to a location, this is the local position.
      */
-    move(x, y, z) {
+    move (x, y, z) {
       this.transform.position.set(x, y, z);
       return this;
     }
 
 
-    rotate(x, y, z) {
+    rotate (x, y, z) {
       this.transform.rotation.set(x, y, z);
       return this;
     }
 
 
-    scale(x, y, z) {
+    scale (x, y, z) {
       if (arguments.length === 1) {
         this.transform.scale.set(x, x, x);
       } else {
-        this.transform.scale.set(x, y, z);
+        this.transform.scale.set(x, y, z);    
       }
       return this;
     }
 
-    get worldPosition() {
+    get worldPosition () {
       return ([this._worldMatrix[12], this._worldMatrix[13], this._worldMatrix[14]]);
     }
 
 
-    _calculateWorldMatrix(parent) {
+    _calculateWorldMatrix (parent) {
       if (parent) {
         multiply(this._worldMatrix, parent._worldMatrix, this.transform.matrix);
       } else {
@@ -3347,7 +3347,7 @@ var GUM3D = (function (exports) {
     }
 
 
-    setParent(node) {
+    setParent (node) {
       if (this.parent) {
         this.parent._removeChild(this);
       }
@@ -3358,31 +3358,31 @@ var GUM3D = (function (exports) {
       return this;
     }
 
-    setGeometry(geo) {
+    setGeometry (geo) {
       this.geometry = geo;
       return this;
     }
 
-    createChildNode(name, geometry) {
+    createChildNode (name, geometry) {
       let node = new Node(name, geometry);
       node.setParent(this);
       return node;
     }
 
-    _removeChild(node) {
+    _removeChild (node) {
       this.children = this.children.filter(n => n !== node);
     }
 
 
-    _addChild(node) {
+    _addChild (node) {
       this.children.push(node);
       this._dirty = true;
     }
 
 
-    _print(output, depth) {
+    _print (output, depth) {
       if (depth > 0) {
-        for (let i = 1; i < depth; i++) {
+        for (let i = 1; i < depth; i++) { 
           output += '  ';
         }
         output += '└─';
@@ -3399,7 +3399,7 @@ var GUM3D = (function (exports) {
       return output;
     }
 
-    _toDrawList(drawList, children = true) {
+    _toDrawList (drawList, children = true) {
       if (!this.visible) {
         return;
       }
@@ -3416,24 +3416,24 @@ var GUM3D = (function (exports) {
     }
 
 
-    traverse(fn) {
+    traverse (fn) {
       fn(this);
       this.children.forEach(child => child.traverse(fn));
     }
 
-    uniform(name, value) {
+    uniform (name, value) {
       this.uniforms[name] = value;
     }
   }
 
   class Camera extends Node {
-    constructor(transform, fov) {
-      super('camera', null, transform);
+    constructor (transform, fov) { 
+      super ('camera', null, transform);
 
       this.fov = fov || 35;
       this.near = 0.5;
       this.far = 100;
-
+      
       this.view = create();
 
       this.projection = create();
@@ -3445,12 +3445,12 @@ var GUM3D = (function (exports) {
       this.updateViewProjection();
     }
 
-    get eye() { return this.worldPosition }
-    set aspect(val) { this._aspect = val; }
-    get aspect() { return this._aspect; }
+    get eye () { return this.worldPosition }
+    set aspect (val) { this._aspect = val; }
+    get aspect () { return this._aspect; }
 
 
-    updateViewProjection() {
+    updateViewProjection () {
       lookAt(this.view, this.eye, this.target.xyz, this.up.xyz);
       perspective(this.projection, radians(this.fov), this._aspect, this.near, this.far);
     }
@@ -3473,26 +3473,26 @@ var GUM3D = (function (exports) {
       this._drawCalls = [];
     }
 
-    print() {
+    print () {
       return this._print('* ', 0);
     }
 
-    drawCalls() {
+    drawCalls () {
       this._drawCalls = [];
       return this._toDrawList(this._drawCalls);
     }
 
-    add() {
-
+    add () {
+      
     }
 
-
-    updateSceneGraph() {
+    
+    updateSceneGraph () {
       this._calculateWorldMatrix();
     }
 
 
-
+    
   }
 
   const graphStyle = {
@@ -3508,7 +3508,7 @@ var GUM3D = (function (exports) {
     padding: '1em',
   };
 
-  function SceneGraph() {
+  function SceneGraph () {
     let graph = tag('div#scene-graph', graphStyle);
     let panel = select('.gum-panel');
     if (panel) {
@@ -3522,52 +3522,60 @@ var GUM3D = (function (exports) {
    * these attribs, but any that it does have will be forced to use the same 
    * layout.
    */
-  const vertexAttributeLayout = [{
-    name: 'aPosition',
-    size: 3,
-    type: 'FLOAT',
-    normalized: false,
-  }, {
-    name: 'aNormal',
-    size: 3,
-    type: 'FLOAT',
-    normalized: false,
-  }, {
-    name: 'aTexCoord',
-    size: 2,
-    type: 'FLOAT',
-    normalized: false,
-  }, {
-    name: 'aColor',
-    size: 4,
-    type: 'FLOAT',
-    normalized: false,
-  }, {
-    name: 'aSurfaceId',
-    size: 1,
-    type: 'FLOAT',
-    normalized: false,
-  }, {
-    name: 'aRegister1',
-    size: 4,
-    type: 'FLOAT',
-    normalized: false,
-  }, {
-    name: 'aRegister2',
-    size: 4,
-    type: 'FLOAT',
-    normalized: false,
-  }, ];
+  const vertexAttributeLayout = [
+     {
+      name: 'aPosition',
+      size: 3,
+      type: 'FLOAT',
+      normalized: false,
+    },
+    {
+      name: 'aNormal',
+      size: 3,
+      type: 'FLOAT',
+      normalized: false,
+    },
+    {
+      name: 'aTexCoord',
+      size: 2,
+      type: 'FLOAT',
+      normalized: false,
+    },
+    {
+      name: 'aColor',
+      size: 4,
+      type: 'FLOAT',
+      normalized: false,
+    },
+    {
+      name: 'aSurfaceId',
+      size: 1,
+      type: 'FLOAT',
+      normalized: false,
+    },
+    {
+      name: 'aRegister1',
+      size: 4,
+      type: 'FLOAT',
+      normalized: false,
+    },
+    {
+      name: 'aRegister2',
+      size: 4,
+      type: 'FLOAT',
+      normalized: false,
+    },
+  ];
 
   /** 
    * Default values for shader unfiforms.
-   */
+   */ 
 
   const defaultUniformValues = {
     uColorA: [0.9, 0.8, 0.9, 1],
     uColorB: [0, 0, 0, 1],
-    uKernel: 2,
-    uDist: 1,
+    uKernel: 2, 
+    uDist: 1, 
     uWeight: 1,
   };
 
@@ -3587,27 +3595,27 @@ var GUM3D = (function (exports) {
      * @param {object} config Optional configuration.
      * @returns {RenderContext} The new render context instance.
      */
-    constructor(canvas, w, h, config) {
+    constructor (canvas, w, h, config) {
       /**
        * The renderer's canvas.
        * @type {HTMLCanvasElement}
        */
       this.canvas = canvas;
-
+      
       /**
        * The width of the renderer. Use the .resize(w, h) method to change.
        * @readyonly
        * @type {number}
-       */
-      this.w = w;
-
+       */ 
+      this.w = w; 
+      
       /**
        * The height of the renderer. Use the .resize(w, h) method to change.
        * @readyonly
        * @type {number}
-       */
+       */ 
       this.h = h;
-
+      
       /**
        * The aspect ratio. Use the .resize(w, h) method to change.
        * @readyonly 
@@ -3621,7 +3629,7 @@ var GUM3D = (function (exports) {
        */
       this.glSettings = {
         // Frame buffers do not support antialias, so skip it.
-        antialias: false,
+        antialias: false, 
 
         // Mimic Processing's optional clear pattern.
         preserveDrawingBuffer: true,
@@ -3631,18 +3639,18 @@ var GUM3D = (function (exports) {
       if (config) {
         Object.assign(this.glSettings, config);
       }
-
+      
       /**
        * The WebGl2 context.
        * @type {WebGL2RenderingContext}
-       */
+      */
       this.gl = canvas.getContext('webgl2', this.glSettings);
-
+     
       if (!this.gl) {
         console.warn('Web GL 2 not available!');
         return;
       }
-
+      
       /**
        * Default configuration for GL rendering.
        * @private
@@ -3681,7 +3689,7 @@ var GUM3D = (function (exports) {
        * @type {arrray}
        */
       this.clearColor = [0, 0, 0, 1];
-
+      
       /**
        * The name of the active program.
        * @type {string}
@@ -3703,7 +3711,7 @@ var GUM3D = (function (exports) {
 
       /**
        * The maximun number of samplers available on the current device.
-       */
+       */ 
       this.MAX_TEX_UNIT = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
       /**
@@ -3711,14 +3719,14 @@ var GUM3D = (function (exports) {
        * @type {object}
        */
       this.uniformTypes = {
-        'FLOAT': 'uniform1f',
-        'FLOAT_VEC2': 'uniform2fv',
-        'FLOAT_VEC3': 'uniform3fv',
-        'FLOAT_VEC4': 'uniform4fv',
-        'FLOAT_MAT4': 'uniformMatrix4fv',
-        'SAMPLER_2D': 'uniform1i',
+        'FLOAT'      : 'uniform1f',
+        'FLOAT_VEC2' : 'uniform2fv',
+        'FLOAT_VEC3' : 'uniform3fv',
+        'FLOAT_VEC4' : 'uniform4fv',
+        'FLOAT_MAT4' : 'uniformMatrix4fv',
+        'SAMPLER_2D' : 'uniform1i',
       };
-
+      
       /**
        * The available meshes keyed by id.
        */
@@ -3731,7 +3739,7 @@ var GUM3D = (function (exports) {
 
       /**
        * A list of the the vertex attributes.
-       */
+       */ 
       this.vertexAttributes = [...vertexAttributeLayout];
 
       if (config.attributes) {
@@ -3740,7 +3748,7 @@ var GUM3D = (function (exports) {
 
       /**
        * Attrib info hashes keyed by name.
-       */
+       */ 
       this.attributeInfoByName = {};
       this.vertexAttributes.forEach((attrib, i) => {
         this.attributeInfoByName[attrib.name] = attrib;
@@ -3750,19 +3758,19 @@ var GUM3D = (function (exports) {
       /**
        * A hash to track a block of shared uniforms between programs. Useful 
        * for things like view matrices, sky colors etc.
-       */
+       */ 
       this.globalUniformBlock = {};
 
       /**
        * Gl resource deleters by constructor name.
-       */
+       */ 
       this.deleteLookup = {
-        'WebGLProgram': 'deleteProgram',
-        'WebGLTexture': 'deleteTexture',
-        'WebGLFramebuffer': 'deleteFramebuffer',
-        'WebGLVertexArrayObject': 'deleteVertexArray',
+        'WebGLProgram' : 'deleteProgram',
+        'WebGLTexture' : 'deleteTexture',
+        'WebGLFramebuffer' : 'deleteFramebuffer',
+        'WebGLVertexArrayObject' : 'deleteVertexArray',
       };
-
+      
     }
 
 
@@ -3771,13 +3779,13 @@ var GUM3D = (function (exports) {
      * and face culling.
      * @param {object} settings 
      */
-    _configure(settings) {
+    _configure (settings) {
       if (settings) {
         for (let setting in settings) {
           this._configuration[setting] = settings[setting];
         }
       }
-
+      
       this.depthTest(this._configuration.depthTest);
       this.depthWrite(this._configuration.depthWrite);
       this.cullFace(this._configuration.faceCulling);
@@ -3789,8 +3797,8 @@ var GUM3D = (function (exports) {
      * the gum canvas size.
      * @param {number} w The width.
      * @param {number} h The height.
-     */
-    resize(w, h) {
+     */ 
+    resize (w, h) {
       if (w === this.w && h === this.h) return;
       this.w = Math.max(w, 1);
       this.h = Math.max(h, 1);
@@ -3807,20 +3815,20 @@ var GUM3D = (function (exports) {
      * Turn depth testing on or off.
      * @param {boolean} flag Whether depth testing is enabled.
      */
-    depthTest(flag) {
+    depthTest (flag) {
       this._configuration.depthTest = flag;
       this.gl.disable(this.gl.DEPTH_TEST);
       if (flag) {
         this.gl.enable(this.gl.DEPTH_TEST);
       }
     }
-
+    
 
     /**
      * Turn depth writing on or off.
      * @param {boolean} flag Whether depth writing is enabled.
      */
-    depthWrite(flag) {
+    depthWrite (flag) {
       this._configuration.depthWrite = flag;
       this.gl.depthMask(flag);
     }
@@ -3831,32 +3839,32 @@ var GUM3D = (function (exports) {
      * @param {string} face The face to cull. Either 'back', 'front', 'none', or 
      *     'all'.
      */
-    cullFace(face) {
+    cullFace (face) {
       const gl = this.gl;
       this._configuration.faceCulling = face;
 
       switch (('' + face).toUpperCase()) {
-      case 'NONE':
-        gl.disable(gl.CULL_FACE);
-        break;
+        case 'NONE':
+          gl.disable(gl.CULL_FACE);
+          break;
 
-      case 'ALL':
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.FRONT_AND_BACK);
-        break;
+        case 'ALL':
+          gl.enable(gl.CULL_FACE);
+          gl.cullFace(gl.FRONT_AND_BACK);
+          break;
 
-      case 'FRONT':
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.FRONT);
-        break;
+        case 'FRONT':
+          gl.enable(gl.CULL_FACE);
+          gl.cullFace(gl.FRONT);
+          break;
 
-      case 'BACK':
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-        break;
+        case 'BACK':
+          gl.enable(gl.CULL_FACE);
+          gl.cullFace(gl.BACK);
+          break;
 
-      default:
-        gl.disable(gl.CULL_FACE);
+        default:
+          gl.disable(gl.CULL_FACE);
       }
     }
 
@@ -3869,7 +3877,7 @@ var GUM3D = (function (exports) {
      * @returns {string}
      * @private
      */
-    _prefixAttribName(name) {
+    _prefixAttribName (name) {
       if (name[0] === 'a') {
         return name;
       }
@@ -3882,12 +3890,12 @@ var GUM3D = (function (exports) {
      * @param {string} program The name of the program to use.
      * @returns {void}
      */
-    setProgram(program) {
+    setProgram (program) {
       if (!this.shaderPrograms[program]) {
         console.warn('No program found:', program);
         return;
       }
-
+      
       if (this.activeProgram === program) {
         return;
       }
@@ -3905,7 +3913,7 @@ var GUM3D = (function (exports) {
      *     canvas.
      * @returns {void}
      */
-    setRenderTarget(target) {
+    setRenderTarget (target) {
       if (target === null || this.renderTargets[target] === null) {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         this.renderTarget = null;
@@ -3932,7 +3940,7 @@ var GUM3D = (function (exports) {
      * @param {string} name A unique name for the render target. 
      * @param {boolean} depth Whether to create a depth texture as well.
      */
-    createRenderTarget(name, depth) {
+    createRenderTarget (name, depth) {
       const target = { w: this.w, h: this.h };
       const gl = this.gl;
 
@@ -3944,43 +3952,43 @@ var GUM3D = (function (exports) {
         texture: target.colorTexture,
       };
 
-      this.textureUnitIndex++;
+      this.textureUnitIndex ++;
 
       gl.activeTexture(gl.TEXTURE0 + target.colorTexUnit);
 
       // Make a texture to be the color of the target.
       gl.bindTexture(gl.TEXTURE_2D, target.colorTexture);
-
+      
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.w, this.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S,     gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T,     gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
+      
       // Create the frame buffer.
       target.frameBuffer = gl.createFramebuffer();
       gl.bindFramebuffer(gl.FRAMEBUFFER, target.frameBuffer);
 
       gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.colorTexture, 0);
-
+      
       if (depth) {
         target.depthTexUnit = this.textureUnitIndex;
         target.depthTexture = gl.createTexture();
-
+        
         this.texturesByName[name + '.depth'] = {
           unit: target.depthTexUnit,
           texture: target.depthTexture,
         };
-
-        this.textureUnitIndex++;
+        
+        this.textureUnitIndex ++;
 
 
         gl.activeTexture(gl.TEXTURE0 + target.depthTexUnit);
         gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.w, this.h, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
-
+        
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -3997,8 +4005,8 @@ var GUM3D = (function (exports) {
      * Update the dimensions of a render target by name. Scales it to match the 
      * current canvas.
      * @param 
-     */
-    updateRenderTarget(name) {
+     */ 
+    updateRenderTarget (name) {
       const target = this.renderTargets[name];
       if (!target) return;
 
@@ -4037,7 +4045,7 @@ var GUM3D = (function (exports) {
      * @param {string} mesh 
      * @returns
      */
-    draw(meshName, uniforms = {}, program = null) {
+    draw (meshName, uniforms = {}, program = null) {
       let mesh;
 
       // Check for a named mesh, which is stored in the renderer's responsobility.
@@ -4050,7 +4058,7 @@ var GUM3D = (function (exports) {
       } else {
         mesh = meshName;
       }
-
+      
 
       if (program && program !== this.activeProgram) {
         this.setProgram(program);
@@ -4058,7 +4066,7 @@ var GUM3D = (function (exports) {
 
       if (mesh.program && mesh.program !== this.activeProgram) {
         this.setProgram(mesh.program);
-      }
+      } 
 
       for (let uniform in uniforms) {
         this.uniform(uniform, uniforms[uniform]);
@@ -4077,13 +4085,13 @@ var GUM3D = (function (exports) {
       this.gl.drawArrays(this.gl[mesh.data.mode], 0, mesh.data.vertexCount);
       this.gl.bindVertexArray(null);
     }
-
+    
 
     /**
      * Find the constant name of a uniform type by the returned uniform type 
      * pointer
      */
-    findUniformType(typePointer) {
+    findUniformType (typePointer) {
       for (let namedType of Object.keys(this.uniformTypes)) {
         if (this.gl[namedType] === typePointer) {
           return namedType;
@@ -4100,7 +4108,7 @@ var GUM3D = (function (exports) {
      * @param {string} frag The fragment shader source.
      * @returns 
      */
-    createProgram(name, vert, frag) {
+    createProgram (name, vert, frag) {
 
       const program = this.gl.createProgram();
 
@@ -4108,7 +4116,7 @@ var GUM3D = (function (exports) {
       this.gl.shaderSource(vertexShader, vert);
       this.gl.compileShader(vertexShader);
       this.gl.attachShader(program, vertexShader);
-
+      
       const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
       this.gl.shaderSource(fragmentShader, frag);
       this.gl.compileShader(fragmentShader);
@@ -4129,17 +4137,17 @@ var GUM3D = (function (exports) {
       // Store information on any uniforms in the program.
       const uniformBlock = {};
       const uniformCount = this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS);
-
+      
       for (let i = 0; i < uniformCount; i++) {
         const uniformInfo = this.gl.getActiveUniform(program, i);
         const { size, type, name } = uniformInfo;
-
+        
         let namedType = this.findUniformType(type);
-
+        
         if (!namedType) {
           continue;
         }
-
+        
         uniformBlock[name] = {
           type: namedType,
           location: this.gl.getUniformLocation(program, name),
@@ -4153,7 +4161,7 @@ var GUM3D = (function (exports) {
           this._uniform(this.uniformTypes[namedType], location, value, isMatrix);
         }
       }
-
+      
       this.shaderPrograms[name] = program;
       this.shaderProgramUniforms[name] = uniformBlock;
       return program;
@@ -4164,7 +4172,7 @@ var GUM3D = (function (exports) {
      * Enforce an identical attribute layout across the programs.
      * @param {WebGLProgram} program 
      */
-    bindVertexAttributeLocations(program) {
+    bindVertexAttributeLocations (program) {
       for (let i = 0; i < this.vertexAttributes.length; i++) {
         const attrib = this.vertexAttributes[i];
         this.gl.bindAttribLocation(program, i, attrib.name);
@@ -4179,15 +4187,15 @@ var GUM3D = (function (exports) {
      * @param {Float32Array} attribs.normal
      *     ... any other vertex attributes.
      * @returns {WebGLVertexArrayObject}
-     */
-    _createVao(attribs) {
+     */ 
+    _createVao (attribs) {
       const vao = this.gl.createVertexArray();
       this._bufferAttribs(vao, attribs);
       return vao;
     }
+    
 
-
-    _bufferAttribs(vao, attribs) {
+    _bufferAttribs (vao, attribs) {
       this.gl.bindVertexArray(vao);
 
       for (const [attrib, data] of Object.entries(attribs)) {
@@ -4214,7 +4222,8 @@ var GUM3D = (function (exports) {
 
 
 
-    _getMeshId(name) {
+
+    _getMeshId (name) {
       const n = name;
       let postFix = '';
       let num = 1;
@@ -4225,16 +4234,16 @@ var GUM3D = (function (exports) {
       return n + postFix;
     }
 
-
+    
     /**
      * Add a retained-mode mesh to the renderer.
      * @param {Mesh|object} 
-     */
-    addMesh(meshData) {
+     */ 
+    addMesh (meshData) {
       let data;
-
+      
       // Flatten a mesh 
-      if (meshData.render) {
+      if (meshData.render) {  
         data = data.render();
       } else {
         data = meshData;
@@ -4243,7 +4252,7 @@ var GUM3D = (function (exports) {
       let name = data.name || 'mesh';
       name = this._getMeshId(name);
 
-      if (this.meshes[name]) {
+      if (this.meshes[name]) { 
         this.updateMesh(name, data);
         return;
       }
@@ -4253,13 +4262,13 @@ var GUM3D = (function (exports) {
       mesh.vao = this._createVao(data.attribs);
 
       mesh.program = data.program ?? null;
-
+      
       this.meshes[name] = mesh;
       return name;
     }
 
 
-    updateMesh(name, data) {
+    updateMesh (name, data) {
       if (!this.meshes[name]) {
         return;
       }
@@ -4269,7 +4278,7 @@ var GUM3D = (function (exports) {
 
       mesh.data = data;
       // mesh.vao = this.gl.createVertexArray();
-
+      
       this._bufferAttribs(mesh.vao, data.attribs);
     }
 
@@ -4279,7 +4288,7 @@ var GUM3D = (function (exports) {
      * @param {string} name The name of the uniform.
      * @param {any} value The value to set.
      */
-    uniform(name, value) {
+    uniform (name, value) {
       const uniforms = this.shaderProgramUniforms[this.activeProgram];
 
       if (!uniforms[name]) {
@@ -4309,8 +4318,8 @@ var GUM3D = (function (exports) {
      * @param {WebGLUniformLocation} location The location in the program.
      * @param {array|float|int} value The value to set.
      * @param {boolean} isMatrix Matrix flag.
-     */
-    _uniform(fn, location, value, isMatrix = false) {
+     */ 
+    _uniform (fn, location, value, isMatrix = false) {
       if (isMatrix) {
         this.gl[fn](location, false, value);
       } else {
@@ -4318,19 +4327,19 @@ var GUM3D = (function (exports) {
       }
     }
 
-
-    clear(color) {
+    
+    clear (color) {
       this.gl.clearColor(...color);
       this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
-    clearDepth() {
+    clearDepth () {
       this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
     }
 
 
 
-    hardFind(pointer) {
+    hardFind (pointer) {
       for (const [key, value] of Object.entries(this.gl.constructor)) {
         if (typeof value !== 'number') {
           continue;
@@ -4343,16 +4352,16 @@ var GUM3D = (function (exports) {
     }
 
 
-    addTexture(name, imageData, settings) {
+    addTexture (name, imageData, settings) {
       const gl = this.gl;
 
-      if (this.textureUnitIndex >= this.MAX_TEX_UNIT) {
+      if (this.textureUnitIndex >= this.MAX_TEX_UNIT) { 
         console.warn('Maximum texture units exceeded.');
-        return;
+        return; 
       }
 
       let unit, texture;
-
+      
       if (this.texturesByName[name]) {
         unit = this.texturesByName[name].unit;
         texture = this.texturesByName[name].texture;
@@ -4360,17 +4369,17 @@ var GUM3D = (function (exports) {
         unit = this.textureUnitIndex;
         texture = gl.createTexture();
         this.texturesByName[name] = { unit, texture };
-        this.textureUnitIndex++;
+        this.textureUnitIndex ++;
       }
 
       gl.activeTexture(gl.TEXTURE0 + unit);
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
+      
       const { width, height, filter, clamp } = settings;
 
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
-
+      
       if (clamp) {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -4378,15 +4387,15 @@ var GUM3D = (function (exports) {
 
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl[filter]);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl[filter]);
-
+      
       return unit;
     }
 
 
     /**
      * Get the total number of vertices in this mesh.
-     */
-    totalVertices() {
+     */ 
+    totalVertices () {
       return Object.values(this.meshes).reduce((a, b) => a + b.data.vertexCount, 0);
     }
 
@@ -4394,7 +4403,7 @@ var GUM3D = (function (exports) {
     /**
      * Set any uniforms in the global block.
      */
-    setGlobalUniformBlock() {
+    setGlobalUniformBlock () {
       for (let uniform in this.globalUniformBlock) {
         this.uniform(uniform, this.globalUniformBlock[uniform]);
       }
@@ -4405,22 +4414,22 @@ var GUM3D = (function (exports) {
      * Blit from one frame buffer to another.
      * @param {WebGLFramebuffer|null} The source buffer or null for canvas.
      * @param {WebGLFramebuffer|null} The target buffer or null for canvas.
-     */
-    blitBuffer(src, target) {
+     */ 
+    blitBuffer (src, target) {
       this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, src);
       this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, target);
       let w = this.w;
       let h = this.h;
       if (w > 0 && h > 0) {
-        this.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST);
+        this.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST);      
       }
     }
 
 
     /**
      * Free up gl (or js) memory for a single object.
-     */
-    _disposeGLEntity(entity) {
+     */ 
+    _disposeGLEntity (entity) {
       if (!entity) return;
       const constructor = entity.constructor.name;
       if (this.deleteLookup[constructor]) {
@@ -4433,8 +4442,8 @@ var GUM3D = (function (exports) {
 
     /**
      * Dispose of any gl resources.
-     */
-    dispose() {
+     */ 
+    dispose () {
       this.gl;
       console.log('disposeId', this.instanceId);
       for (let target of Object.values(this.renderTargets)) {
@@ -4460,7 +4469,7 @@ var GUM3D = (function (exports) {
       }
     }
 
-    _printShader(info, shaderSrc) {
+    _printShader (info, shaderSrc) {
       if (info.length === 0) return;
 
       let lines = shaderSrc.split('\n');
@@ -4544,6 +4553,7 @@ var GUM3D = (function (exports) {
     }
 
 
+
     /**
      * Load and parse a PLY file asynchronously.
      * @param {string} file The path to the file.
@@ -4569,8 +4579,6 @@ var GUM3D = (function (exports) {
 
       const header = this._parseHeader(buffer);
 
-      console.log(header);
-
       if (!header.valid) {
         console.error('Malformed data. Missing ply header: ' + file);
         this._finishLoading();
@@ -4594,6 +4602,25 @@ var GUM3D = (function (exports) {
       this._finishLoading();
 
       return mesh;
+    }
+
+
+    /**
+     * From a buffer, get a mesh. Useful for the upfront loading.
+     */
+    fromBuffer(buffer, filename) {
+
+      const header = this._parseHeader(buffer);
+      if (!header.valid) {
+        console.error('Malformed data. Missing ply header: ' + filename);
+        return new Mesh();
+      }
+
+      let [vertices, faces] = this._unpackData(buffer, header);
+      vertices = this._unfoldVertices(vertices, header.vertexFormat);
+      faces = this._trimFaces(faces);
+
+      return new Mesh(vertices, faces, { name: filename });
     }
 
 
@@ -4714,7 +4741,7 @@ var GUM3D = (function (exports) {
       }
 
       header.vertexStart = headerByteLength;
-      if (header.format === 'ascii');
+      if (header.format === 'ascii') ;
 
       header.totalVertexBytes = header.vertexCount * header.bytesPerVertex;
       header.faceStart = header.vertexStart + header.totalVertexBytes;
@@ -4916,13 +4943,13 @@ var GUM3D = (function (exports) {
    */
 
   class Texer {
-
+    
     /**
      * Make a new texer.
      * @param {number} size The size used for the width and height of the canvas.
      *     Power of 2 recommended.
      */
-    constructor(w, h, app) {
+    constructor (w, h, app) {
 
       /**
        * Css style for the texture canvas.
@@ -4954,12 +4981,12 @@ var GUM3D = (function (exports) {
 
       this.textureSettings = {
         width: w,
-        height: h,
+        height: h, 
         clamp: true,
         filter: 'NEAREST'
       };
-
-
+      
+      
 
       this.style = '#111';
 
@@ -4971,28 +4998,28 @@ var GUM3D = (function (exports) {
     /**
      * Set the color to be used by the next 'pixels' call.
      */
-    fill(col) {
+    fill (col) {
       this.style = col;
       this.ctx.fillStyle = col;
       return this;
     }
 
 
-    pixels(x1, y1, x2, y2) {
+    pixels (x1, y1, x2, y2) {
       this.ctx.fillRect(x1, y1, (x2 - x1), (y2 - y1));
       this._changed = true;
       return this;
 
     }
 
-    clear() {
+    clear () {
       this.pixels(0, 0, this.size, this.size);
       this._changed = true;
       return this;
     }
 
 
-    changed() {
+    changed () {
       const c = this._changed;
       this._changed = false;
       return c;
@@ -5006,8 +5033,8 @@ var GUM3D = (function (exports) {
 
   class Instancer {
 
-    constructor(instance, count, renderer, program) {
-
+    constructor (instance, count, renderer, program) {
+      
       /** The instance mesh */
       this.instance = instance;
       if (this.instance.render) {
@@ -5022,13 +5049,13 @@ var GUM3D = (function (exports) {
 
       /** The name of the shader program */
       this.program = program;
-
+      
       /** Pointer to gl context. */
       this.gl = this.renderer.gl;
 
       /** The total attributes. */
       this.attrs = ['x', 'y', 'z', 'w', 'r', 'g', 'b', 'a'];
-
+      
       /** The total attributes. */
       this.stride = this.attrs.length;
 
@@ -5044,7 +5071,7 @@ var GUM3D = (function (exports) {
 
       /** Shader attr pointer to the position. Position of the verts per instance. */
       this.posLoc = this.gl.getAttribLocation(this.renderer.shaderPrograms[this.program], 'aPosition');
-
+      
       /** Shader attr pointer to the color. */
       this.colorLoc = this.gl.getAttribLocation(this.renderer.shaderPrograms[this.program], 'aColor');
 
@@ -5059,8 +5086,8 @@ var GUM3D = (function (exports) {
 
     /** 
      * Fill the particles with randomized data.
-     */
-    iniitialize(data = null) {
+     */ 
+    iniitialize (data = null) {
       if (!data) {
         this.fillRandom();
         this.changed = true;
@@ -5076,9 +5103,9 @@ var GUM3D = (function (exports) {
 
     /** 
      * Fill the particles with randomized data.
-     */
-    fillRandom() {
-      for (let i = 0; i < this.count; i++) {
+     */ 
+    fillRandom () {
+      for (let i = 0; i < this.count; i++) { 
         this.setAttr(i, 'x', Math.random());
         this.setAttr(i, 'y', Math.random());
         this.setAttr(i, 'z', Math.random());
@@ -5094,7 +5121,7 @@ var GUM3D = (function (exports) {
      * @param {int} index The particle index.
      * @param {string} attr The attr 
      * @param {float} value
-     */
+     */ 
     setAttr(index, attr, val) {
       this.data[index * this.stride + this.attribIndices.get(attr)] = val;
     }
@@ -5103,19 +5130,19 @@ var GUM3D = (function (exports) {
      * Get an attr. 
      * @param {int} index The particle index.
      * @param {string} attr The attr.
-     */
+     */ 
     getAttr(index, attr) {
       return this.data[index * this.stride + this.attribIndices.get(attr)];
     }
 
     /**
      * Copy the desired data from the main buffer into the gpu buffer.
-     */
-    renderPoints() {
-
+     */ 
+    renderPoints () {
+     
     }
 
-    draw() {
+    draw () {
       this.renderer.setProgram(this.program);
 
       // Prep the quad mesh for the particle.
@@ -5127,7 +5154,7 @@ var GUM3D = (function (exports) {
 
       // Prep the instances.
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
-
+      
       // Buffer Data?
       this.gl.bufferData(this.gl.ARRAY_BUFFER, this.data, this.gl.DYNAMIC_DRAW);
 
@@ -5720,7 +5747,11 @@ var GUM3D = (function (exports) {
     }
 
 
-    addProgram(programName) {
+    addProgram(programName, shaders = false) {
+      if (shaders && shaders.vert && shaders.frag) {
+        this.renderer.createProgram(programName, shaders.vert, shaders.frag);
+        return;
+      }
       if (shaders[programName].vert && shaders[programName].frag) {
         this.renderer.createProgram(programName, shaders[programName].vert, shaders[programName].frag);
       }
@@ -5773,6 +5804,7 @@ var GUM3D = (function (exports) {
       let lift = 30;
       let zoom = distance;
       let mouseDown = false;
+      let pos = new Vec3();
 
       const moveCam = (e = {}, force = false) => {
         if (!mouseDown && !force) return;
@@ -5786,8 +5818,8 @@ var GUM3D = (function (exports) {
         const z = Math.sin(radians(lift)) * Math.sin(radians(theta));
         const y = Math.cos(radians(lift));
 
-        let pos = new Vec3(x, y, z).normalize(zoom);
-        this.camera.move(...pos.xyz);
+        pos.set(x, y, z).normalize(zoom);
+        this.camera.move(...pos);
       };
 
       moveCam({}, true);
@@ -5796,7 +5828,7 @@ var GUM3D = (function (exports) {
       window.onpointerup = () => mouseDown = false;
       window.onmousemove = (e) => moveCam(e);
 
-      canvas.onwheel = (e) => {
+      this.canvas.onwheel = (e) => {
 
         zoom += e.deltaY * -0.1;
         zoom = clamp(zoom, 0.1, 30);

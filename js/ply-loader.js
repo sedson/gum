@@ -5,13 +5,13 @@
 import { Mesh } from "./mesh.js";
 
 export class PlyLoader {
-  
+
   /**
    * Make a new Loader. A given project should only need one loader instance.
    * @param {boolean} verbose 
    */
-  constructor (settings = {}) {
-    
+  constructor(settings = {}) {
+
     /** The queue of files to be loaded. */
     this._filesToLoad = [];
 
@@ -38,14 +38,14 @@ export class PlyLoader {
      * shim those to javascript ready values.
      */
     this.PLY_TYPES = {
-      'char':   { bytes: 1, getter: 'getInt8'},
-      'uchar':  { bytes: 1, getter: 'getUint8', maxValue: 255 },
-      'short':  { bytes: 2, getter: 'getInt16'},
-      'ushort': { bytes: 2, getter: 'getUint16'},
-      'int':    { bytes: 4, getter: 'getInt32'},
-      'uint':   { bytes: 4, getter: 'getUint32'},
-      'float':  { bytes: 4, getter: 'getFloat32'},
-      'double': { bytes: 8, getter: 'getFloat64'},
+      'char': { bytes: 1, getter: 'getInt8' },
+      'uchar': { bytes: 1, getter: 'getUint8', maxValue: 255 },
+      'short': { bytes: 2, getter: 'getInt16' },
+      'ushort': { bytes: 2, getter: 'getUint16' },
+      'int': { bytes: 4, getter: 'getInt32' },
+      'uint': { bytes: 4, getter: 'getUint32' },
+      'float': { bytes: 4, getter: 'getFloat32' },
+      'double': { bytes: 8, getter: 'getFloat64' },
     };
 
     /**
@@ -53,23 +53,24 @@ export class PlyLoader {
      * Mesh class.
      */
     this.PLY_MAPPINGS = {
-      'x'    : { attrib: 'position', index: 0 },
-      'y'    : { attrib: 'position', index: 1 },
-      'z'    : { attrib: 'position', index: 2 },
+      'x': { attrib: 'position', index: 0 },
+      'y': { attrib: 'position', index: 1 },
+      'z': { attrib: 'position', index: 2 },
 
-      'nx'   : { attrib: 'normal'  , index: 0 },
-      'ny'   : { attrib: 'normal'  , index: 1 },
-      'nz'   : { attrib: 'normal'  , index: 2 },
+      'nx': { attrib: 'normal', index: 0 },
+      'ny': { attrib: 'normal', index: 1 },
+      'nz': { attrib: 'normal', index: 2 },
 
-      's'    : { attrib: 'texCoord', index: 0 },
-      't'    : { attrib: 'texCoord', index: 1 },
+      's': { attrib: 'texCoord', index: 0 },
+      't': { attrib: 'texCoord', index: 1 },
 
-      'red'  : { attrib: 'color'   , index: 0 },
-      'green': { attrib: 'color'   , index: 1 },
-      'blue' : { attrib: 'color'   , index: 2 },
-      'alpha': { attrib: 'color'   , index: 3 },
+      'red': { attrib: 'color', index: 0 },
+      'green': { attrib: 'color', index: 1 },
+      'blue': { attrib: 'color', index: 2 },
+      'alpha': { attrib: 'color', index: 3 },
     };
-  } 
+  }
+
 
 
   /**
@@ -77,7 +78,7 @@ export class PlyLoader {
    * @param {string} file The path to the file.
    * @param {function} fn The callback function to handle the mesh data.
    */
-  async load (file, fn) {
+  async load(file, fn) {
     // If loading, add task to the queue.
     if (this._isLoading) {
       this._filesToLoad.push([file, fn]);
@@ -94,10 +95,8 @@ export class PlyLoader {
 
     // Get the response as an array buffer to handle both ascii and binary PLYs.
     const buffer = await response.arrayBuffer();
-    
-    const header = this._parseHeader(buffer);
 
-    console.log(header)
+    const header = this._parseHeader(buffer);
 
     if (!header.valid) {
       console.error('Malformed data. Missing ply header: ' + file);
@@ -105,9 +104,9 @@ export class PlyLoader {
       return;
     }
 
-    let [ vertices, faces ] = this._unpackData(buffer, header);
+    let [vertices, faces] = this._unpackData(buffer, header);
     vertices = this._unfoldVertices(vertices, header.vertexFormat);
-    faces    = this._trimFaces(faces);
+    faces = this._trimFaces(faces);
 
     const mesh = new Mesh(vertices, faces, { name: file });
 
@@ -126,11 +125,30 @@ export class PlyLoader {
 
 
   /**
+   * From a buffer, get a mesh. Useful for the upfront loading.
+   */
+  fromBuffer(buffer, filename) {
+
+    const header = this._parseHeader(buffer);
+    if (!header.valid) {
+      console.error('Malformed data. Missing ply header: ' + filename);
+      return new Mesh();
+    }
+
+    let [vertices, faces] = this._unpackData(buffer, header);
+    vertices = this._unfoldVertices(vertices, header.vertexFormat);
+    faces = this._trimFaces(faces);
+
+    return new Mesh(vertices, faces, { name: filename });
+  }
+
+
+  /**
    * Flag that we are done loading and then check to queue of next files to
    * load.
    * @private
    */
-  _finishLoading () {
+  _finishLoading() {
     this._isLoading = false;
     if (this._filesToLoad.length) {
       this.load(...this._filesToLoad.shift());
@@ -145,7 +163,7 @@ export class PlyLoader {
    *    strings where each entry represents one line of text.
    * @private
    */
-  _bufferToHeaderStrings (buffer) {
+  _bufferToHeaderStrings(buffer) {
     const chars = new Uint8Array(buffer);
     const headerStrings = [];
 
@@ -179,12 +197,12 @@ export class PlyLoader {
    * @return {object} A header object.
    * @private
    */
-  _parseHeader (buffer) {
+  _parseHeader(buffer) {
     const headerStrings = this._bufferToHeaderStrings(buffer);
 
     const header = {
       valid: false,
-      format: null, 
+      format: null,
       vertexCount: 0,
       vertexFormat: [],
       vertexStart: 0,
@@ -199,7 +217,7 @@ export class PlyLoader {
     let mode = 'vertex';
 
     for (const str of headerStrings) {
-      
+
       // Track the byte length of the header. The extra 1 is for the return 
       // carriage which got trimmed already. 
       headerByteLength += str.length + 1;
@@ -207,36 +225,37 @@ export class PlyLoader {
       const values = str.split(' ');
 
       switch (values[0]) {
-        case 'ply' :
-          header.valid = true;
-          break; 
+      case 'ply':
+        header.valid = true;
+        break;
 
-        case 'format' : 
-          header.format = values[1];
-          break;
-        
-        case 'comment' :
-          break;
-        
-        case 'element' : 
-          if (values[1] === 'vertex') {
-            header.vertexCount = parseInt(values[2]);
-            mode = 'vertex';
-          } else if (values[1] === 'face') {
-            header.faceCount = parseInt(values[2]);
-            mode = 'face';
-          }
-          break;
-        
-        case 'property' :
-          if (mode === 'vertex') {
-            const type = values[1], property = values[2];
-            header.vertexFormat.push({ type, property });
-            header.bytesPerVertex += this.PLY_TYPES[type].bytes;
-          } else {
-            header.faceFormat = values.slice(1);
-          }
-          break;
+      case 'format':
+        header.format = values[1];
+        break;
+
+      case 'comment':
+        break;
+
+      case 'element':
+        if (values[1] === 'vertex') {
+          header.vertexCount = parseInt(values[2]);
+          mode = 'vertex';
+        } else if (values[1] === 'face') {
+          header.faceCount = parseInt(values[2]);
+          mode = 'face';
+        }
+        break;
+
+      case 'property':
+        if (mode === 'vertex') {
+          const type = values[1],
+            property = values[2];
+          header.vertexFormat.push({ type, property });
+          header.bytesPerVertex += this.PLY_TYPES[type].bytes;
+        } else {
+          header.faceFormat = values.slice(1);
+        }
+        break;
       }
     }
 
@@ -256,7 +275,7 @@ export class PlyLoader {
    * Trim the first value from each array in the faces array. Because PLY is 
    * tightly packed, a face has to tell how many 
    */
-  _trimFaces (faces) {
+  _trimFaces(faces) {
     return faces.map(face => face.slice(1));
   }
 
@@ -264,7 +283,7 @@ export class PlyLoader {
   /** 
    * Unfold the vertex data from a flat array to a structured object. 
    */
-  _unfoldVertex (vertex, format) {
+  _unfoldVertex(vertex, format) {
     const v = {};
 
     for (let i = 0; i < format.length; i++) {
@@ -289,7 +308,7 @@ export class PlyLoader {
   /** 
    * Unfold all the vertices.
    */
-  _unfoldVertices (vertices, format) {
+  _unfoldVertices(vertices, format) {
     return vertices.map(vertex => this._unfoldVertex(vertex, format));
   }
 
@@ -314,12 +333,12 @@ export class PlyLoader {
    * @param {ArrayBuffer} byteArray The ply file buffer.
    * @param {object} header The parsed header meta data.
    */
-  _unpackDataAscii (buffer, header) {
+  _unpackDataAscii(buffer, header) {
     const byteArray = new Uint8Array(buffer);
-    
+
     const vertices = [];
     const faces = [];
-    
+
     let currentValue = '';
     let currentArray = [];
 
@@ -328,31 +347,31 @@ export class PlyLoader {
 
       switch (charCode) {
 
-        case this.SPACE:
-          currentArray.push(Number(currentValue));
-          currentValue = '';
-          break;
+      case this.SPACE:
+        currentArray.push(Number(currentValue));
+        currentValue = '';
+        break;
 
-        case this.RETURN:
-          currentArray.push(Number(currentValue));
-          currentValue = '';
+      case this.RETURN:
+        currentArray.push(Number(currentValue));
+        currentValue = '';
 
-          if (vertices.length < header.vertexCount) {
-            vertices.push(currentArray)
-          } else {
-            faces.push(currentArray);
-          }
+        if (vertices.length < header.vertexCount) {
+          vertices.push(currentArray)
+        } else {
+          faces.push(currentArray);
+        }
 
-          currentArray = [];
-          break;
+        currentArray = [];
+        break;
 
-        default:
-          currentValue += String.fromCharCode(charCode);
-          break;
+      default:
+        currentValue += String.fromCharCode(charCode);
+        break;
       }
     }
 
-    return [ vertices, faces ];
+    return [vertices, faces];
   }
 
 
@@ -361,7 +380,7 @@ export class PlyLoader {
    * @param {ArrayBuffer} buffer The array buffer of the file.
    * @param {object} header The parsed header structure.
    */
-  _unpackDataBinary (buffer, header) {
+  _unpackDataBinary(buffer, header) {
     // A DataView lets us fetch any type from the buffer from any index.
     const view = new DataView(buffer);
 
@@ -392,7 +411,7 @@ export class PlyLoader {
       return vertex;
     }
 
-    
+
     /**
      * Local helper to unpack a slice of the buffer into one vertex.
      * @param {number} start The start index of the vertex. Vertices in PLY are 
@@ -427,7 +446,7 @@ export class PlyLoader {
       const start = header.vertexStart + v * header.bytesPerVertex;
       vertices.push(unpackVert(start));
     }
-    
+
     let faceStartIndex = header.faceStart;
     for (let f = 0; f < header.faceCount; f++) {
       const { bytesConsumed, face } = unpackFace(faceStartIndex);
