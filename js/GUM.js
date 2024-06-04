@@ -289,9 +289,8 @@ export class Gum {
 
   /**
    * Set the background color. Like processing also has the effect of 
-   * a full canvas clean
+   * a full canvas clear
    * @param {Color} color 
-   * @returns 
    */
   clear(color) {
     if (color instanceof col.Color) {
