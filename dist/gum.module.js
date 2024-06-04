@@ -230,11 +230,14 @@ function ColorSwatch (color) {
  */
 
 /* I like default black, but default white is arguably more useful. */
-const defR = 0; const defG = 0; const defB = 0; const defA = 1;
+const defR = 0;
+const defG = 0;
+const defB = 0;
+const defA = 1;
 
 
 /**
- * Color class with rgb and hsl state. Ideally colors are not mutable. To 
+ * A Color class with rgb and hsl state. Ideally colors are not mutable. To 
  * get a new color, create a new color. 
  */
 class Color {
@@ -242,43 +245,123 @@ class Color {
    * Construct a Color from normalized rgba values. In general, API usage should 
    * discourage calling 'new Color()' and should rely on the color() generator.
    */
-  constructor (r, g, b, a) {
-    this._rgb = [ r ?? defR, g ?? defG, b ?? defB ];
+  constructor(r, g, b, a) {
+    this._rgb = [r ?? defR, g ?? defG, b ?? defB];
     this._hsl = rgbToHsl(...this._rgb);
     this._a = a ?? defA;
     ColorSwatch(this.rgbString());
   }
   
-  get r    () { return this._rgb[0]; }
-  get g    () { return this._rgb[1]; } 
-  get b    () { return this._rgb[2]; } 
+  /**
+   * The red value.
+   * @member
+   * @type {number}
+   */
+  get r() { return this._rgb[0]; }
   
-  get h    () { return this._hsl[0]; }
-  get s    () { return this._hsl[1]; }
-  get l    () { return this._hsl[2]; }
-
-  get a    () { return this._a };
-  set a    (a) { this._a = a; }
-
-  get rgb  () { return [...this._rgb]; }
-  get rgba () { return [...this._rgb, this._a]; }
-  get hsl  () { return [...this._hsl]; }
-  get hsla () { return [...this._hsl, this._a]; }
-
-  set r (r) { this._rgb[0] = r;  this._hsl = rgbToHsl(...this._rgb); }
-  set g (g) { this._rgb[1] = g;  this._hsl = rgbToHsl(...this._rgb); }
-  set b (b) { this._rgb[2] = b;  this._hsl = rgbToHsl(...this._rgb); }
+  /**
+   * The green value.
+   * @member
+   * @type {number}
+   */
+  get g() { return this._rgb[1]; }
   
-  set h (h) { this._hsl[0] = h;  this._rgb = hslToRgb(...this._hsl); }
-  set s (s) { this._hsl[1] = s;  this._rgb = hslToRgb(...this._hsl); }
-  set l (l) { this._hsl[2] = l;  this._rgb = hslToRgb(...this._hsl); }
+  /**
+   * The blue value.
+   * @member
+   * @type {number}
+   */
+  get b() { return this._rgb[2]; }
+
+  /**
+   * The hue value.
+   * @member
+   * @type {number}
+   */
+  get h() { return this._hsl[0]; }
+
+  /**
+   * The saturation value.
+   * @member
+   * @type {number}
+   */
+  get s() { return this._hsl[1]; }
+  
+  /**
+   * The lightness value.
+   * @member
+   * @type {number}
+   */
+  get l() { return this._hsl[2]; }
+
+  /**
+   * The alpha value.
+   * @member
+   * @type {number}
+   */
+  get a() { return this._a };
+  set a(a) { this._a = a; }
+ 
+  /**
+   * RGB as a plain array.
+   * @member
+   * @type {array}
+   */
+  get rgb() { return [...this._rgb]; }
+
+  /**
+   * RGBA as a plain array.
+   * @member
+   * @type {array}
+   */
+  get rgba() { return [...this._rgb, this._a]; }
+
+  /**
+   * HSL as a plain array.
+   * @member
+   * @type {array}
+   */
+  get hsl() { return [...this._hsl]; }
+  
+  /**
+   * HSLA as a plain array.
+   * @member
+   * @type {array}
+   */
+  get hsla() { return [...this._hsl, this._a]; }
+
+  set r(r) {
+    this._rgb[0] = r;
+    this._hsl = rgbToHsl(...this._rgb);
+  }
+  set g(g) {
+    this._rgb[1] = g;
+    this._hsl = rgbToHsl(...this._rgb);
+  }
+  set b(b) {
+    this._rgb[2] = b;
+    this._hsl = rgbToHsl(...this._rgb);
+  }
+
+  set h(h) {
+    this._hsl[0] = h;
+    this._rgb = hslToRgb(...this._hsl);
+  }
+  set s(s) {
+    this._hsl[1] = s;
+    this._rgb = hslToRgb(...this._hsl);
+  }
+  set l(l) {
+    this._hsl[2] = l;
+    this._rgb = hslToRgb(...this._hsl);
+  }
 
 
   /**
    * Get the CSS-ready rgb or rgba string representation of this color.
    * @returns {string}
    */
-  rgbString () {
+  rgbString() {
     const r255 = Math.round(this._rgb[0] * 255);
     const g255 = Math.round(this._rgb[1] * 255);
     const b255 = Math.round(this._rgb[2] * 255);
@@ -293,7 +376,7 @@ class Color {
    * Get the CSS-ready hsl or hsla string representation of this color.
    * @returns {string}
    */
-  hslString () {
+  hslString() {
     const h360 = Math.round(this.h);
     const s100 = Math.round(this.s * 100);
     const l100 = Math.round(this.s * 100);
@@ -305,30 +388,50 @@ class Color {
 
   /**
    * Blend this color with other by amount using mode. 
-   * 
+   * @param {Color} other The other color.
+   * @param {number} amt The aboumt to blend (0:1).
+   * @param {string} mode The color space to blend in. Options are 'RGB' (default) and 
+   *     'HSL'. 
+   * @returns {Color}
    */
-  blend (other, amt = 0.5, mode = 'RGB') {
+  blend(other, amt = 0.5, mode = 'RGB') {
     return blend(this, other, amt, mode);
   }
 
-  copy () {
+  /** 
+   * Copy this color.
+   * @returns {Color}
+   */
+  copy() {
     return new Color(...this.rgba);
   }
 
   /**
-   * Hue shift
+   * Hue shift.
    * @param {number} amt The amount of hue shift in degrees.
-   * @returns {Color} A new color object.
-   */ 
-  shiftHue (amt) {
+   * @returns {Color} A new color.
+   */
+  shiftHue(amt) {
     return new Color(...hslToRgb(this.h + amt, this.s, this.l, this.a));
   }
 
-  lighten (amt) {
+  /**
+   * Lighten or darken the color.
+   * @param {number} amt The lightness change. Positive for lighter. Negative for darker.
+   *     Overall lightness is (0:100).
+   * @returns {Color} A new color.
+   */
+  lighten(amt) {
     return new Color(...hslToRgb(this.h, this.s, this.l + amt, this.a));
   }
 
-  saturate (amt) {
+  /**
+   * Saturate or desaturate the color.
+   * @param {number} amt The saturation change. Positive for more. Negative for less.
+   *     Overall saturation is (0:100).
+   * @returns {Color} A new color.
+   */
+  saturate(amt) {
     return new Color(...hslToRgb(this.h, this.s + amt, this.l, this.a));
   }
 }
@@ -340,14 +443,18 @@ class Color {
  * out versions of those values, or an existing color object. If no params 
  * passed get a random color.
  * @param {string} color The color.
+ * @exampe 
+ * const red = color('rgb(255, 0, 0)');
+ * const yellow = color('#ffff00');
+ * const randomColor = color();
  * @returns {Color}
  */
-function color (...args) {
+function color(...args) {
 
   if (args.length === 0) {
     return new Color(Math.random(), Math.random(), Math.random());
   }
-  
+
   // 3 or more numbers were passed.
   if (validColorArray(args)) {
     return new Color(...args);
@@ -367,14 +474,14 @@ function color (...args) {
   if (ColorDict[col]) { col = ColorDict[col]; }
 
   switch (colorFormat(col)) {
-    case 'HEX' :
-      return new Color(...hexToRgb(col, true));
-    
-    case 'RGB' : 
-      return new Color(...strToRgb(col, true));
-    
-    case 'HSL' :
-      return new Color(hslToRgb(...strToHsl(col, true)));
+  case 'HEX':
+    return new Color(...hexToRgb(col, true));
+
+  case 'RGB':
+    return new Color(...strToRgb(col, true));
+
+  case 'HSL':
+    return new Color(hslToRgb(...strToHsl(col, true)));
   }
 
   return new Color(Math.random(), Math.random(), Math.random());
@@ -387,9 +494,10 @@ function color (...args) {
  * values.
  * @param {array} arr An array of potential color values. 
  * @returns {boolean} Whether the array is valid.
+ * @private
  */
-function validColorArray (arr) {
-  if (Array.isArray(arr) && arr.length >= 3 ) {
+function validColorArray(arr) {
+  if (Array.isArray(arr) && arr.length >= 3) {
     return arr.every(x => x !== '' && !isNaN(Number(x)));
   }
   return false;
@@ -400,8 +508,9 @@ function validColorArray (arr) {
  * Get the color format from a string.
  * @param {string} str The input color string. 
  * @returns {string} 'HEX' | 'RGB' | 'HSL'.
+ * @private
  */
-function colorFormat (str) {
+function colorFormat(str) {
   if (str.indexOf('#') === 0) {
     return 'HEX';
   } else if (str.indexOf('rgb') === 0) {
@@ -416,9 +525,10 @@ function colorFormat (str) {
  * Get all the numbers out of a color string.
  * @param {string} str An rgb or hsl string.
  * @returns {array<number>}
+ * @private
  */
-function extractNumbers (str) {
-  const parts =  str.replace(/[^0-9|\.]+/g, '-').split('-');
+function extractNumbers(str) {
+  const parts = str.replace(/[^0-9|\.]+/g, '-').split('-');
   const numbers = [];
   for (let part of parts) {
     if (part === '') continue;
@@ -435,14 +545,15 @@ function extractNumbers (str) {
  * @param {boolean} normalized If true return components in the [0->1] range. If
  *     not leave them in rgb[0->255].
  * @returns {array<number>}
+ * @private
  */
-function strToRgb (str, normalized = true) {
+function strToRgb(str, normalized = true) {
   if (str.indexOf('rgb') === -1) { return [defR, defG, defB]; }
-  
+
   const numbers = extractNumbers(str);
   if (numbers.length < 3) { return [defR, defG, defB]; }
 
-  const m = normalized ? 1 / 255  : 1;
+  const m = normalized ? 1 / 255 : 1;
   const color = [
     numbers[0] * m,
     numbers[1] * m,
@@ -461,15 +572,16 @@ function strToRgb (str, normalized = true) {
  * @param {boolean} normalized If true return components in h[0->360] sl[0->1] 
  *     range. If not leave them in h[0->360] sl[0->100].
  * @returns {array<number>}
+ * @private
  */
-function strToHsl (str, normalized = true) {
+function strToHsl(str, normalized = true) {
   if (str.indexOf('hsl') === -1) { return [0, 0, 0]; }
-  
+
   const numbers = extractNumbers(str);
   if (numbers.length < 3) { return [0, 0, 0]; }
 
-  const m = normalized ? 1 / 100  : 1;
-  const color = [ 
+  const m = normalized ? 1 / 100 : 1;
+  const color = [
     numbers[0],
     numbers[1] * m,
     numbers[2] * m,
@@ -487,10 +599,11 @@ function strToHsl (str, normalized = true) {
  * @param {boolean} normalized If true return components in the [0->1] range. If
  *     not leave them in rgb[0->255].
  * @returns {array<number>}
+ * @private
  */
-function hexToRgb (hex, normalized = true) {
+function hexToRgb(hex, normalized = true) {
   const h = hex.slice(1);
-  const m = normalized ? (1/ 255) : 1;
+  const m = normalized ? (1 / 255) : 1;
   const parse = v => m * parseInt(v, 16);
 
   if (h.length === 3) {
@@ -529,7 +642,7 @@ function hexToRgb (hex, normalized = true) {
  * @param {number} l Lightness in the 0->1 range.
  * @return {array} Normalized RGB color array.
  */
-function hslToRgb (h = 0, s = 0, l = 0, a = 1) {
+function hslToRgb(h = 0, s = 0, l = 0, a = 1) {
   // Validate hsv.
   h = (h + 360) % 360;
   s = Math.max(Math.min(s, 1), 0);
@@ -546,19 +659,31 @@ function hslToRgb (h = 0, s = 0, l = 0, a = 1) {
   let r, g, b;
 
   if (h1 < 1) {
-    r = c; g = x; b = 0;
+    r = c;
+    g = x;
+    b = 0;
   } else if (h1 < 2) {
-    r = x; g = c; b = 0;
+    r = x;
+    g = c;
+    b = 0;
   } else if (h1 < 3) {
-    r = 0; g = c; b = x;
+    r = 0;
+    g = c;
+    b = x;
   } else if (h1 < 4) {
-    r = 0; g = x; b = c;
+    r = 0;
+    g = x;
+    b = c;
   } else if (h1 < 5) {
-    r = x; g = 0; b = c;
+    r = x;
+    g = 0;
+    b = c;
   } else if (h1 <= 6) {
-    r = c; g = 0; b = x;
+    r = c;
+    g = 0;
+    b = x;
   }
-  
+
   // Apply the lightness 
   const m = l - (c / 2);
   return [r + m, g + m, b + m, a];
@@ -572,7 +697,7 @@ function hslToRgb (h = 0, s = 0, l = 0, a = 1) {
  * @param {number} b blue in the 0->1 range.
  * @return {array} HSL color array.
  */
-function rgbToHsl (r = 0, g = 0, b = 0, a = 1) {
+function rgbToHsl(r = 0, g = 0, b = 0, a = 1) {
   // Validate rgb.
   r = Math.min(Math.max(r, 0), 1);
   g = Math.min(Math.max(g, 0), 1);
@@ -584,7 +709,7 @@ function rgbToHsl (r = 0, g = 0, b = 0, a = 1) {
 
   // Value.
   const v = xMax;
-  
+
   // Chroma.
   const c = xMax - xMin;
 
@@ -613,8 +738,9 @@ function rgbToHsl (r = 0, g = 0, b = 0, a = 1) {
 
 /**
  * Check if an object is an instance of Color.
- */ 
-function isColor (any) {
+ * @returns {boolean}
+ */
+function isColor(any) {
   return (any instanceof Color);
 }
 
@@ -626,19 +752,26 @@ function isColor (any) {
  * @param {string} mode The blend space. 'RGB' or 'HSL'.
  * @return {Color}
  */
-function blend (src, target, amt = 0.5, mode = 'RGB') {
+function blend(src, target, amt = 0.5, mode = 'RGB') {
   switch (mode.toUpperCase()) {
-    case 'RGB' : 
-      return _blendRgb(src, target, amt);
+  case 'RGB':
+    return _blendRgb(src, target, amt);
 
-    case 'HSL' :
-      return _blendHSL(src, target, amt);
+  case 'HSL':
+    return _blendHSL(src, target, amt);
   }
 }
 
 
-
-function _blendRgb (src, target, amt = 0.5) {
+/**
+ * Blend in RGB space.
+ * @param {*} src 
+ * @param {*} target 
+ * @param {*} amt 
+ * @private
+ * @returns {Color}
+ */
+function _blendRgb(src, target, amt = 0.5) {
   if (!isColor(src) || !isColor(target)) {
     return new Color();
   }
@@ -651,15 +784,22 @@ function _blendRgb (src, target, amt = 0.5) {
   return new Color(r, g, b, src.a);
 }
 
-
-function _blendHSL (src, target, amt = 0.5) {
+/**
+ * Blend in HSL
+ * @param {*} src 
+ * @param {*} target 
+ * @param {*} amt 
+ * @private
+ * @returns {Color}
+ */
+function _blendHSL(src, target, amt = 0.5) {
   if (!isColor(src) || !isColor(target)) {
     return new Color();
   }
 
   amt *= target.a;
 
-  const h= lerp(src.h, target.h, amt);
+  const h = lerp(src.h, target.h, amt);
   const s = lerp(src.s, target.s, amt);
   const l = lerp(src.l, target.l, amt);
   return new Color(...hslToRgb(h, s, l, src.a));
@@ -698,7 +838,7 @@ const shaders = {
     "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\nuniform float uThreshold;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nfloat brightness (vec3 col) {\n  return dot(col, vec3(0.2126, 0.7152, 0.0722));\n}\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uScreenSize;\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\n\n\nvec4 sampleCol = texture(uMainTex, sampleCoord);\nfloat mask = step(uThreshold, brightness(sampleCol.rgb));\n\n\naccum += sampleCol.rgb * mask * uWeight;\n\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\n\nfragColor = col;\nfragColor.rgb += avg;\nfloat mask = step(uThreshold, brightness(col.rgb));\n\n// fragColor = vec4(vec3(mask), 1.0);\nfragColor = vec4(avg, 1.0);\n\n\n}"
   },
   "post-blur": {
-    "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uScreenSize;\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\naccum += texture(uMainTex, sampleCoord).rgb * uWeight;\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\n\nfragColor = vec4(avg, 1.0);\n}"
+    "frag": "#version 300 es\n\nprecision mediump float;\n\n// Defualt uniforms.\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\n\n// Custom uniforms.\nuniform float uKernel;\nuniform float uDist;\nuniform float uWeight;\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\nvoid main() {\nvec4 col = texture(uMainTex, vTexCoord);\n\nvec3 accum = vec3(0.0);\nvec3 weightSum = vec3(0.0);\n\nvec2 pix = vec2(uDist, uDist) / uScreenSize;\n\nfor (float i = -uKernel; i <= uKernel; i++) {\nfor (float j = -uKernel; j <= uKernel; j++) {\nvec2 sampleCoord = vTexCoord + (vec2(i, j) * pix);\naccum += texture(uMainTex, sampleCoord).rgb * uWeight;\nweightSum += uWeight;\n}\n}\n\nvec3 avg = accum / weightSum;\n\nfragColor = vec4(avg, 1.0);\n}"
   },
   "post-chromatic": {
     "frag": "#version 300 es\n\nprecision mediump float;\n\nuniform sampler2D uMainTex;\nuniform sampler2D uDepthTex;\nuniform vec2 uScreenSize;\nuniform float uNear;\nuniform float uFar;\n\n\nin vec2 vTexCoord;\nout vec4 fragColor;\n\n\nvoid main() {\nvec2 rOff = vec2(0.0, 4.0);\nvec2 gOff = vec2(0.0, 0.0);\nvec2 bOff = vec2(4.0, 0.0);\nvec2 pixelSize = 1.0 / uScreenSize;\nvec4 col = texture(uMainTex, vTexCoord);\n\nfragColor = col;\nfloat r = texture(uMainTex, vTexCoord + (pixelSize * rOff)).r;\nfloat g = texture(uMainTex, vTexCoord + (pixelSize * gOff)).g;\nfloat b = texture(uMainTex, vTexCoord + (pixelSize * bOff)).b;\n\nfragColor.rgb = vec3(r, g, b);\n\n// vec2 uv = vTexCoord;\n// uv *= 1.0 - uv.xy;\n\n// float vig = uv.x * uv.y * 15.0;\n\n// vig = pow(vig, 0.03);\n\n// fragColor.rgb *= vig;\n}"
@@ -741,9 +881,15 @@ const shaders = {
 };
 
 /**
- * 2 element vector class.
+ * The Vec2 class.
  */
 class Vec2 extends Array {
+  /**
+   * Construct a new Vec2. Gum vectors extend native JS arrays, so the 
+   * myVec[0] syntax works but myVec.x is preferred.
+   * @param {number} x
+   * @param {number} y
+   */
   constructor(x = 0, y = 0) {
     super();
     this[0] = x;
@@ -751,20 +897,37 @@ class Vec2 extends Array {
     this._changed = false;
   }
 
+  /**
+   * The x value.
+   * @member
+   */
   get x() { return this[0]; }
   set x(val) {
     this[0] = val;
     this._changed = true;
   }
+
+  /**
+   * The x value.
+   * @member
+   */
   get y() { return this[1]; }
   set y(val) {
     this[1] = val;
     this._changed = true;
   }
 
+  /**
+   * Get or set both x and y using a plain array.
+   * @member
+   */
   get xy() { return [this.x, this.y]; }
   set xy(xy) { this.set(...xy); }
 
+  /**
+   * Check if the vector has been changed since changed() was last checked.
+   * @returns {boolean}
+   */
   changed() {
     if (this._changed) {
       this._changed = false;
@@ -773,6 +936,12 @@ class Vec2 extends Array {
     return false;
   }
 
+  /**
+   * Set this vector.
+   * @param {number} x
+   * @param {number} y
+   * @chainable
+   */
   set(x, y) {
     this[0] = x;
     this[1] = y;
@@ -780,28 +949,52 @@ class Vec2 extends Array {
     return this;
   }
 
+  /**
+   * Copy this vector.
+   * @returns {Vec2}
+   */
   copy() {
     return new Vec2(...this.xy);
   }
 
+  /**
+   * Add another vector to this one. IN PLACE!
+   * @param {Vec2} a The other vector.
+   * @chainable
+   */
   add(a) {
     this.x += a.x;
     this.y += a.y;
     return this;
   }
 
+  /**
+   * Get the distance from this vector to another.
+   * @param {Vec2} a The other vector.
+   * @returns {number}
+   */
   distance(a) {
     const dx = this.y - a.x;
     const dy = this.y - a.y;
     return Math.sqrt(dx * dx + dy * dy);
   }
 
+  /**
+   * Get the squared distance from this vector to another.
+   * @param {Vec2} a The other vector.
+   * @returns {number}
+   */
   distance2(a) {
     const dx = this.y - a.x;
     const dy = this.y - a.y;
     return dx * dx + dy * dy;
   }
 
+  /**
+   * Get a new vector, from a pointing back to this.
+   * @param {Vec2} a The other vector.
+   * @returns {Vec2}
+   */
   vectorTo(a) {
     return new Vec2(a.x - this.x, a.y - this.y);
   }
@@ -810,9 +1003,16 @@ class Vec2 extends Array {
 
 
 /**
- * 3 element vector class.
+ * The Vec3 class.
  */
 class Vec3 extends Array {
+  /**
+   * Construct a new Vec3. Gum vectors extend native JS arrays, so the 
+   * myVec[0] syntax works but myVec.x is preferred.
+   * @param {number} x
+   * @param {number} y
+   * @param {number} z
+   */
   constructor(x = 0, y = 0, z = 0) {
     super();
     this[0] = x;
@@ -821,26 +1021,55 @@ class Vec3 extends Array {
     this._changed = false;
   }
 
+  /**
+   * Get a Vector3 from a plain js array of numbers.
+   * @param {number[]}
+   */
+  static from(arr) {
+    return new Vec3(...arr);
+  }
+
+  /**
+   * The x value.
+   * @member
+   */
   get x() { return this[0]; }
   set x(val) {
     this[0] = val;
     this._changed = true;
   }
+
+  /**
+   * The y value.
+   * @member
+   */
   get y() { return this[1]; }
   set y(val) {
     this[1] = val;
     this._changed = true;
   }
+
+  /**
+   * The z value.
+   * @member
+   */
   get z() { return this[2]; }
   set z(val) {
     this[2] = val;
     this._changed = true;
   }
 
+  /**
+   * Get or x, y, and z using a plain array.
+   * @member
+   */
   get xyz() { return [this.x, this.y, this.z]; }
   set xyz(xyz) { this.set(...xyz); }
 
-
+  /**
+   * Check if the vector has been changed since changed() was last checked.
+   * @returns {boolean}
+   */
   changed() {
     if (this._changed) {
       this._changed = false;
@@ -849,6 +1078,13 @@ class Vec3 extends Array {
     return false;
   }
 
+  /**
+   * Set this vector.
+   * @param {number} x
+   * @param {number} y
+   * @param {number} z
+   * @chainable
+   */
   set(x, y, z) {
     this[0] = x;
     this[1] = y;
@@ -857,10 +1093,19 @@ class Vec3 extends Array {
     return this;
   }
 
+  /**
+   * Copy this vector.
+   * @returns {Vec3}
+   */
   copy() {
     return new Vec3(...this.xyz);
   }
 
+  /**
+   * Add another vector to this one. IN PLACE!
+   * @param {Vec3} a The other vector.
+   * @chainable
+   */
   add(a) {
     this.x += a.x;
     this.y += a.y;
@@ -868,6 +1113,11 @@ class Vec3 extends Array {
     return this;
   }
 
+  /**
+   * Subtract another vector from this one. IN PLACE!
+   * @param {Vec3} a The other vector.
+   * @chainable
+   */
   sub(a) {
     this.x -= a.x;
     this.y -= a.y;
@@ -875,6 +1125,11 @@ class Vec3 extends Array {
     return this;
   }
 
+  /**
+   * Distance from this to another.
+   * @param {Vec3} a The other vector.
+   * @return {number}
+   */
   distance(a) {
     const dx = this.x - a.x;
     const dy = this.y - a.y;
@@ -882,6 +1137,11 @@ class Vec3 extends Array {
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
   }
 
+  /**
+   * Squared distance from this to another.
+   * @param {Vec3} a The other vector.
+   * @return {number}
+   */
   distance2(a) {
     const dx = this.x - a.x;
     const dy = this.y - a.y;
@@ -889,10 +1149,19 @@ class Vec3 extends Array {
     return dx * dx + dy * dy + dz * dz;
   }
 
+  /**
+   * Magnitude of this vector.
+   * @return {number}
+   */
   mag() {
     return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
   }
 
+  /**
+   * Multiply this vector by a scalar. IN PLACE!
+   * @param {number} s The scalar.
+   * @chainable
+   */
   mult(s) {
     this.x *= s;
     this.y *= s;
@@ -900,11 +1169,20 @@ class Vec3 extends Array {
     return this;
   }
 
+  /**
+   * Divide this vector by a scalar. IN PLACE!
+   * @param {number} s The scalar.
+   * @chainable
+   */
   div(s) {
     return this.mult(1 / s);
   }
 
-
+  /**
+   * Normalize this vector. IN PLACE!
+   * @param {number} n The length of the normalized vector. Defualt 1.
+   * @chainable
+   */
   normalize(len = 1) {
     const mag = this.mag();
     if (mag === 0) {
@@ -917,10 +1195,20 @@ class Vec3 extends Array {
     return this;
   }
 
+  /**
+   * Dot this vector with another.
+   * @param {Vec3} a The other.
+   * @returns {number}
+   */
   dot(a) {
     return this.x * a.x + this.y * a.y + this.z * a.z;
   }
 
+  /**
+   * Cross this vector with another.
+   * @param {Vec3} a The other.
+   * @returns {Vec3} A new vector.
+   */
   cross(a) {
     const x = this.y * a.z - this.z * a.y;
     const y = this.z * a.x - this.x * a.z;
@@ -928,10 +1216,21 @@ class Vec3 extends Array {
     return new Vec3(x, y, z);
   }
 
+  /**
+   * Get the vector pointing from this vector to another.
+   * @param {Vec3} a The other.
+   * @returns {Vec3} A new vector.
+   */
   vectorTo(a) {
     return new Vec3(a.x - this.x, a.y - this.y, a.z - this.z);
   }
 
+  /**
+   * Equality test this vector with another.
+   * @param {Vec3} a The other vector.
+   * @param {number=} tolerance The min distance to consider equal.
+   * @returns {boolean}
+   */
   equals(a, tolerance = Number.EPSILON) {
     return Math.abs(this.x - a.x) < tolerance &&
       Math.abs(this.y - a.y) < tolerance &&
@@ -1026,7 +1325,6 @@ function findGroups(faces) {
    * Join a set with another set or a list.
    * @param {Set} a The receiving set. 
    * @param {Ser|array} b The giving set or list.
-   * @returns 
    */
   const join = (a, b) => {
     if (b instanceof Set) {
@@ -1093,7 +1391,7 @@ function findGroups(faces) {
  * @param {array<(array|number)>} attribValues An array of values to attach.
  *     Must be the same length as vertices. 
  * @param {array<Vertex>} vertices The mesh's vertex list.
- * @returns 
+ * @returns {array<Vertex>}
  */
 function applyAttribVarying(attribName, attribValues, vertices) {
   const outVertices = [];
@@ -1126,7 +1424,7 @@ function applyAttribVarying(attribName, attribValues, vertices) {
  * @param {array<(array|number|function)>} attribValue The value to attach.
  * @param {array<Vertex>} vertices The mesh's vertex list.
  * @param {function} filter An optional filter function to operate 
- * @returns 
+ * @returns {array<vertex>}
  */
 function applyAttribConstant(attribName, attribValue, vertices) {
   const outVertices = [];
@@ -1333,9 +1631,1341 @@ var meshOps = /*#__PURE__*/Object.freeze({
   verticesToNormals: verticesToNormals
 });
 
+const CHARS = 'abcdefghijfklmnopqrstuvwxyzABCDEFGHIJFKLMNOPQRSTUVWXYZ0123456789_@!';
+const buffer = new Uint8Array(128);
+let index = buffer.byteLength;
+
+function fillBuffer () {
+  crypto.getRandomValues(buffer);
+  index = 0;
+}
+
+function uuid (length = 6) {
+  if (index + length >= buffer.byteLength) fillBuffer();
+  let id = '';
+  while(id.length < length) {
+    id += CHARS[buffer[index] % CHARS.length];
+    ++ index;
+  }
+  return id;
+}
+
 /**
- * Matrix math borrowed from GlMatrix.
+ * @fileoverview Provide a polygonal mesh class.
+ */
+
+/**
+ * A single vertex.Contains 1 or more named attributes.
+ * @typedef {object} Vertex
+ */
+
+/**
+ * A single face. Contains an array of 3 or more indices into a vertex list.
+ * @typedef {array<number>} Face
+ */
+
+/**
+ * The mesh class represents the vertex and face data of a shape. Meshses are 
+ * created with shape primitives or by loading models.
+ */
+class Mesh {
+  /**
+   * Construct a mesh from a list of vertices and faces.
+   * @param {array<Vertex>} vertices 
+   * @param {array<Face>} faces 
+   * @param {object} meta Additional meta information about the mesh. Name and 
+   *     more.
+   */
+  constructor(vertices, faces, meta = {}) {
+
+    /** 
+     * The array of vertices for this mesh. Each entry is object with with 
+     * named attributes and arrays for the value.
+     * @type {array<Vertex>}
+     */
+    this.vertices = vertices;
+
+    /**
+     * The array of faces for this mesh. An array of arrays. The internal array
+     * contains indices into the vertex array. Quads and ngons are allowed but 
+     * must be triangulated before being sent to the card.
+     * @type {array<Face>}
+     */
+    this.faces = faces;
+
+    /**
+     * A name for this mesh.
+     * @type {string}
+     */
+    this.name = meta.name || 'mesh';
+
+    /**
+     * The id for this mesh.
+     * @type {string}
+     */
+    this.id = uuid();
+  }
+
+
+  /**
+   * Triangulate this mesh. Turns any quads and ngons into triangles. Is done 
+   * before passing to GL anyway.
+   * @chainable
+   */
+  triangulate() {
+    this.faces = triangulate(this.faces);
+    return this;
+  }
+
+
+  /**
+   * Creates a render-able version of the mesh that works with a gl.drawArrays()
+   * call. 
+   * @returns {object} The flattened, triangulates, GL ready data.
+   */
+  render() {
+    const mode = 'TRIANGLES';
+    const triangles = triangulate(this.faces);
+    const vertexCount = triangles.length * 3;
+    const attribs = {};
+
+    for (let f = 0; f < triangles.length; f++) {
+      const face = triangles[f];
+
+      for (let v = 0; v < 3; v++) {
+        const vertex = this.vertices[face[v]];
+
+        for (let attrib in vertex) {
+          const data = vertex[attrib];
+          if (!attribs[attrib]) {
+            attribs[attrib] = [];
+          }
+          attribs[attrib].push(...data);
+        }
+      }
+
+    }
+    for (let attrib in attribs) {
+      attribs[attrib] = new Float32Array(attribs[attrib]);
+    }
+
+    const name = `${this.name}_${this.id}`;
+    return { mode, vertexCount, attribs, name };
+  }
+
+
+  /**
+   * Creates a wireframe version of this mesh that works with a gl.drawArrays()
+   * call. Use gl.LINES mode.
+   * @returns {object} The flattened GL ready edge data.
+   */
+  renderEdges() {
+    const mode = 'LINES';
+    const edges = facesToEdges(this.faces);
+    const vertexCount = edges.length * 2;
+    const attribs = {};
+
+    for (let ei = 0; ei < edges.length; ei++) {
+      const edge = edges[ei];
+      for (let vi = 0; vi < 2; vi++) {
+        const vertex = this.vertices[edge[vi]];
+        for (let attrib in vertex) {
+          const data = vertex[attrib];
+          if (!attribs[attrib]) {
+            attribs[attrib] = [];
+          }
+          attribs[attrib].push(...data);
+        }
+      }
+    }
+    for (let attrib in attribs) {
+      attribs[attrib] = new Float32Array(attribs[attrib]);
+    }
+
+    const name = `${this.name}_${this.id}_edges`;
+    return { mode, vertexCount, attribs, name };
+  }
+
+
+  /**
+   * Render points as the vertices of this mesh. Uses gl.POINTS mode.
+   * @returns {object} The flattened GL ready point data.
+   */
+  renderPoints() {
+    const mode = 'POINTS';
+    const vertexCount = this.vertices.length;
+    const attribs = {};
+
+    for (let vi = 0; vi < this.vertices.length; vi++) {
+      const vertex = this.vertices[vi];
+      for (let attrib in vertex) {
+        const data = vertex[attrib];
+        if (!attribs[attrib]) {
+          attribs[attrib] = [];
+        }
+        attribs[attrib].push(...data);
+      }
+    }
+
+    for (let attrib in attribs) {
+      attribs[attrib] = new Float32Array(attribs[attrib]);
+    }
+
+    const name = `${this.name}_${this.id}_points`;
+    return { mode, vertexCount, attribs, name };
+  }
+
+
+  /**
+   * Render the vertex normal data as wireframe lines using the gl.LINES mode
+   * @param {number} length The length in world units to debug normals with.
+   * @returns {object} The flattened GL ready edge data.
+   */
+  renderNormals(length = 0.05) {
+    const mode = 'LINES';
+    const vertexCount = this.vertices.length * 2;
+    const attribs = {};
+
+    for (let vi = 0; vi < this.vertices.length; vi++) {
+      const vertex = this.vertices[vi];
+
+
+      for (let attrib in vertex) {
+        const data = vertex[attrib];
+        if (!attribs[attrib]) {
+          attribs[attrib] = [];
+        }
+        attribs[attrib].push(...data);
+
+        if (attrib === 'position' && vertex['normal']) {
+          const { position, normal } = vertex;
+          const position2 = new Vec3(...position);
+          position2.add(new Vec3(...normal).normalize(length));
+          attribs[attrib].push(...position2.xyz);
+        } else {
+          attribs[attrib].push(...data);
+        }
+      }
+    }
+
+    for (let attrib in attribs) {
+      attribs[attrib] = new Float32Array(attribs[attrib]);
+    }
+
+    const name = `${this.name}_${this.id}_normals`;
+    return { mode, vertexCount, attribs, name };
+  }
+
+
+  /**
+   * Attach group info to this mesh. Adds another attrib (surfaceId) to each 
+   * vertex. The surfaceId value will be unique for each set of disjoint 
+   * vertices in the mesh.
+   * @chainable 
+   */
+  findGroups() {
+    const groups = findGroups(this.faces);
+    this.vertices = applyAttribVarying('surfaceId', groups, this.vertices);
+    return this;
+  }
+
+
+  /**
+   * Fill the vertex colors for the mesh with a single vertex color.
+   * @param {color|function} col The color to apply to each vertex OR a function 
+   *     to map to each vertex that returns a color.
+   * @chainable
+   */
+  fill(col) {
+
+    if (col.rgba) {
+      this.vertices = applyAttribConstant('color', col.rgba, this.vertices);
+    } else if (typeof col === 'function') {
+      this.vertices = applyAttribConstant('color', col, this.vertices);
+    } else {
+      console.warn(`Fill: ${col} was not of type color or function.`);
+    }
+
+    return this;
+  }
+
+
+  /**
+   * Inflate the mesh along its normals.
+   * @param {number} amt The amount to inflate the mesh by. Can be positive or 
+   * negative.
+   * @chainable
+   */
+  inflate(amt = 0) {
+    for (let vi = 0; vi < this.vertices.length; vi++) {
+      const vertex = this.vertices[vi];
+      if (!(vertex.position && vertex.normal)) continue;
+      for (let i = 0; i < 3; i++) {
+        vertex.position[i] += vertex.normal[i] * amt;
+      }
+    }
+    return this;
+  }
+
+
+  /**
+   * Get a position-only edge list where p0, p1, p2, p3 are vec3s and the edge 
+   * list is [[p0, p1], [p1, [p2], [p3, p4]]...]. 
+   * @returns {array<array<Vector3>>} The nested edge array.
+   */
+  getEdges() {
+    const edges = facesToEdges(this.faces);
+    const outEdges = [];
+
+    for (let ei = 0; ei < edges.length; ei++) {
+      const edge = edges[ei];
+      const pos1 = this.vertices[edge[0]].position;
+      const pos2 = this.vertices[edge[1]].position;
+      outEdges.push([pos1, pos2]);
+    }
+    return outEdges;
+  }
+
+
+  /**
+   * Convert this mesh to flat-shaded vertices.
+   * @chainable
+   */
+  shadeFlat() {
+    const { vertices, faces } = shadeFlat(this.vertices, this.faces);
+    this.vertices = vertices;
+    this.faces = faces;
+    return this;
+  }
+
+
+  /**
+   * Convert this mesh to smooth-shaded vertices.
+   * @param {number} tolerance Vertices that are closer-together than tolerance
+   *     will me merged.
+   * @chainable
+   */
+  shadeSmooth(tolerance) {
+    const { vertices, faces } = shadeSmooth(this.vertices, this.faces, tolerance);
+    this.vertices = vertices;
+    this.faces = faces;
+    return this;
+  }
+
+
+  /**
+   * Transforms all the positions and normals in this mesh by some 3D 
+   * transformation.
+   * @param {Transform} transform The Gum Transform to use.
+   * @chainable
+   */
+  applyTransform(transform) {
+    for (let vi = 0; vi < this.vertices.length; vi++) {
+      const vert = this.vertices[vi];
+      if (vert.position) {
+        vert.position = transform.transformPoint(vert.position);
+      }
+      if (vert.normal) {
+        vert.normal = transform.transformNormal(vert.normal);
+      }
+    }
+    return this;
+  }
+
+
+  /**
+   * Join another mesh into this one.
+   * @param {Mesh} The other mesh.
+   * @chainable
+   */
+  join(other) {
+    const offset = this.vertices.length;
+
+    const newFaces = other.faces.map(face => {
+      return face.map(index => index + offset);
+    });
+
+    this.vertices = this.vertices.concat(other.vertices);
+    this.faces = this.faces.concat(newFaces);
+
+    return this;
+  }
+
+
+  /**
+   * Invert this meshes normals.
+   * @chainable
+   */
+  flipNormals() {
+    const flipNormal = n => n.map(x => x * -1);
+    this.vertices = mapFuncToAttributes(this.vertices, 'normal', flipNormal);
+    return this;
+  }
+
+
+  /**
+   * Return a full deep copy of this mesh.
+   * @returns {Mesh} The new mesh.
+   */
+  copy() {
+    const copyVertices = JSON.parse(JSON.stringify(this.vertices));
+    const copFaces = JSON.parse(JSON.stringify(this.faces));
+    return new Mesh(copyVertices, copFaces, { name: this.name });
+  }
+
+
+  /**
+   * Map a function over the vertices in this mesh.
+   * @param {Function} func A vertex->vertex callback.
+   * 
+   * @exmaple 
+   * // This function copies the vertex position, normalizes it, then uses 
+   * // that as the vertex color rgb.
+   * function vertFunc (vert) {
+   *   const pos = g.vec3(...vert.position);
+   *   pos.normalize();
+   *   return {
+   *      color: [...pos, 1]
+   *   };
+   * }
+   * 
+   * myMesh.attributeMap(vertFunc);
+   */
+  attributeMap(func) {
+    this.vertices = attributeMap(this.vertices, func);
+    return this;
+  }
+}
+
+/**
+ * @file Provide geometric primitives.
+ */
+
+/**
+ * @module shapes
+ */
+
+/**
+ * Make a cube. Centered on the origin with w, h, d of size.
+ * @param {number} size The size of the cube.
+ * @return {Mesh}
+ */
+function cube(size = 1) {
+  const s = size / 2;
+
+  //   7-----6
+  //  /|    /|
+  // 4-----5 |
+  // | 3---|-2
+  // |/    |/
+  // 0-----1
+
+  const positions = [
+    [-s, -s, +s],
+    [+s, -s, +s],
+    [+s, -s, -s],
+    [-s, -s, -s],
+
+    [-s, +s, +s],
+    [+s, +s, +s],
+    [+s, +s, -s],
+    [-s, +s, -s]
+  ];
+
+
+  const vertices = [];
+  const faces = [];
+  let i = 0;
+
+  const quad = function (a, b, c, d, normal, color) {
+    vertices.push({ position: [...positions[a]], normal, color, texCoord: [0, 0] }, { position: [...positions[b]], normal, color, texCoord: [1, 0] }, { position: [...positions[c]], normal, color, texCoord: [1, 1] }, { position: [...positions[d]], normal, color, texCoord: [0, 1] }, );
+
+    faces.push([i, i + 1, i + 2, i + 3]);
+
+    i += 4;
+  };
+
+  quad(0, 1, 5, 4, [0, 0, +1], [1, 0, 0, 1]); // FRONT
+  quad(2, 3, 7, 6, [0, 0, -1], [0, 1, 1, 1]); // BACK
+
+  quad(4, 5, 6, 7, [0, +1, 0], [1, 0, 1, 1]); // TOP
+  quad(1, 0, 3, 2, [0, -1, 0], [0, 1, 0, 1]); // BOTTOM
+
+  quad(3, 0, 4, 7, [-1, 0, 0], [0, 0, 1, 1]); // LEFT
+  quad(1, 2, 6, 5, [+1, 0, 0], [1, 1, 0, 1]); // RIGHT
+
+  let mesh = new Mesh(vertices, faces, { name: 'cube' });
+  return mesh;
+}
+
+
+/**
+ * Make an icosphere shape with diameter size.
+ * @param {number} size The diameter of the sphere.
+ * @param {number} level The subdivision level to use. 0 is low poly. 5 is very very high poly.
+ * @param {boolean} flat Whether to use flat shading. Default smooth (false).
+ * @return {Mesh}
+ */
+function icosphere(size = 1, level = 1, flat = false) {
+
+  const radius = size / 2;
+
+  // Start with an icosahedron, using this aspect ratio to generate points.
+  // The positions of the the twelve icosahedron vertices.
+  const t = (1 + Math.sqrt(5)) / 2;
+
+  let positions = [
+    /**00*/
+    new Vec3(-t, 0, -1).normalize(radius),
+    /**01*/
+    new Vec3(+t, 0, -1).normalize(radius),
+    /**02*/
+    new Vec3(+t, 0, +1).normalize(radius),
+    /**03*/
+    new Vec3(-t, 0, +1).normalize(radius),
+    /**04*/
+    new Vec3(-1, -t, 0).normalize(radius),
+    /**05*/
+    new Vec3(+1, -t, 0).normalize(radius),
+    /**06*/
+    new Vec3(+1, +t, 0).normalize(radius),
+    /**07*/
+    new Vec3(-1, +t, 0).normalize(radius),
+    /**08*/
+    new Vec3(0, -1, -t).normalize(radius),
+    /**09*/
+    new Vec3(0, -1, +t).normalize(radius),
+    /**10*/
+    new Vec3(0, +1, +t).normalize(radius),
+    /**11*/
+    new Vec3(0, +1, -t).normalize(radius),
+  ];
+
+  let faces = [
+    [0, 3, 7],
+    [0, 7, 11],
+    [0, 11, 8],
+    [0, 8, 4],
+    [0, 4, 3],
+
+    [2, 1, 6],
+    [2, 6, 10],
+    [2, 10, 9],
+    [2, 9, 5],
+    [2, 5, 1],
+
+    [3, 9, 10],
+    [3, 10, 7],
+    [3, 4, 9],
+
+    [1, 8, 11],
+    [1, 11, 6],
+    [1, 5, 8],
+
+    [8, 5, 4],
+    [9, 4, 5],
+    [10, 6, 7],
+    [11, 7, 6],
+  ];
+
+
+  /**
+   * Add a new position. Normalize its position so it sits on the surface of 
+   * the sphere.
+   * @param {*} pos 
+   * @private
+   */
+  const addPosition = (pos) => {
+    positions.push(pos.normalize(radius));
+  };
+
+  const foundMidPoints = {};
+
+  /**
+   * @param {*} a 
+   * @param {*} b 
+   * @private
+   */
+  const getMidPoint = (a, b) => {
+    const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+
+    if (foundMidPoints[key]) {
+      return foundMidPoints[key];
+    }
+
+    const posA = positions[a].copy();
+    const posB = positions[b].copy();
+    const midPoint = posA.copy().add(posB).div(2);
+
+    addPosition(midPoint);
+
+    const index = positions.length - 1;
+    foundMidPoints[key] = index;
+    return index;
+  };
+
+
+  let faceBuffer = [];
+  let vertices = [];
+
+  for (let i = 0; i < level; i++) {
+    faceBuffer = [];
+
+    for (const face of faces) {
+      const a = getMidPoint(face[0], face[1]);
+      const b = getMidPoint(face[1], face[2]);
+      const c = getMidPoint(face[2], face[0]);
+
+      faceBuffer.push([face[0], a, c]);
+      faceBuffer.push([face[1], b, a]);
+      faceBuffer.push([face[2], c, b]);
+      faceBuffer.push([a, b, c]);
+    }
+    faces = faceBuffer;
+  }
+
+  // For flat shading we need to split each vertex into 3 new ones and 
+  // re-index the faces.
+  if (flat) {
+    faceBuffer = [];
+
+    for (const face of faces) {
+      const a = positions[face[0]];
+      const b = positions[face[1]];
+      const c = positions[face[2]];
+
+      const ba = b.copy().sub(a);
+      const ca = c.copy().sub(a);
+
+      const normal = ba.cross(ca).normalize();
+
+      const pointer = vertices.length;
+
+      vertices.push({ position: a.xyz, normal: normal.xyz }, { position: b.xyz, normal: normal.xyz }, { position: c.xyz, normal: normal.xyz });
+
+      faceBuffer.push([pointer, pointer + 1, pointer + 2]);
+    }
+    faces = faceBuffer;
+
+  } else {
+    vertices = positions.map(pos => {
+      return { position: pos.xyz, normal: pos.normalize().xyz };
+    });
+  }
+
+  return new Mesh(vertices, faces, { name: 'icosphere' });
+}
+
+
+/**
+ * Make a UV Sphere - like a mercator globe.
+ * @param {number} size The diameter of the sphere.
+ * @param {number} level The segments level. 1 is very low poly. 40 is pretty high poly.
+ * @param {boolean} flat Whether to use flat shading. Default smooth (false).
+ * @returns {Mesh}
+ */
+function uvsphere(size = 1, level = 1, flat = false) {
+  const radius = size / 2;
+
+  const segments = level + 2;
+
+  const getSphericalPos = (uFac, vFac) => {
+    const r = Math.sin(Math.PI * vFac);
+    const x = Math.cos(2 * Math.PI * uFac) * r * radius;
+    const y = -Math.cos(Math.PI * vFac) * radius;
+    const z = Math.sin(2 * Math.PI * uFac) * r * radius;
+    return [x, y, z];
+  };
+
+
+  let step = size / segments;
+
+  const positions = [];
+  const texCoords = [];
+  const faces = [];
+
+  let vertIndex = 0;
+  console.log(segments);
+
+  for (let v = 0; v < segments; v++) {
+
+    for (let u = 0; u < segments; u++) {
+
+      const uf0 = u / segments;
+      const uf1 = (u + 1) / segments;
+
+      const vf0 = v / segments;
+      const vf1 = (v + 1) / segments;
+
+      // South pole case.
+      if (v === 0) {
+
+
+        positions.push(
+          getSphericalPos(uf0, vf0),
+          getSphericalPos(uf1, vf1),
+          getSphericalPos(uf0, vf1)
+        );
+
+        texCoords.push(
+          [uf0 + (0.5 * step), vf0],
+          [uf1, vf1],
+          [uf0, vf1]
+        );
+
+        faces.push([vertIndex, vertIndex + 2, vertIndex + 1]);
+
+        vertIndex += 3;
+        continue;
+
+
+      }
+
+      // North pole case. 
+      if (v === segments - 1) {
+        positions.push(
+          getSphericalPos(uf0, vf0),
+          getSphericalPos(uf1, vf0),
+          getSphericalPos(uf1, vf1),
+        );
+
+        texCoords.push(
+          [uf0, vf0],
+          [uf1, vf0],
+          [uf1 - (0.5 / segments), vf1],
+        );
+
+        faces.push([vertIndex, vertIndex + 2, vertIndex + 1]);
+        vertIndex += 3;
+        continue;
+      }
+
+
+
+      positions.push(
+        getSphericalPos(uf0, vf0),
+        getSphericalPos(uf1, vf0),
+        getSphericalPos(uf1, vf1),
+        getSphericalPos(uf0, vf1)
+      );
+
+
+      texCoords.push(
+        [uf0, vf0],
+        [uf1, vf0],
+        [uf1, vf1],
+        [uf0, vf1]
+      );
+
+      // texCoords.push(
+      //   [0, 1],
+      //   [1, 1],
+      //   [1, 0],
+      //   [0, 0]
+      // );
+
+
+      faces.push([vertIndex, vertIndex + 3, vertIndex + 2, vertIndex + 1]);
+      vertIndex += 4;
+
+    }
+  }
+
+  console.log(positions, faces);
+
+  const vertices = positions.map((pos, i) => {
+    return { position: pos, normal: pos, texCoord: texCoords[i] };
+  });
+
+  return new Mesh(vertices, faces, { name: 'uvsphere' });
+
+}
+
+/**
+ * Make a quad facing up along y axis.
+ * @param {number} size The w and d of the quad.
+ * @return {Mesh}
+ */
+function quad(size) {
+  const s = size / 2;
+  const positions = [
+    new Vec3(-s, 0, -s),
+    new Vec3(+s, 0, -s),
+    new Vec3(+s, 0, +s),
+    new Vec3(-s, 0, +s),
+  ];
+
+  const faces = [
+    [0, 3, 2, 1]
+  ];
+  const vertices = positions.map(pos => {
+    return { position: pos.xyz, normal: [0, 1, 0] };
+  });
+
+  return new Mesh(vertices, faces, { name: 'quad' });
+}
+
+
+/**
+ * Make a grid facing up along y axis.
+ * @param {number} size The size (w, h) of the grid.
+ * @param {number} subdivisions The number of subdivisions. Default 10.
+ * @return {Mesh}
+ */
+function grid(size, subdivisions = 10, flat = false) {
+  const s = size / 2;
+  const step = size / (subdivisions + 1);
+
+  const positions = [];
+  const faces = [];
+
+  if (flat) {
+
+    // Flat normals case. Copy shared verts.
+    let vertIndex = 0;
+    for (let i = 0; i < subdivisions + 1; i++) {
+      const z = i * step;
+      for (let j = 0; j < subdivisions + 1; j++) {
+        const x = j * step;
+        positions.push([-s + x, 0, -s + z]);
+        positions.push([-s + x + step, 0, -s + z]);
+        positions.push([-s + x + step, 0, -s + z + step]);
+        positions.push([-s + x, 0, -s + z + step]);
+
+        faces.push([vertIndex, vertIndex + 3, vertIndex + 2, vertIndex + 1]);
+        vertIndex += 4;
+      }
+    }
+
+  } else {
+
+    // Smooth normals case. Reuse shared verts.
+    for (let i = 0; i < subdivisions + 2; i++) {
+      const z = i * step;
+      for (let j = 0; j < subdivisions + 2; j++) {
+        const x = j * step;
+        positions.push([-s + x, 0, -s + z]);
+
+        if (i < subdivisions + 1 && j < subdivisions + 1) {
+          const a = i * (subdivisions + 2) + j;
+          const b = a + 1;
+          const c = a + subdivisions + 2;
+          const d = c + 1;
+          faces.push([a, c, d, b]);
+        }
+      }
+    }
+  }
+
+  const vertices = positions.map(pos => {
+    return { position: pos, normal: [0, 1, 0] };
+  });
+
+  return new Mesh(vertices, faces, { name: 'grid' });
+}
+
+
+/**
+ * Make a circle with diameter size facing up along y axis.
+ * @param {number} size The size of the circle.
+ * @param {number} resolution The number of straight line segments to use. Default 12.
+ * @param {string} fill The fill type to use. 'ngon' is default and does not require an
+ *     extra vertex at the center. 'fan' places an extra vert at the center and connects 
+ *     all the verts to that like spokes.
+ * @return {Mesh}
+ */
+function circle(size, resolution = 12, fill = 'ngon') {
+  const positions = [];
+  const faces = [];
+
+  if (fill === 'fan') {
+    positions.push([0, 0, 0]);
+  } else if (fill === 'ngon') {
+    faces[0] = [];
+  }
+
+  for (let i = 0; i < resolution; i++) {
+    const theta = -i * Math.PI * 2 / resolution;
+    const x = Math.cos(theta) * (size / 2);
+    const z = Math.sin(theta) * (size / 2);
+
+    positions.push([x, 0, z]);
+
+    if (fill === 'fan') {
+      const next = (i + 1) % (resolution);
+      faces.push([0, i + 1, next + 1]);
+    } else if (fill === 'ngon') {
+      faces[0].push(i);
+    }
+  }
+
+  const vertices = positions.map(pos => {
+    return { position: pos, normal: [0, 1, 0] };
+  });
+  return new Mesh(vertices, faces, { name: 'circle' });
+}
+
+
+/**
+ * Make a full screen quad for rendering post effects.
+ * @private
+ */
+function _fsQuad() {
+  const vertices = [
+    [-1, -1, 0],
+    [+1, -1, 0],
+    [-1, +1, 0],
+
+    [-1, +1, 0],
+    [+1, -1, 0],
+    [+1, +1, 0],
+  ];
+
+  return {
+    mode: 'TRIANGLES',
+    vertexCount: 6,
+    attribs: {
+      aPosition: new Float32Array(vertices.flat()),
+    }
+  }
+}
+
+
+/**
+ * Make an axes gizmo.
+ * @private
+ */
+function _axes(size = 100) {
+  const positions = [
+    [0, 0, 0],
+    [1, 0, 0],
+    [0, 0, 0],
+    [0, 1, 0],
+    [0, 0, 0],
+    [0, 0, 1],
+    [0, 0, 0],
+    [-1, 0, 0],
+    [0, 0, 0],
+    [0, -1, 0],
+    [0, 0, 0],
+    [0, 0, -1],
+  ].map(pos => Vec3.from(pos).mult(size));
+
+  const colors = [
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [0, 1, 0, 1],
+    [0, 1, 0, 1],
+    [0, 0, 1, 1],
+    [0, 0, 1, 1],
+    [0, 1, 1, 1],
+    [0, 1, 1, 1],
+    [1, 0, 1, 1],
+    [1, 0, 1, 1],
+    [1, 1, 0, 1],
+    [1, 1, 0, 1],
+  ];
+
+  const normals = [
+    [1, 0, 0],
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 1, 0],
+    [0, 0, 1],
+    [0, 0, 1],
+    [-1, 0, 0],
+    [-1, 0, 0],
+    [0, -1, 0],
+    [0, -1, 0],
+    [0, 0, -1],
+    [0, 0, -1],
+  ];
+
+  return {
+    mode: 'LINES',
+    vertexCount: 12,
+    attribs: {
+      position: new Float32Array(positions.flat(2)),
+      color: new Float32Array(colors.flat(2)),
+      normal: new Float32Array(normals.flat(2)),
+    }
+  }
+}
+
+
+
+/**
+ * Make a circle with diameter size facing up along y axis.
+ * @param {number} size The size of the circle.
+ * @param {number} resolution The number of straight line segments to use.
+ * @param {string} fill The fill type to use. 'ngon' is default and does not require an
+ *     extra vertex at the center. 'fan' places an extra vert at the center and connects 
+ *     all the verts to that like spokes.
+ * @return {Mesh}
+ */
+function cylinder(size, resolution = 12, fill = 'ngon', flat = false) {
+  const positions = [];
+  let faces = [];
+  const normals = [];
+  let ngon = [];
+  const radius = size / 2;
+
+  // Make the top and bottom face.
+  for (let k = 0; k < 2; k++) {
+
+    let y = k * 2 - 1;
+    let offset = fill === 'fan' ? (resolution + 1) * k : resolution * k;
+
+    if (fill === 'fan') {
+      positions.push([0, y * radius, 0]);
+      normals.push([0, y, 0]);
+    }
+
+    for (let i = 0; i < resolution; i++) {
+      const theta = -i * Math.PI * 2 / resolution;
+      const x = Math.cos(theta) * (size / 2);
+      const z = Math.sin(theta) * (size / 2);
+
+      positions.push([x, y * radius, z]);
+      normals.push([0, y, 0]);
+
+      if (fill === 'fan') {
+        const next = ((i + 1) % (resolution));
+        if (k === 0) {
+          faces.push([offset, offset + next + 1, offset + i + 1]);
+        } else {
+          faces.push([offset, offset + i + 1, offset + next + 1]);
+        }
+      } else if (fill === 'ngon') {
+        if (k === 0) {
+          ngon.push((resolution - (i + 1)) + offset);
+        } else {
+          ngon.push(i + offset);
+        }
+      }
+    }
+
+    if (fill === 'ngon') {
+      faces.push(ngon);
+      ngon = [];
+    }
+  }
+
+  let offset = positions.length;
+
+  // Make the outer wall. 
+  // TODO : This is smooth shading but with split verts. Make the smooth shading 
+  //     work with shared verts and a flat shading vertsion work with split 
+  //     verts.
+  for (let i = 0; i < resolution; i++) {
+    const theta = -i * Math.PI * 2 / resolution;
+    const x = Math.cos(theta) * (size / 2);
+    const z = Math.sin(theta) * (size / 2);
+
+    const theta2 = -(i + 1) * Math.PI * 2 / resolution;
+    const x2 = Math.cos(theta2) * (size / 2);
+    const z2 = Math.sin(theta2) * (size / 2);
+
+    positions.push(
+      [x, -radius, z],
+      [x, radius, z],
+      [x2, -radius, z2],
+      [x2, radius, z2],
+    );
+
+    normals.push(
+      new Vec3(x, 0, z).normalize().xyz,
+      new Vec3(x, 0, z).normalize().xyz,
+      new Vec3(x2, 0, z2).normalize().xyz,
+      new Vec3(x2, 0, z2).normalize().xyz,
+    );
+
+    faces.push([
+      offset + 1,
+      offset + 0,
+      offset + 2,
+      offset + 3,
+    ]);
+
+    offset += 4;
+  }
+
+
+
+  const vertices = positions.map((pos, i) => {
+    return { position: pos, normal: normals[i] };
+  });
+
+
+  return new Mesh(vertices, faces, { name: 'cylinder' });
+}
+
+
+
+/**
+ * Make a cone with diameter size facing up along y axis.
+ * https://stackoverflow.com/questions/19245363/opengl-glut-surface-normals-of-cone
+ * TODO : proper normals for the cone.
+ * @param {number} size The size of the circle.
+ * @param {number} resolution The number of straight line segments to use.
+ * @param {string} fill The fill type to use. 'ngon' is default and does not require an
+ *     extra vertex at the center. 'fan' places an extra vert at the center and connects 
+ *     all the verts to that like spokes.
+ * @return {Mesh}
+ */
+function cone(size, resolution = 12, fill = 'ngon', flat = false) {
+  const positions = [];
+  let faces = [];
+  const normals = [];
+  let ngon = [];
+  const radius = size / 2;
+
+  // Make the bottom face.
+
+  let y = -1;
+
+  if (fill === 'fan') {
+    positions.push([0, y * radius, 0]);
+    normals.push([0, y, 0]);
+  }
+
+  for (let i = 0; i < resolution; i++) {
+    const theta = -i * Math.PI * 2 / resolution;
+    const x = Math.cos(theta) * (size / 2);
+    const z = Math.sin(theta) * (size / 2);
+
+    positions.push([x, y * radius, z]);
+    normals.push([0, y, 0]);
+
+    if (fill === 'fan') {
+
+      const next = ((i + 1) % (resolution));
+      faces.push([0, next + 1, i + 1]);
+
+    } else if (fill === 'ngon') {
+
+      ngon.push((resolution - (i + 1)));
+
+    }
+  }
+
+  if (fill === 'ngon') {
+    faces.push(ngon);
+    ngon = [];
+  }
+
+  let offset = positions.length;
+
+  // Make the outer wall. 
+  // TODO : This is smooth shading but with split verts. Make the smooth shading 
+  //     work with shared verts and a flat shading vertsion work with split 
+  //     verts.
+  for (let i = 0; i < resolution; i++) {
+    const theta = -i * Math.PI * 2 / resolution;
+    const x = Math.cos(theta) * (size / 2);
+    const z = Math.sin(theta) * (size / 2);
+
+    const theta2 = -(i + 1) * Math.PI * 2 / resolution;
+    const x2 = Math.cos(theta2) * (size / 2);
+    const z2 = Math.sin(theta2) * (size / 2);
+
+    positions.push(
+      [x, -radius, z],
+      [0, radius, 0],
+      [x2, -radius, z2],
+    );
+
+    normals.push(
+      new Vec3(x, 0, z).normalize().xyz,
+      new Vec3(0, 1, 0).normalize().xyz,
+      new Vec3(x, 0, z).normalize().xyz,
+    );
+
+    faces.push([
+      offset + 1,
+      offset + 0,
+      offset + 2,
+    ]);
+
+    offset += 3;
+  }
+
+
+
+  const vertices = positions.map((pos, i) => {
+    return { position: pos, normal: normals[i] };
+  });
+
+
+  return new Mesh(vertices, faces, { name: 'cylinder' });
+}
+
+var primitives = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  _axes: _axes,
+  _fsQuad: _fsQuad,
+  circle: circle,
+  cone: cone,
+  cube: cube,
+  cylinder: cylinder,
+  grid: grid,
+  icosphere: icosphere,
+  quad: quad,
+  uvsphere: uvsphere
+});
+
+/**
+ * 
+ */ 
+
+
+class Line {
+  constructor (points, color = [1, 1, 1, 1]) {
+    this.points = points;
+    this.color = color;
+    this.thickness = .1;
+    this.name = 'line_' + uuid(); 
+
+  }
+
+  render () {
+    const mode = 'TRIANGLE_STRIP';
+    const vertexCount = this.points.length * 2;
+    const program = 'line';
+    const name = this.name;
+
+
+    const attribs = {
+      position: [],
+      normal: [],
+      register1: [],
+      register2: [], 
+      color: [],
+    };
+    
+    for (let i = 0; i < this.points.length; i++) {
+
+      const current = this.points[i];
+      const previous = (i === 0) ? this.points[i] : this.points[i - 1];
+      const next = (i === this.points.length - 1) ? this.points[i] : this.points[i + 1];
+
+      // Submit position twice.
+      attribs.position.push(...current, ...current);
+
+      // t value (normal.z) is progess allong the line;
+      const t = ([i % this.points.length] / (this.points.length - 1));
+
+      // x component of normal is thickness. y component is direction.
+      attribs.normal.push(this.thickness, 1, t, this.thickness, -1, t);
+
+      attribs.register1.push(...previous, 1, ...previous, 1);
+      attribs.register2.push(...next, 1, ...next, 1);
+
+      attribs.color.push(...this.color, ...this.color);
+    }
+
+    for (let attrib in attribs) {
+      attribs[attrib] = new Float32Array(attribs[attrib]);
+    }
+
+    return { mode, vertexCount, attribs, name, program };
+
+  }
+
+
+}
+
+/**
+ * An edge collection is used to display any number of disjoint edges
+ */ 
+
+
+class EdgeCollection {
+  constructor (edges, color) {
+    this.edges = edges;
+    this.color = color || [1, 1, 1, 1];
+    this.thickness = 2;
+    this.name = 'edge_collection_' + uuid(); 
+
+  }
+
+  render () {
+    const mode = 'TRIANGLES';
+    const vertexCount = this.edges.length * 6;
+    const program = 'line2';
+    const name = this.name;
+
+    const attribs = {
+      position: [],
+      normal: [],
+      register1: [],
+      color: [],
+    };
+    
+    for (let i = 0; i < this.edges.length; i++) {
+
+      const current = this.edges[i][0];
+      const next = this.edges[i][1];
+
+      // Submit position for each vert.
+      attribs.position.push(
+        current[0], current[1], current[2],
+        current[0], current[1], current[2],
+        current[0], current[1], current[2],
+        current[0], current[1], current[2],
+        current[0], current[1], current[2],
+        current[0], current[1], current[2],
+      );
+
+      // Submit next position for each vert.
+      attribs.register1.push(
+        next[0], next[1], next[2], 1, 
+        next[0], next[1], next[2], 1, 
+        next[0], next[1], next[2], 1, 
+        next[0], next[1], next[2], 1, 
+        next[0], next[1], next[2], 1, 
+        next[0], next[1], next[2], 1, 
+      );
+
+      // Submit color for each vert.
+      attribs.color.push(
+        ...this.color, 
+        ...this.color,
+        ...this.color,
+        ...this.color,
+        ...this.color,
+        ...this.color
+      );
+
+      // Submit thickness and vert index. The vertex shader will unpack the vert index and apply 
+      // the needed transformations in screen space. 
+      attribs.normal.push(
+        this.thickness, 3, 0,
+        this.thickness, 1, 0,
+        this.thickness, 2, 0,
+        this.thickness, 0, 0,
+        this.thickness, 1, 0,
+        this.thickness, 2, 0,
+      );
+    }
+
+    for (let attrib in attribs) {
+      attribs[attrib] = new Float32Array(attribs[attrib]);
+    }
+
+    return { mode, vertexCount, attribs, name, program };
+  }
+
+
+}
+
+/**
+ * @file Matrix math borrowed from GlMatrix.
  * https://github.com/toji/gl-matrix/blob/master/src/mat4.js.
+ */
+
+/** 
+ * Minimal float difference for equality.
  */
 
 const EPSILON = 0.0000001;
@@ -1943,1255 +3573,14 @@ var m4 = /*#__PURE__*/Object.freeze({
   transpose: transpose
 });
 
-const CHARS = 'abcdefghijfklmnopqrstuvwxyzABCDEFGHIJFKLMNOPQRSTUVWXYZ0123456789_@!';
-const buffer = new Uint8Array(128);
-let index = buffer.byteLength;
-
-function fillBuffer () {
-  crypto.getRandomValues(buffer);
-  index = 0;
-}
-
-function uuid (length = 6) {
-  if (index + length >= buffer.byteLength) fillBuffer();
-  let id = '';
-  while(id.length < length) {
-    id += CHARS[buffer[index] % CHARS.length];
-    ++ index;
-  }
-  return id;
-}
-
-/**
- * @fileoverview Provide a polygonal mesh class.
- */
-
-/**
- * A single vertex. Contains 1 or more named attributes. 
- * @typedef {object} Vertex
- */
-
-/**
- * A single face. Contains an array of 3 or more indices into a vertex list.
- * @typedef {array<number>} Face
- */
-
-
-class Mesh {
-  /**
-   * Construct a mesh from a list of vertices and faces.
-   * @param {array<Vertex>} vertices 
-   * @param {array<Face>} faces 
-   * @param {object} meta Additional meta information about the mesh. Name and 
-   *     more.
-   */
-  constructor(vertices, faces, meta = {}) {
-
-    /** 
-     * The array of vertices for this mesh. Each entry is object with with 
-     * named attributes and arrays for the value.
-     * @type {array<Vertex>}
-     * @example 
-     */
-    this.vertices = vertices;
-
-    /**
-     * The array of faces for this mesh. An array of arrays. The internal array
-     * contains indices into the vertex array. Quads and ngons are allowed but 
-     * must be triangulated before being sent to the 
-     * @type {array<Face>}
-     */
-    this.faces = faces;
-
-    /**
-     * A name for this mesh.
-     */
-    this.name = meta.name || 'mesh';
-
-    /**
-     * The id for this mesh.
-     */
-    this.id = uuid();
-  }
-
-
-  /**
-   * Triangulate this mesh.
-   * @chainable
-   */
-  triangulate() {
-    this.faces = triangulate(this.faces);
-    return this;
-  }
-
-
-  /**
-   * Create a render-able version of the mesh that works with a gl.drawArrays()
-   * call. 
-   * TODO : Rename this.
-   * @returns 
-   */
-  render() {
-    const mode = 'TRIANGLES';
-    const triangles = triangulate(this.faces);
-    const vertexCount = triangles.length * 3;
-    const attribs = {};
-
-    for (let f = 0; f < triangles.length; f++) {
-      const face = triangles[f];
-
-      for (let v = 0; v < 3; v++) {
-        const vertex = this.vertices[face[v]];
-
-        for (let attrib in vertex) {
-          const data = vertex[attrib];
-          if (!attribs[attrib]) {
-            attribs[attrib] = [];
-          }
-          attribs[attrib].push(...data);
-        }
-      }
-
-    }
-    for (let attrib in attribs) {
-      attribs[attrib] = new Float32Array(attribs[attrib]);
-    }
-
-    const name = `${this.name}_${this.id}`;
-    return { mode, vertexCount, attribs, name };
-  }
-
-
-  renderEdges() {
-    const mode = 'LINES';
-    const edges = facesToEdges(this.faces);
-    const vertexCount = edges.length * 2;
-    const attribs = {};
-
-    for (let ei = 0; ei < edges.length; ei++) {
-      const edge = edges[ei];
-      for (let vi = 0; vi < 2; vi++) {
-        const vertex = this.vertices[edge[vi]];
-        for (let attrib in vertex) {
-          const data = vertex[attrib];
-          if (!attribs[attrib]) {
-            attribs[attrib] = [];
-          }
-          attribs[attrib].push(...data);
-        }
-      }
-    }
-    for (let attrib in attribs) {
-      attribs[attrib] = new Float32Array(attribs[attrib]);
-    }
-
-    const name = `${this.name}_${this.id}_edges`;
-    return { mode, vertexCount, attribs, name };
-  }
-
-
-  renderPoints() {
-    const mode = 'POINTS';
-    const vertexCount = this.vertices.length;
-    const attribs = {};
-
-    for (let vi = 0; vi < this.vertices.length; vi++) {
-      const vertex = this.vertices[vi];
-      for (let attrib in vertex) {
-        const data = vertex[attrib];
-        if (!attribs[attrib]) {
-          attribs[attrib] = [];
-        }
-        attribs[attrib].push(...data);
-      }
-    }
-
-    for (let attrib in attribs) {
-      attribs[attrib] = new Float32Array(attribs[attrib]);
-    }
-
-    const name = `${this.name}_${this.id}_points`;
-    return { mode, vertexCount, attribs, name };
-  }
-
-
-  renderNormals(length = 0.05) {
-    const mode = 'LINES';
-    const vertexCount = this.vertices.length * 2;
-    const attribs = {};
-
-    for (let vi = 0; vi < this.vertices.length; vi++) {
-      const vertex = this.vertices[vi];
-
-
-      for (let attrib in vertex) {
-        const data = vertex[attrib];
-        if (!attribs[attrib]) {
-          attribs[attrib] = [];
-        }
-        attribs[attrib].push(...data);
-
-        if (attrib === 'position' && vertex['normal']) {
-          const { position, normal } = vertex;
-          const position2 = new Vec3(...position);
-          position2.add(new Vec3(...normal).normalize(length));
-          attribs[attrib].push(...position2.xyz);
-        } else {
-          attribs[attrib].push(...data);
-        }
-      }
-    }
-
-    for (let attrib in attribs) {
-      attribs[attrib] = new Float32Array(attribs[attrib]);
-    }
-
-    const name = `${this.name}_${this.id}_normals`;
-    return { mode, vertexCount, attribs, name };
-  }
-
-
-  /**
-   * Attach group info to this mesh. Adds another attrib (surfaceId) to each 
-   * vertex. The surfaceId value will be unique for each set of disjoint 
-   * vertices in the mesh.
-   * @chainable 
-   */
-  findGroups() {
-    const groups = findGroups(this.faces);
-    this.vertices = applyAttribVarying('surfaceId', groups, this.vertices);
-    return this;
-  }
-
-
-  /**
-   * Fill the vetex colors for the mesh with a single vertex color.
-   * @param {color|function} col The color to apply to each vertex OR a function 
-   *     to map to each vertex that returns a color.
-   */
-  fill(col) {
-
-    if (col.rgba) {
-      this.vertices = applyAttribConstant('color', col.rgba, this.vertices);
-    } else if (typeof col === 'function') {
-      this.vertices = applyAttribConstant('color', col, this.vertices);
-    } else {
-      console.warn(`${col} was not of type color or function.`);
-    }
-
-    return this;
-  }
-
-
-  /**
-   * Inflate the mesh along its normals.
-   */
-  inflate(amt = 0) {
-    for (let vi = 0; vi < this.vertices.length; vi++) {
-      const vertex = this.vertices[vi];
-      if (!(vertex.position && vertex.normal)) continue;
-
-      for (let i = 0; i < 3; i++) {
-        vertex.position[i] += vertex.normal[i] * amt;
-      }
-    }
-    return this;
-  }
-
-
-  getEdges() {
-    const edges = facesToEdges(this.faces);
-    const outEdges = [];
-
-    for (let ei = 0; ei < edges.length; ei++) {
-      const edge = edges[ei];
-      const pos1 = this.vertices[edge[0]].position;
-      const pos2 = this.vertices[edge[1]].position;
-      outEdges.push([pos1, pos2]);
-    }
-    return outEdges;
-  }
-
-  shadeFlat() {
-    const { vertices, faces } = shadeFlat(this.vertices, this.faces);
-    this.vertices = vertices;
-    this.faces = faces;
-    return this;
-  }
-
-  shadeSmooth(tolerance) {
-    const { vertices, faces } = shadeSmooth(this.vertices, this.faces, tolerance);
-    this.vertices = vertices;
-    this.faces = faces;
-    return this;
-  }
-
-  applyTransform(transform) {
-    for (let vi = 0; vi < this.vertices.length; vi++) {
-      const vert = this.vertices[vi];
-      if (vert.position) {
-        vert.position = transform.transformPoint(vert.position);
-      }
-      if (vert.normal) {
-        vert.normal = transform.transformNormal(vert.normal);
-      }
-    }
-    return this;
-  }
-
-  join(other) {
-    const offset = this.vertices.length;
-
-    const newFaces = other.faces.map(face => {
-      return face.map(index => index + offset);
-    });
-
-    this.vertices = this.vertices.concat(other.vertices);
-    this.faces = this.faces.concat(newFaces);
-
-    return this;
-  }
-
-  flipNormals() {
-    const flipNormal = n => n.map(x => x * -1);
-    this.vertices = mapFuncToAttributes(this.vertices, 'normal', flipNormal);
-    return this;
-  }
-
-  copy() {
-    const copyVertices = JSON.parse(JSON.stringify(this.vertices));
-    const copFaces = JSON.parse(JSON.stringify(this.faces));
-    return new Mesh(copyVertices, copFaces, { name: this.name });
-  }
-
-  /**
-   * Maps a function over the vertices in this mesh.
-   * @param {Function} func A vertex->vertex callback.
-   * 
-   * @exmaple 
-   * function vertFunc (vert) {
-   *   const pos = g.vec3(...vert.aPosition);
-   *   pos.normalize();
-   *   return {
-   *      aNormal: [...pos]
-   *   };
-   * }
-   * 
-   * myMesh.map(vertFunc)
-   */
-  attributeMap(func) {
-    this.vertices = attributeMap(this.vertices, func);
-  }
-}
-
-/**
- * @file Provide geometric primitives.
- */
-
-
-/**
- * Make a cube. Centered on the origin with w, h, d of size.
- * @param {number} size The size of the cube.
- * @return {Mesh}
- */
-function cube(size = 1) {
-  const s = size / 2;
-
-  //   7-----6
-  //  /|    /|
-  // 4-----5 |
-  // | 3---|-2
-  // |/    |/
-  // 0-----1
-
-  const positions = [
-    [-s, -s, +s],
-    [+s, -s, +s],
-    [+s, -s, -s],
-    [-s, -s, -s],
-
-    [-s, +s, +s],
-    [+s, +s, +s],
-    [+s, +s, -s],
-    [-s, +s, -s]
-  ];
-
-
-  const vertices = [];
-  const faces = [];
-  let i = 0;
-
-  const quad = function (a, b, c, d, normal, color) {
-    vertices.push({ position: [...positions[a]], normal, color, texCoord: [0, 0] }, { position: [...positions[b]], normal, color, texCoord: [1, 0] }, { position: [...positions[c]], normal, color, texCoord: [1, 1] }, { position: [...positions[d]], normal, color, texCoord: [0, 1] }, );
-
-    faces.push([i, i + 1, i + 2, i + 3]);
-
-    i += 4;
-  };
-
-  quad(0, 1, 5, 4, [0, 0, +1], [1, 0, 0, 1]); // FRONT
-  quad(2, 3, 7, 6, [0, 0, -1], [0, 1, 1, 1]); // BACK
-
-  quad(4, 5, 6, 7, [0, +1, 0], [1, 0, 1, 1]); // TOP
-  quad(1, 0, 3, 2, [0, -1, 0], [0, 1, 0, 1]); // BOTTOM
-
-  quad(3, 0, 4, 7, [-1, 0, 0], [0, 0, 1, 1]); // LEFT
-  quad(1, 2, 6, 5, [+1, 0, 0], [1, 1, 0, 1]); // RIGHT
-
-  let mesh = new Mesh(vertices, faces, { name: 'cube' });
-  return mesh;
-}
-
-
-/**
- * Make an icosphere shape with diameter size.
- * @param {number} size The diameter of the sphere.
- * @param {number} level The subdivision level to use.
- * @param {boolean} flat Whether to use flat shading. Default smooth (false).
- * @return {Mesh}
- */
-function icosphere(size = 1, level = 1, flat = false) {
-
-  const radius = size / 2;
-
-  // Start with an icosahedron, using this aspect ratio to generate points.
-  // The positions of the the twelve icosahedron vertices.
-  const t = (1 + Math.sqrt(5)) / 2;
-
-  let positions = [
-    /**00*/
-    new Vec3(-t, 0, -1).normalize(radius),
-    /**01*/
-    new Vec3(+t, 0, -1).normalize(radius),
-    /**02*/
-    new Vec3(+t, 0, +1).normalize(radius),
-    /**03*/
-    new Vec3(-t, 0, +1).normalize(radius),
-    /**04*/
-    new Vec3(-1, -t, 0).normalize(radius),
-    /**05*/
-    new Vec3(+1, -t, 0).normalize(radius),
-    /**06*/
-    new Vec3(+1, +t, 0).normalize(radius),
-    /**07*/
-    new Vec3(-1, +t, 0).normalize(radius),
-    /**08*/
-    new Vec3(0, -1, -t).normalize(radius),
-    /**09*/
-    new Vec3(0, -1, +t).normalize(radius),
-    /**10*/
-    new Vec3(0, +1, +t).normalize(radius),
-    /**11*/
-    new Vec3(0, +1, -t).normalize(radius),
-  ];
-
-  let faces = [
-    [0, 3, 7],
-    [0, 7, 11],
-    [0, 11, 8],
-    [0, 8, 4],
-    [0, 4, 3],
-
-    [2, 1, 6],
-    [2, 6, 10],
-    [2, 10, 9],
-    [2, 9, 5],
-    [2, 5, 1],
-
-    [3, 9, 10],
-    [3, 10, 7],
-    [3, 4, 9],
-
-    [1, 8, 11],
-    [1, 11, 6],
-    [1, 5, 8],
-
-    [8, 5, 4],
-    [9, 4, 5],
-    [10, 6, 7],
-    [11, 7, 6],
-  ];
-
-
-  /**
-   * Add a new position. Normalize its position so it sits on the surface of 
-   * the sphere.
-   * @param {*} pos 
-   */
-  const addPosition = (pos) => {
-    positions.push(pos.normalize(radius));
-  };
-
-  const foundMidPoints = {};
-
-  /**
-   * @param {*} a 
-   * @param {*} b 
-   * @returns 
-   */
-  const getMidPoint = (a, b) => {
-    const key = a < b ? `${a}_${b}` : `${b}_${a}`;
-
-    if (foundMidPoints[key]) {
-      return foundMidPoints[key];
-    }
-
-    const posA = positions[a].copy();
-    const posB = positions[b].copy();
-    const midPoint = posA.copy().add(posB).div(2);
-
-    addPosition(midPoint);
-
-    const index = positions.length - 1;
-    foundMidPoints[key] = index;
-    return index;
-  };
-
-
-  let faceBuffer = [];
-  let vertices = [];
-
-  for (let i = 0; i < level; i++) {
-    faceBuffer = [];
-
-    for (const face of faces) {
-      const a = getMidPoint(face[0], face[1]);
-      const b = getMidPoint(face[1], face[2]);
-      const c = getMidPoint(face[2], face[0]);
-
-      faceBuffer.push([face[0], a, c]);
-      faceBuffer.push([face[1], b, a]);
-      faceBuffer.push([face[2], c, b]);
-      faceBuffer.push([a, b, c]);
-    }
-    faces = faceBuffer;
-  }
-
-  // For flat shading we need to split each vertex into 3 new ones and 
-  // re-index the faces.
-  if (flat) {
-    faceBuffer = [];
-
-    for (const face of faces) {
-      const a = positions[face[0]];
-      const b = positions[face[1]];
-      const c = positions[face[2]];
-
-      const ba = b.copy().sub(a);
-      const ca = c.copy().sub(a);
-
-      const normal = ba.cross(ca).normalize();
-
-      const pointer = vertices.length;
-
-      vertices.push({ position: a.xyz, normal: normal.xyz }, { position: b.xyz, normal: normal.xyz }, { position: c.xyz, normal: normal.xyz });
-
-      faceBuffer.push([pointer, pointer + 1, pointer + 2]);
-    }
-    faces = faceBuffer;
-
-  } else {
-    vertices = positions.map(pos => {
-      return { position: pos.xyz, normal: pos.normalize().xyz };
-    });
-  }
-
-  return new Mesh(vertices, faces, { name: 'icosphere' });
-}
-
-
-/**
- * 
- */
-function uvsphere(size = 1, level = 1, flat = false) {
-  const radius = size / 2;
-
-  const segments = level + 2;
-
-  const getSphericalPos = (uFac, vFac) => {
-    const r = Math.sin(Math.PI * vFac);
-    const x = Math.cos(2 * Math.PI * uFac) * r * radius;
-    const y = -Math.cos(Math.PI * vFac) * radius;
-    const z = Math.sin(2 * Math.PI * uFac) * r * radius;
-    return [x, y, z];
-  };
-
-
-  let step = size / segments;
-
-  const positions = [];
-  const texCoords = [];
-  const faces = [];
-
-  let vertIndex = 0;
-  console.log(segments);
-
-  for (let v = 0; v < segments; v++) {
-
-    for (let u = 0; u < segments; u++) {
-
-      const uf0 = u / segments;
-      const uf1 = (u + 1) / segments;
-
-      const vf0 = v / segments;
-      const vf1 = (v + 1) / segments;
-
-      // South pole case.
-      if (v === 0) {
-
-
-        positions.push(
-          getSphericalPos(uf0, vf0),
-          getSphericalPos(uf1, vf1),
-          getSphericalPos(uf0, vf1)
-        );
-
-        texCoords.push(
-          [uf0 + (0.5 * step), vf0],
-          [uf1, vf1],
-          [uf0, vf1]
-        );
-
-        faces.push([vertIndex, vertIndex + 2, vertIndex + 1]);
-
-        vertIndex += 3;
-        continue;
-
-
-      }
-
-      // North pole case. 
-      if (v === segments - 1) {
-        positions.push(
-          getSphericalPos(uf0, vf0),
-          getSphericalPos(uf1, vf0),
-          getSphericalPos(uf1, vf1),
-        );
-
-        texCoords.push(
-          [uf0, vf0],
-          [uf1, vf0],
-          [uf1 - (0.5 / segments), vf1],
-        );
-
-        faces.push([vertIndex, vertIndex + 2, vertIndex + 1]);
-        vertIndex += 3;
-        continue;
-      }
-
-
-
-      positions.push(
-        getSphericalPos(uf0, vf0),
-        getSphericalPos(uf1, vf0),
-        getSphericalPos(uf1, vf1),
-        getSphericalPos(uf0, vf1)
-      );
-
-
-      texCoords.push(
-        [uf0, vf0],
-        [uf1, vf0],
-        [uf1, vf1],
-        [uf0, vf1]
-      );
-
-      // texCoords.push(
-      //   [0, 1],
-      //   [1, 1],
-      //   [1, 0],
-      //   [0, 0]
-      // );
-
-
-      faces.push([vertIndex, vertIndex + 3, vertIndex + 2, vertIndex + 1]);
-      vertIndex += 4;
-
-    }
-  }
-
-  console.log(positions, faces);
-
-  const vertices = positions.map((pos, i) => {
-    return { position: pos, normal: pos, texCoord: texCoords[i] };
-  });
-
-  return new Mesh(vertices, faces, { name: 'uvsphere' });
-
-}
-
-/**
- * Make a quad facing up along y axis.
- * @param {number} size The w and d of the quad.
- * @return {Mesh}
- */
-function quad(size) {
-  const s = size / 2;
-  const positions = [
-    new Vec3(-s, 0, -s),
-    new Vec3(+s, 0, -s),
-    new Vec3(+s, 0, +s),
-    new Vec3(-s, 0, +s),
-  ];
-
-  const faces = [
-    [0, 3, 2, 1]
-  ];
-  const vertices = positions.map(pos => {
-    return { position: pos.xyz, normal: [0, 1, 0] };
-  });
-
-  return new Mesh(vertices, faces, { name: 'quad' });
-}
-
-
-/**
- * Make a grid facing up along y axis.
- * @param {number} size The size of the quad.
- * @param {number} subdivisions The number of subdivisions.
- * @return {Mesh}
- */
-function grid(size, subdivisions = 10, flat = false) {
-  const s = size / 2;
-  const step = size / (subdivisions + 1);
-
-  const positions = [];
-  const faces = [];
-
-  if (flat) {
-
-    // Flat normals case. Copy shared verts.
-    let vertIndex = 0;
-    for (let i = 0; i < subdivisions + 1; i++) {
-      const z = i * step;
-      for (let j = 0; j < subdivisions + 1; j++) {
-        const x = j * step;
-        positions.push([-s + x, 0, -s + z]);
-        positions.push([-s + x + step, 0, -s + z]);
-        positions.push([-s + x + step, 0, -s + z + step]);
-        positions.push([-s + x, 0, -s + z + step]);
-
-        faces.push([vertIndex, vertIndex + 3, vertIndex + 2, vertIndex + 1]);
-        vertIndex += 4;
-      }
-    }
-
-  } else {
-
-    // Smooth normals case. Reuse shared verts.
-    for (let i = 0; i < subdivisions + 2; i++) {
-      const z = i * step;
-      for (let j = 0; j < subdivisions + 2; j++) {
-        const x = j * step;
-        positions.push([-s + x, 0, -s + z]);
-
-        if (i < subdivisions + 1 && j < subdivisions + 1) {
-          const a = i * (subdivisions + 2) + j;
-          const b = a + 1;
-          const c = a + subdivisions + 2;
-          const d = c + 1;
-          faces.push([a, c, d, b]);
-        }
-      }
-    }
-  }
-
-  const vertices = positions.map(pos => {
-    return { position: pos, normal: [0, 1, 0] };
-  });
-
-  return new Mesh(vertices, faces, { name: 'grid' });
-}
-
-
-/**
- * Make a circle with diameter size facing up along y axis.
- * @param {number} size The size of the circle.
- * @param {number} resolution The number of straight line segments to use.
- * @return {Mesh}
- */
-function circle(size, resolution = 12, fill = 'ngon') {
-  const positions = [];
-  const faces = [];
-
-  if (fill === 'fan') {
-    positions.push([0, 0, 0]);
-  } else if (fill === 'ngon') {
-    faces[0] = [];
-  }
-
-  for (let i = 0; i < resolution; i++) {
-    const theta = -i * Math.PI * 2 / resolution;
-    const x = Math.cos(theta) * (size / 2);
-    const z = Math.sin(theta) * (size / 2);
-
-    positions.push([x, 0, z]);
-
-    if (fill === 'fan') {
-      const next = (i + 1) % (resolution);
-      faces.push([0, i + 1, next + 1]);
-    } else if (fill === 'ngon') {
-      faces[0].push(i);
-    }
-  }
-
-  const vertices = positions.map(pos => {
-    return { position: pos, normal: [0, 1, 0] };
-  });
-  return new Mesh(vertices, faces, { name: 'circle' });
-}
-
-
-/**
- * Make a full screen quad for rendering post effects..
- */
-function _fsQuad() {
-  const vertices = [
-    [-1, -1, 0],
-    [+1, -1, 0],
-    [-1, +1, 0],
-
-    [-1, +1, 0],
-    [+1, -1, 0],
-    [+1, +1, 0],
-  ];
-
-  return {
-    mode: 'TRIANGLES',
-    vertexCount: 6,
-    attribs: {
-      aPosition: new Float32Array(vertices.flat()),
-    }
-  }
-}
-
-
-/**
- * Make an axes gizmo.
- */
-function _axes() {
-  const positions = [
-    [0, 0, 0],
-    [1, 0, 0],
-    [0, 0, 0],
-    [0, 1, 0],
-    [0, 0, 0],
-    [0, 0, 1],
-    [0, 0, 0],
-    [-1, 0, 0],
-    [0, 0, 0],
-    [0, -1, 0],
-    [0, 0, 0],
-    [0, 0, -1],
-  ];
-
-  const colors = [
-    [1, 0, 0, 1],
-    [1, 0, 0, 1],
-    [0, 1, 0, 1],
-    [0, 1, 0, 1],
-    [0, 0, 1, 1],
-    [0, 0, 1, 1],
-    [0, 1, 1, 1],
-    [0, 1, 1, 1],
-    [1, 0, 1, 1],
-    [1, 0, 1, 1],
-    [1, 1, 0, 1],
-    [1, 1, 0, 1],
-  ];
-
-  const normals = [
-    [1, 0, 0],
-    [1, 0, 0],
-    [0, 1, 0],
-    [0, 1, 0],
-    [0, 0, 1],
-    [0, 0, 1],
-    [-1, 0, 0],
-    [-1, 0, 0],
-    [0, -1, 0],
-    [0, -1, 0],
-    [0, 0, -1],
-    [0, 0, -1],
-  ];
-
-  return {
-    mode: 'LINES',
-    vertexCount: 12,
-    attribs: {
-      position: new Float32Array(positions.flat(2)),
-      color: new Float32Array(colors.flat(2)),
-      normal: new Float32Array(normals.flat(2)),
-    }
-  }
-}
-
-
-
-/**
- * Make a circle with diameter size facing up along y axis.
- * @param {number} size The size of the circle.
- * @param {number} resolution The number of straight line segments to use.
- * @return {Mesh}
- */
-function cylinder(size, resolution = 12, fill = 'ngon', flat = false) {
-  const positions = [];
-  let faces = [];
-  const normals = [];
-  let ngon = [];
-  const radius = size / 2;
-
-  // Make the top and bottom face.
-  for (let k = 0; k < 2; k++) {
-
-    let y = k * 2 - 1;
-    let offset = fill === 'fan' ? (resolution + 1) * k : resolution * k;
-
-    if (fill === 'fan') {
-      positions.push([0, y * radius, 0]);
-      normals.push([0, y, 0]);
-    }
-
-    for (let i = 0; i < resolution; i++) {
-      const theta = -i * Math.PI * 2 / resolution;
-      const x = Math.cos(theta) * (size / 2);
-      const z = Math.sin(theta) * (size / 2);
-
-      positions.push([x, y * radius, z]);
-      normals.push([0, y, 0]);
-
-      if (fill === 'fan') {
-        const next = ((i + 1) % (resolution));
-        if (k === 0) {
-          faces.push([offset, offset + next + 1, offset + i + 1]);
-        } else {
-          faces.push([offset, offset + i + 1, offset + next + 1]);
-        }
-      } else if (fill === 'ngon') {
-        if (k === 0) {
-          ngon.push((resolution - (i + 1)) + offset);
-        } else {
-          ngon.push(i + offset);
-        }
-      }
-    }
-
-    if (fill === 'ngon') {
-      faces.push(ngon);
-      ngon = [];
-    }
-  }
-
-  let offset = positions.length;
-
-  // Make the outer wall. 
-  // TODO : This is smooth shading but with split verts. Make the smooth shading 
-  //     work with shared verts and a flat shading vertsion work with split 
-  //     verts.
-  for (let i = 0; i < resolution; i++) {
-    const theta = -i * Math.PI * 2 / resolution;
-    const x = Math.cos(theta) * (size / 2);
-    const z = Math.sin(theta) * (size / 2);
-
-    const theta2 = -(i + 1) * Math.PI * 2 / resolution;
-    const x2 = Math.cos(theta2) * (size / 2);
-    const z2 = Math.sin(theta2) * (size / 2);
-
-    positions.push(
-      [x, -radius, z],
-      [x, radius, z],
-      [x2, -radius, z2],
-      [x2, radius, z2],
-    );
-
-    normals.push(
-      new Vec3(x, 0, z).normalize().xyz,
-      new Vec3(x, 0, z).normalize().xyz,
-      new Vec3(x2, 0, z2).normalize().xyz,
-      new Vec3(x2, 0, z2).normalize().xyz,
-    );
-
-    faces.push([
-      offset + 1,
-      offset + 0,
-      offset + 2,
-      offset + 3,
-    ]);
-
-    offset += 4;
-  }
-
-
-
-  const vertices = positions.map((pos, i) => {
-    return { position: pos, normal: normals[i] };
-  });
-
-
-  return new Mesh(vertices, faces, { name: 'cylinder' });
-}
-
-
-
-/**
- * Make a cone with diameter size facing up along y axis.
- * https://stackoverflow.com/questions/19245363/opengl-glut-surface-normals-of-cone
- * TODO : proper normals for the cone.
- * @param {number} size The size of the circle.
- * @param {number} resolution The number of straight line segments to use.
- * @return {Mesh}
- */
-function cone(size, resolution = 12, fill = 'ngon', flat = false) {
-  const positions = [];
-  let faces = [];
-  const normals = [];
-  let ngon = [];
-  const radius = size / 2;
-
-  // Make the bottom face.
-
-  let y = -1;
-
-  if (fill === 'fan') {
-    positions.push([0, y * radius, 0]);
-    normals.push([0, y, 0]);
-  }
-
-  for (let i = 0; i < resolution; i++) {
-    const theta = -i * Math.PI * 2 / resolution;
-    const x = Math.cos(theta) * (size / 2);
-    const z = Math.sin(theta) * (size / 2);
-
-    positions.push([x, y * radius, z]);
-    normals.push([0, y, 0]);
-
-    if (fill === 'fan') {
-
-      const next = ((i + 1) % (resolution));
-      faces.push([0, next + 1, i + 1]);
-
-    } else if (fill === 'ngon') {
-
-      ngon.push((resolution - (i + 1)));
-
-    }
-  }
-
-  if (fill === 'ngon') {
-    faces.push(ngon);
-    ngon = [];
-  }
-
-  let offset = positions.length;
-
-  // Make the outer wall. 
-  // TODO : This is smooth shading but with split verts. Make the smooth shading 
-  //     work with shared verts and a flat shading vertsion work with split 
-  //     verts.
-  for (let i = 0; i < resolution; i++) {
-    const theta = -i * Math.PI * 2 / resolution;
-    const x = Math.cos(theta) * (size / 2);
-    const z = Math.sin(theta) * (size / 2);
-
-    const theta2 = -(i + 1) * Math.PI * 2 / resolution;
-    const x2 = Math.cos(theta2) * (size / 2);
-    const z2 = Math.sin(theta2) * (size / 2);
-
-    positions.push(
-      [x, -radius, z],
-      [0, radius, 0],
-      [x2, -radius, z2],
-    );
-
-    normals.push(
-      new Vec3(x, 0, z).normalize().xyz,
-      new Vec3(0, 1, 0).normalize().xyz,
-      new Vec3(x, 0, z).normalize().xyz,
-    );
-
-    faces.push([
-      offset + 1,
-      offset + 0,
-      offset + 2,
-    ]);
-
-    offset += 3;
-  }
-
-
-
-  const vertices = positions.map((pos, i) => {
-    return { position: pos, normal: normals[i] };
-  });
-
-
-  return new Mesh(vertices, faces, { name: 'cylinder' });
-}
-
-var primitives = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  _axes: _axes,
-  _fsQuad: _fsQuad,
-  circle: circle,
-  cone: cone,
-  cube: cube,
-  cylinder: cylinder,
-  grid: grid,
-  icosphere: icosphere,
-  quad: quad,
-  uvsphere: uvsphere
-});
-
-/**
- * 
- */ 
-
-
-class Line {
-  constructor (points, color = [1, 1, 1, 1]) {
-    this.points = points;
-    this.color = color;
-    this.thickness = .1;
-    this.name = 'line_' + uuid(); 
-
-  }
-
-  render () {
-    const mode = 'TRIANGLE_STRIP';
-    const vertexCount = this.points.length * 2;
-    const program = 'line';
-    const name = this.name;
-
-
-    const attribs = {
-      position: [],
-      normal: [],
-      register1: [],
-      register2: [], 
-      color: [],
-    };
-    
-    for (let i = 0; i < this.points.length; i++) {
-
-      const current = this.points[i];
-      const previous = (i === 0) ? this.points[i] : this.points[i - 1];
-      const next = (i === this.points.length - 1) ? this.points[i] : this.points[i + 1];
-
-      // Submit position twice.
-      attribs.position.push(...current, ...current);
-
-      // t value (normal.z) is progess allong the line;
-      const t = ([i % this.points.length] / (this.points.length - 1));
-
-      // x component of normal is thickness. y component is direction.
-      attribs.normal.push(this.thickness, 1, t, this.thickness, -1, t);
-
-      attribs.register1.push(...previous, 1, ...previous, 1);
-      attribs.register2.push(...next, 1, ...next, 1);
-
-      attribs.color.push(...this.color, ...this.color);
-    }
-
-    for (let attrib in attribs) {
-      attribs[attrib] = new Float32Array(attribs[attrib]);
-    }
-
-    return { mode, vertexCount, attribs, name, program };
-
-  }
-
-
-}
-
-/**
- * An edge collection is used to display any number of disjoint edges
- */ 
-
-
-class EdgeCollection {
-  constructor (edges, color) {
-    this.edges = edges;
-    this.color = color || [1, 1, 1, 1];
-    this.thickness = 2;
-    this.name = 'edge_collection_' + uuid(); 
-
-  }
-
-  render () {
-    const mode = 'TRIANGLES';
-    const vertexCount = this.edges.length * 6;
-    const program = 'line2';
-    const name = this.name;
-
-    const attribs = {
-      position: [],
-      normal: [],
-      register1: [],
-      color: [],
-    };
-    
-    for (let i = 0; i < this.edges.length; i++) {
-
-      const current = this.edges[i][0];
-      const next = this.edges[i][1];
-
-      // Submit position for each vert.
-      attribs.position.push(
-        current[0], current[1], current[2],
-        current[0], current[1], current[2],
-        current[0], current[1], current[2],
-        current[0], current[1], current[2],
-        current[0], current[1], current[2],
-        current[0], current[1], current[2],
-      );
-
-      // Submit next position for each vert.
-      attribs.register1.push(
-        next[0], next[1], next[2], 1, 
-        next[0], next[1], next[2], 1, 
-        next[0], next[1], next[2], 1, 
-        next[0], next[1], next[2], 1, 
-        next[0], next[1], next[2], 1, 
-        next[0], next[1], next[2], 1, 
-      );
-
-      // Submit color for each vert.
-      attribs.color.push(
-        ...this.color, 
-        ...this.color,
-        ...this.color,
-        ...this.color,
-        ...this.color,
-        ...this.color
-      );
-
-      // Submit thickness and vert index. The vertex shader will unpack the vert index and apply 
-      // the needed transformations in screen space. 
-      attribs.normal.push(
-        this.thickness, 3, 0,
-        this.thickness, 1, 0,
-        this.thickness, 2, 0,
-        this.thickness, 0, 0,
-        this.thickness, 1, 0,
-        this.thickness, 2, 0,
-      );
-    }
-
-    for (let attrib in attribs) {
-      attribs[attrib] = new Float32Array(attribs[attrib]);
-    }
-
-    return { mode, vertexCount, attribs, name, program };
-  }
-
-
-}
-
 /**
  * 
  */
 
 
+/**
+ * The transform class represents one point and manages matrix math to update that.
+ */
 class Transform {
   constructor () {
     this.position = new Vec3();
@@ -3267,57 +3656,183 @@ class Transform {
 }
 
 /**
- * A single node (gameObject).
+ * @file A single node (gameObject).
  */
 
-// Track a hidded render node id.
+// Track a hidden render node id.
 let id = 0;
 
+/**
+ * The Node class represents a scene-graph node.
+ */
 class Node {
-
+  /**
+   * Construct a new Node. None of the arguments are strictly necessary.
+   * @param {string} name 
+   * @param {string} geometry 
+   * @param {Transform} transform 
+   */
   constructor(name, geometry, transform) {
+    /**
+     * The name of the node.
+     * @type {string} 
+     */
     this.name = name;
+
+    /**
+     * A short unique id.
+     * @type {string} 
+     */
     this.id = uuid();
+
+    /**
+     * A numeric render id.
+     * @type {number}
+     */
     this.renderId = id++;
+
+    /**
+     * The pointer to the mesh name in the render system.
+     * @type {string|null}
+     */
     this.geometry = geometry || null;
+    
+    /**
+     * This objects 3D transform.
+     * @type {Transform}
+     */
     this.transform = transform || new Transform();
+
+    /**
+     * Whether this object is visible to the scene.
+     * @type {boolean}
+     */
     this.visible = true;
+
+    /**
+     * The parent node. Always use the .setParent() method to manage parenting.
+     * @readonly
+     * @type {Node|null}
+     */
     this.parent = null;
+
+    /**
+     * The children list. Always use the .setParent() method to manage parenting.
+     * @readonly
+     * @type {array<Node>}
+     */
     this.children = [];
+
+    /**
+     * The private world matrix.
+     * @private
+     */
     this._worldMatrix = create();
+    
+    /**
+     * The shader uniforms attached to this node.
+     * @type {object}
+     */
     this.uniforms = {
       uObjectId: this.renderId,
       uModel: this._worldMatrix,
       uTex: 'none',
     };
+
+    /**
+     * The name of the shader program to use when rendering this object.
+     * @type {string}
+     */
     this.program = 'default';
   }
 
+  /**
+   * Reference to the transform position.
+   * @type {Vec3}
+   */
+  get position () { return this.transform.position; }
+
+  /**
+   * Reference to the transform rotation.
+   * @type {Vec3}
+   */
+  get rotation () { return this.transform.rotation; }
+
+  /**
+   * Reference to the transform scale.
+   * @type {Vec3}
+   */
+  get scale () { return this.transform.scale; }
+
+  /**
+   * The x position of this object's transform.
+   * @type {number}
+   */
   get x ()  { return this.transform.position.x };
+  
+  /**
+   * The y position of this object's transform.
+   * @type {number}
+   */
   get y ()  { return this.transform.position.y };
+  
+  /**
+   * The z position of this object's transform.
+   * @type {number}
+   */
   get z ()  { return this.transform.position.z };
   
+  /**
+   * The x rotation of this object's transform.
+   * @type {number}
+   */
   get rx () { return this.transform.rotation.x };
+
+  /**
+   * The y rotation of this object's transform.
+   * @type {number}
+   */
   get ry () { return this.transform.rotation.y };
+
+  /**
+   * The z rotation of this object's transform.
+   * @type {number}
+   */
   get rz () { return this.transform.rotation.z };
 
 
-  /** 
-   * Move this node to a location, this is the local position.
+  /**
+   * Move this node somewhere.
+   * @param {number} x 
+   * @param {number} y 
+   * @param {number} z 
+   * @chainable
    */
   move (x, y, z) {
     this.transform.position.set(x, y, z);
     return this;
   }
 
-
+  /**
+   * Rotate this node.
+   * @param {number} x 
+   * @param {number} y 
+   * @param {number} z 
+   * @chainable
+   */
   rotate (x, y, z) {
     this.transform.rotation.set(x, y, z);
     return this;
   }
 
-
-  scale (x, y, z) {
+  /**
+   * Scale this node.
+   * @param {number} x 
+   * @param {number} y 
+   * @param {number} z 
+   * @chainable
+   */
+  rescale (x, y, z) {
     if (arguments.length === 1) {
       this.transform.scale.set(x, x, x);
     } else {
@@ -3330,7 +3845,11 @@ class Node {
     return ([this._worldMatrix[12], this._worldMatrix[13], this._worldMatrix[14]]);
   }
 
-
+  /**
+   * 
+   * @param {*} parent 
+   * @private
+   */
   _calculateWorldMatrix (parent) {
     if (parent) {
       multiply(this._worldMatrix, parent._worldMatrix, this.transform.matrix);
@@ -3343,7 +3862,12 @@ class Node {
     });
   }
 
-
+  /**
+   * Parent this node to another one. This node's transform is now in the local space 
+   * ogf its parent.
+   * @param {Node} node 
+   * @chainable
+   */
   setParent (node) {
     if (this.parent) {
       this.parent._removeChild(this);
@@ -3355,28 +3879,64 @@ class Node {
     return this;
   }
 
+  /**
+   * Set the geometry (mesh) used to render this node.
+   * @param {string} geo The string geometry pointer. 
+   * @chainable
+   */
   setGeometry (geo) {
     this.geometry = geo;
     return this;
   }
 
+  /**
+   * Set the program (shader) used when rendering this node and its children (unless they override);
+   * @param {string} prog The string program pointer. 
+   * @chainable
+   */
+  setProgram (prog) {
+    this.program = prog;
+    return this;
+  }
+
+  /**
+   * Create a child node under this node. Return the new child.
+   * @param {string} name 
+   * @param {string} geometry 
+   * @returns {Node} 
+   */
   createChildNode (name, geometry) {
     let node = new Node(name, geometry);
     node.setParent(this);
     return node;
   }
 
+  /**
+   * 
+   * @param {*} node 
+   * @private
+   */
   _removeChild (node) {
     this.children = this.children.filter(n => n !== node);
   }
 
-
+  /**
+   * 
+   * @param {*} node 
+   * @private
+   */
   _addChild (node) {
     this.children.push(node);
     this._dirty = true;
   }
 
-
+  /**
+   * 
+   * @param {*} output 
+   * @param {*} depth 
+   * @returns {string}
+   * @private
+   */
   _print (output, depth) {
     if (depth > 0) {
       for (let i = 1; i < depth; i++) { 
@@ -3396,6 +3956,13 @@ class Node {
     return output;
   }
 
+  /**
+   * 
+   * @param {*} drawList 
+   * @param {*} children 
+   * @returns {array}
+   * @private
+   */
   _toDrawList (drawList, children = true) {
     if (!this.visible) {
       return;
@@ -3412,25 +3979,47 @@ class Node {
     return drawList;
   }
 
-
+  /**
+   * Recursively walk this node and its children, calling a callback at each node.
+   * @param {Function} fn A func(node) => { doSomethingTo(node) } shaped callback.
+   */
   traverse (fn) {
     fn(this);
     this.children.forEach(child => child.traverse(fn));
   }
-
+  
+  /**
+   * Set a single uniform on this node.
+   * @param {string} name The name of the uniform.
+   * @param {number|array} value The GL value to set.
+   * @chainable
+   */
   uniform (name, value) {
     this.uniforms[name] = value;
+    return this;
+  }
+
+  /**
+   * Set multiple uniforms on this node.
+   * @param {object} uniforms A {name: str -> val: number or array } object to set.
+   * @chainable
+   */
+  uniforms (uniforms) {
+    for (let [name, value] of Object.entries(uniforms)) {
+      this.uniform(name, value);
+    }
+    return this;
   }
 }
 
 class Camera extends Node {
-  constructor (transform, fov) { 
-    super ('camera', null, transform);
+  constructor(transform, fov) {
+    super('camera', null, transform);
 
     this.fov = fov || 35;
     this.near = 0.5;
     this.far = 100;
-    
+
     this.view = create();
 
     this.projection = create();
@@ -3442,12 +4031,12 @@ class Camera extends Node {
     this.updateViewProjection();
   }
 
-  get eye () { return this.worldPosition }
-  set aspect (val) { this._aspect = val; }
-  get aspect () { return this._aspect; }
+  get eye() { return this.worldPosition }
+  set aspect(val) { this._aspect = val; }
+  get aspect() { return this._aspect; }
 
 
-  updateViewProjection () {
+  updateViewProjection() {
     lookAt(this.view, this.eye, this.target.xyz, this.up.xyz);
     perspective(this.projection, radians(this.fov), this._aspect, this.near, this.far);
   }
@@ -3592,27 +4181,27 @@ class RendererGL2 {
    * @param {object} config Optional configuration.
    * @returns {RenderContext} The new render context instance.
    */
-  constructor (canvas, w, h, config) {
+  constructor(canvas, w, h, config) {
     /**
      * The renderer's canvas.
      * @type {HTMLCanvasElement}
      */
     this.canvas = canvas;
-    
+
     /**
      * The width of the renderer. Use the .resize(w, h) method to change.
      * @readyonly
      * @type {number}
-     */ 
-    this.w = w; 
-    
+     */
+    this.w = w;
+
     /**
      * The height of the renderer. Use the .resize(w, h) method to change.
      * @readyonly
      * @type {number}
-     */ 
+     */
     this.h = h;
-    
+
     /**
      * The aspect ratio. Use the .resize(w, h) method to change.
      * @readyonly 
@@ -3626,7 +4215,7 @@ class RendererGL2 {
      */
     this.glSettings = {
       // Frame buffers do not support antialias, so skip it.
-      antialias: false, 
+      antialias: false,
 
       // Mimic Processing's optional clear pattern.
       preserveDrawingBuffer: true,
@@ -3636,18 +4225,18 @@ class RendererGL2 {
     if (config) {
       Object.assign(this.glSettings, config);
     }
-    
+
     /**
      * The WebGl2 context.
      * @type {WebGL2RenderingContext}
-    */
+     */
     this.gl = canvas.getContext('webgl2', this.glSettings);
-   
+
     if (!this.gl) {
       console.warn('Web GL 2 not available!');
       return;
     }
-    
+
     /**
      * Default configuration for GL rendering.
      * @private
@@ -3686,7 +4275,7 @@ class RendererGL2 {
      * @type {arrray}
      */
     this.clearColor = [0, 0, 0, 1];
-    
+
     /**
      * The name of the active program.
      * @type {string}
@@ -3708,7 +4297,7 @@ class RendererGL2 {
 
     /**
      * The maximun number of samplers available on the current device.
-     */ 
+     */
     this.MAX_TEX_UNIT = this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
     /**
@@ -3716,14 +4305,14 @@ class RendererGL2 {
      * @type {object}
      */
     this.uniformTypes = {
-      'FLOAT'      : 'uniform1f',
-      'FLOAT_VEC2' : 'uniform2fv',
-      'FLOAT_VEC3' : 'uniform3fv',
-      'FLOAT_VEC4' : 'uniform4fv',
-      'FLOAT_MAT4' : 'uniformMatrix4fv',
-      'SAMPLER_2D' : 'uniform1i',
+      'FLOAT': 'uniform1f',
+      'FLOAT_VEC2': 'uniform2fv',
+      'FLOAT_VEC3': 'uniform3fv',
+      'FLOAT_VEC4': 'uniform4fv',
+      'FLOAT_MAT4': 'uniformMatrix4fv',
+      'SAMPLER_2D': 'uniform1i',
     };
-    
+
     /**
      * The available meshes keyed by id.
      */
@@ -3736,7 +4325,7 @@ class RendererGL2 {
 
     /**
      * A list of the the vertex attributes.
-     */ 
+     */
     this.vertexAttributes = [...vertexAttributeLayout];
 
     if (config.attributes) {
@@ -3745,7 +4334,7 @@ class RendererGL2 {
 
     /**
      * Attrib info hashes keyed by name.
-     */ 
+     */
     this.attributeInfoByName = {};
     this.vertexAttributes.forEach((attrib, i) => {
       this.attributeInfoByName[attrib.name] = attrib;
@@ -3755,19 +4344,19 @@ class RendererGL2 {
     /**
      * A hash to track a block of shared uniforms between programs. Useful 
      * for things like view matrices, sky colors etc.
-     */ 
+     */
     this.globalUniformBlock = {};
 
     /**
      * Gl resource deleters by constructor name.
-     */ 
+     */
     this.deleteLookup = {
-      'WebGLProgram' : 'deleteProgram',
-      'WebGLTexture' : 'deleteTexture',
-      'WebGLFramebuffer' : 'deleteFramebuffer',
-      'WebGLVertexArrayObject' : 'deleteVertexArray',
+      'WebGLProgram': 'deleteProgram',
+      'WebGLTexture': 'deleteTexture',
+      'WebGLFramebuffer': 'deleteFramebuffer',
+      'WebGLVertexArrayObject': 'deleteVertexArray',
     };
-    
+
   }
 
 
@@ -3776,13 +4365,13 @@ class RendererGL2 {
    * and face culling.
    * @param {object} settings 
    */
-  _configure (settings) {
+  _configure(settings) {
     if (settings) {
       for (let setting in settings) {
         this._configuration[setting] = settings[setting];
       }
     }
-    
+
     this.depthTest(this._configuration.depthTest);
     this.depthWrite(this._configuration.depthWrite);
     this.cullFace(this._configuration.faceCulling);
@@ -3794,8 +4383,8 @@ class RendererGL2 {
    * the gum canvas size.
    * @param {number} w The width.
    * @param {number} h The height.
-   */ 
-  resize (w, h) {
+   */
+  resize(w, h) {
     if (w === this.w && h === this.h) return;
     this.w = Math.max(w, 1);
     this.h = Math.max(h, 1);
@@ -3812,20 +4401,20 @@ class RendererGL2 {
    * Turn depth testing on or off.
    * @param {boolean} flag Whether depth testing is enabled.
    */
-  depthTest (flag) {
+  depthTest(flag) {
     this._configuration.depthTest = flag;
     this.gl.disable(this.gl.DEPTH_TEST);
     if (flag) {
       this.gl.enable(this.gl.DEPTH_TEST);
     }
   }
-  
+
 
   /**
    * Turn depth writing on or off.
    * @param {boolean} flag Whether depth writing is enabled.
    */
-  depthWrite (flag) {
+  depthWrite(flag) {
     this._configuration.depthWrite = flag;
     this.gl.depthMask(flag);
   }
@@ -3836,32 +4425,32 @@ class RendererGL2 {
    * @param {string} face The face to cull. Either 'back', 'front', 'none', or 
    *     'all'.
    */
-  cullFace (face) {
+  cullFace(face) {
     const gl = this.gl;
     this._configuration.faceCulling = face;
 
     switch (('' + face).toUpperCase()) {
-      case 'NONE':
-        gl.disable(gl.CULL_FACE);
-        break;
+    case 'NONE':
+      gl.disable(gl.CULL_FACE);
+      break;
 
-      case 'ALL':
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.FRONT_AND_BACK);
-        break;
+    case 'ALL':
+      gl.enable(gl.CULL_FACE);
+      gl.cullFace(gl.FRONT_AND_BACK);
+      break;
 
-      case 'FRONT':
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.FRONT);
-        break;
+    case 'FRONT':
+      gl.enable(gl.CULL_FACE);
+      gl.cullFace(gl.FRONT);
+      break;
 
-      case 'BACK':
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-        break;
+    case 'BACK':
+      gl.enable(gl.CULL_FACE);
+      gl.cullFace(gl.BACK);
+      break;
 
-      default:
-        gl.disable(gl.CULL_FACE);
+    default:
+      gl.disable(gl.CULL_FACE);
     }
   }
 
@@ -3874,7 +4463,7 @@ class RendererGL2 {
    * @returns {string}
    * @private
    */
-  _prefixAttribName (name) {
+  _prefixAttribName(name) {
     if (name[0] === 'a') {
       return name;
     }
@@ -3887,12 +4476,12 @@ class RendererGL2 {
    * @param {string} program The name of the program to use.
    * @returns {void}
    */
-  setProgram (program) {
+  setProgram(program) {
     if (!this.shaderPrograms[program]) {
       console.warn('No program found:', program);
       return;
     }
-    
+
     if (this.activeProgram === program) {
       return;
     }
@@ -3910,7 +4499,7 @@ class RendererGL2 {
    *     canvas.
    * @returns {void}
    */
-  setRenderTarget (target) {
+  setRenderTarget(target) {
     if (target === null || this.renderTargets[target] === null) {
       this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
       this.renderTarget = null;
@@ -3937,7 +4526,7 @@ class RendererGL2 {
    * @param {string} name A unique name for the render target. 
    * @param {boolean} depth Whether to create a depth texture as well.
    */
-  createRenderTarget (name, depth) {
+  createRenderTarget(name, depth) {
     const target = { w: this.w, h: this.h };
     const gl = this.gl;
 
@@ -3949,43 +4538,43 @@ class RendererGL2 {
       texture: target.colorTexture,
     };
 
-    this.textureUnitIndex ++;
+    this.textureUnitIndex++;
 
     gl.activeTexture(gl.TEXTURE0 + target.colorTexUnit);
 
     // Make a texture to be the color of the target.
     gl.bindTexture(gl.TEXTURE_2D, target.colorTexture);
-    
+
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.w, this.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-    
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S,     gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T,     gl.CLAMP_TO_EDGE);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    
+
     // Create the frame buffer.
     target.frameBuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, target.frameBuffer);
 
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.colorTexture, 0);
-    
+
     if (depth) {
       target.depthTexUnit = this.textureUnitIndex;
       target.depthTexture = gl.createTexture();
-      
+
       this.texturesByName[name + '.depth'] = {
         unit: target.depthTexUnit,
         texture: target.depthTexture,
       };
-      
-      this.textureUnitIndex ++;
+
+      this.textureUnitIndex++;
 
 
       gl.activeTexture(gl.TEXTURE0 + target.depthTexUnit);
       gl.bindTexture(gl.TEXTURE_2D, target.depthTexture);
 
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, this.w, this.h, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
-      
+
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -4002,8 +4591,8 @@ class RendererGL2 {
    * Update the dimensions of a render target by name. Scales it to match the 
    * current canvas.
    * @param 
-   */ 
-  updateRenderTarget (name) {
+   */
+  updateRenderTarget(name) {
     const target = this.renderTargets[name];
     if (!target) return;
 
@@ -4015,6 +4604,14 @@ class RendererGL2 {
 
     target.w = this.w;
     target.h = this.h;
+
+    // TODO For some reason, if I do the framebuffer resizing below with the 
+    // buffertextures set as the active, they don't work. If some texture is set
+    //  as active texture, then the call to texImage2D resizes the texture 
+    // without breaking things. But what ever is in active texture get busted. 
+    // In the currnet version of Gum, texture0 is always the none texture. Let 
+    // that be the one that gets busted.
+    gl.activeTexture(gl.TEXTURE0);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, target.frameBuffer);
 
@@ -4042,7 +4639,7 @@ class RendererGL2 {
    * @param {string} mesh 
    * @returns
    */
-  draw (meshName, uniforms = {}, program = null) {
+  draw(meshName, uniforms = {}, program = null) {
     let mesh;
 
     // Check for a named mesh, which is stored in the renderer's responsobility.
@@ -4055,7 +4652,7 @@ class RendererGL2 {
     } else {
       mesh = meshName;
     }
-    
+
 
     if (program && program !== this.activeProgram) {
       this.setProgram(program);
@@ -4063,7 +4660,7 @@ class RendererGL2 {
 
     if (mesh.program && mesh.program !== this.activeProgram) {
       this.setProgram(mesh.program);
-    } 
+    }
 
     for (let uniform in uniforms) {
       this.uniform(uniform, uniforms[uniform]);
@@ -4082,13 +4679,13 @@ class RendererGL2 {
     this.gl.drawArrays(this.gl[mesh.data.mode], 0, mesh.data.vertexCount);
     this.gl.bindVertexArray(null);
   }
-  
+
 
   /**
    * Find the constant name of a uniform type by the returned uniform type 
    * pointer
    */
-  findUniformType (typePointer) {
+  findUniformType(typePointer) {
     for (let namedType of Object.keys(this.uniformTypes)) {
       if (this.gl[namedType] === typePointer) {
         return namedType;
@@ -4105,7 +4702,7 @@ class RendererGL2 {
    * @param {string} frag The fragment shader source.
    * @returns 
    */
-  createProgram (name, vert, frag) {
+  createProgram(name, vert, frag) {
 
     const program = this.gl.createProgram();
 
@@ -4113,7 +4710,7 @@ class RendererGL2 {
     this.gl.shaderSource(vertexShader, vert);
     this.gl.compileShader(vertexShader);
     this.gl.attachShader(program, vertexShader);
-    
+
     const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
     this.gl.shaderSource(fragmentShader, frag);
     this.gl.compileShader(fragmentShader);
@@ -4134,17 +4731,17 @@ class RendererGL2 {
     // Store information on any uniforms in the program.
     const uniformBlock = {};
     const uniformCount = this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS);
-    
+
     for (let i = 0; i < uniformCount; i++) {
       const uniformInfo = this.gl.getActiveUniform(program, i);
       const { size, type, name } = uniformInfo;
-      
+
       let namedType = this.findUniformType(type);
-      
+
       if (!namedType) {
         continue;
       }
-      
+
       uniformBlock[name] = {
         type: namedType,
         location: this.gl.getUniformLocation(program, name),
@@ -4158,7 +4755,7 @@ class RendererGL2 {
         this._uniform(this.uniformTypes[namedType], location, value, isMatrix);
       }
     }
-    
+
     this.shaderPrograms[name] = program;
     this.shaderProgramUniforms[name] = uniformBlock;
     return program;
@@ -4169,7 +4766,7 @@ class RendererGL2 {
    * Enforce an identical attribute layout across the programs.
    * @param {WebGLProgram} program 
    */
-  bindVertexAttributeLocations (program) {
+  bindVertexAttributeLocations(program) {
     for (let i = 0; i < this.vertexAttributes.length; i++) {
       const attrib = this.vertexAttributes[i];
       this.gl.bindAttribLocation(program, i, attrib.name);
@@ -4184,15 +4781,15 @@ class RendererGL2 {
    * @param {Float32Array} attribs.normal
    *     ... any other vertex attributes.
    * @returns {WebGLVertexArrayObject}
-   */ 
-  _createVao (attribs) {
+   */
+  _createVao(attribs) {
     const vao = this.gl.createVertexArray();
     this._bufferAttribs(vao, attribs);
     return vao;
   }
-  
 
-  _bufferAttribs (vao, attribs) {
+
+  _bufferAttribs(vao, attribs) {
     this.gl.bindVertexArray(vao);
 
     for (const [attrib, data] of Object.entries(attribs)) {
@@ -4219,8 +4816,7 @@ class RendererGL2 {
 
 
 
-
-  _getMeshId (name) {
+  _getMeshId(name) {
     const n = name;
     let postFix = '';
     let num = 1;
@@ -4231,16 +4827,16 @@ class RendererGL2 {
     return n + postFix;
   }
 
-  
+
   /**
    * Add a retained-mode mesh to the renderer.
    * @param {Mesh|object} 
-   */ 
-  addMesh (meshData) {
+   */
+  addMesh(meshData) {
     let data;
-    
+
     // Flatten a mesh 
-    if (meshData.render) {  
+    if (meshData.render) {
       data = data.render();
     } else {
       data = meshData;
@@ -4249,7 +4845,7 @@ class RendererGL2 {
     let name = data.name || 'mesh';
     name = this._getMeshId(name);
 
-    if (this.meshes[name]) { 
+    if (this.meshes[name]) {
       this.updateMesh(name, data);
       return;
     }
@@ -4259,13 +4855,13 @@ class RendererGL2 {
     mesh.vao = this._createVao(data.attribs);
 
     mesh.program = data.program ?? null;
-    
+
     this.meshes[name] = mesh;
     return name;
   }
 
 
-  updateMesh (name, data) {
+  updateMesh(name, data) {
     if (!this.meshes[name]) {
       return;
     }
@@ -4275,7 +4871,7 @@ class RendererGL2 {
 
     mesh.data = data;
     // mesh.vao = this.gl.createVertexArray();
-    
+
     this._bufferAttribs(mesh.vao, data.attribs);
   }
 
@@ -4285,7 +4881,7 @@ class RendererGL2 {
    * @param {string} name The name of the uniform.
    * @param {any} value The value to set.
    */
-  uniform (name, value) {
+  uniform(name, value) {
     const uniforms = this.shaderProgramUniforms[this.activeProgram];
 
     if (!uniforms[name]) {
@@ -4315,8 +4911,8 @@ class RendererGL2 {
    * @param {WebGLUniformLocation} location The location in the program.
    * @param {array|float|int} value The value to set.
    * @param {boolean} isMatrix Matrix flag.
-   */ 
-  _uniform (fn, location, value, isMatrix = false) {
+   */
+  _uniform(fn, location, value, isMatrix = false) {
     if (isMatrix) {
       this.gl[fn](location, false, value);
     } else {
@@ -4324,19 +4920,19 @@ class RendererGL2 {
     }
   }
 
-  
-  clear (color) {
+
+  clear(color) {
     this.gl.clearColor(...color);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
 
-  clearDepth () {
+  clearDepth() {
     this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
   }
 
 
 
-  hardFind (pointer) {
+  hardFind(pointer) {
     for (const [key, value] of Object.entries(this.gl.constructor)) {
       if (typeof value !== 'number') {
         continue;
@@ -4349,34 +4945,34 @@ class RendererGL2 {
   }
 
 
-  addTexture (name, imageData, settings) {
+  addTexture(name, imageData, settings) {
     const gl = this.gl;
 
-    if (this.textureUnitIndex >= this.MAX_TEX_UNIT) { 
+    if (this.textureUnitIndex >= this.MAX_TEX_UNIT) {
       console.warn('Maximum texture units exceeded.');
-      return; 
+      return;
     }
 
     let unit, texture;
-    
+
     if (this.texturesByName[name]) {
       unit = this.texturesByName[name].unit;
       texture = this.texturesByName[name].texture;
     } else {
       unit = this.textureUnitIndex;
       texture = gl.createTexture();
-      this.texturesByName[name] = { unit, texture };
-      this.textureUnitIndex ++;
+      this.texturesByName[name] = { unit, texture, settings };
+      this.textureUnitIndex++;
     }
 
     gl.activeTexture(gl.TEXTURE0 + unit);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    
+
     const { width, height, filter, clamp } = settings;
 
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
-    
+
     if (clamp) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -4384,15 +4980,15 @@ class RendererGL2 {
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl[filter]);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl[filter]);
-    
+
     return unit;
   }
 
 
   /**
    * Get the total number of vertices in this mesh.
-   */ 
-  totalVertices () {
+   */
+  totalVertices() {
     return Object.values(this.meshes).reduce((a, b) => a + b.data.vertexCount, 0);
   }
 
@@ -4400,7 +4996,7 @@ class RendererGL2 {
   /**
    * Set any uniforms in the global block.
    */
-  setGlobalUniformBlock () {
+  setGlobalUniformBlock() {
     for (let uniform in this.globalUniformBlock) {
       this.uniform(uniform, this.globalUniformBlock[uniform]);
     }
@@ -4411,22 +5007,22 @@ class RendererGL2 {
    * Blit from one frame buffer to another.
    * @param {WebGLFramebuffer|null} The source buffer or null for canvas.
    * @param {WebGLFramebuffer|null} The target buffer or null for canvas.
-   */ 
-  blitBuffer (src, target) {
+   */
+  blitBuffer(src, target) {
     this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, src);
     this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, target);
     let w = this.w;
     let h = this.h;
     if (w > 0 && h > 0) {
-      this.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST);      
+      this.gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST);
     }
   }
 
 
   /**
    * Free up gl (or js) memory for a single object.
-   */ 
-  _disposeGLEntity (entity) {
+   */
+  _disposeGLEntity(entity) {
     if (!entity) return;
     const constructor = entity.constructor.name;
     if (this.deleteLookup[constructor]) {
@@ -4439,8 +5035,8 @@ class RendererGL2 {
 
   /**
    * Dispose of any gl resources.
-   */ 
-  dispose () {
+   */
+  dispose() {
     this.gl;
     console.log('disposeId', this.instanceId);
     for (let target of Object.values(this.renderTargets)) {
@@ -4466,7 +5062,7 @@ class RendererGL2 {
     }
   }
 
-  _printShader (info, shaderSrc) {
+  _printShader(info, shaderSrc) {
     if (info.length === 0) return;
 
     let lines = shaderSrc.split('\n');
@@ -5220,12 +5816,16 @@ class Gum {
     /** 
      * The width of the canvas.
      */
-    this.w = 500;
+    this.w = settings.width || 500;
 
     /** 
      * The height of the canvas.
      */
-    this.h = 500;
+    this.h = settings.height || 500;
+
+    if (settings.width || settings.height) {
+      this._isFixedSize = true;
+    }
 
     /*
      * The renderer.
@@ -5241,7 +5841,9 @@ class Gum {
     this.gl = this.renderer.gl;
 
     // Call on resize.
+    this.size(this.w, this.h);
     this._onresize();
+
 
     /**
      * The scene.
@@ -5259,7 +5861,7 @@ class Gum {
 
     /**
      * The scene graph widget.
-     * @type {}
+     * @type {SceneGraph}
      */
     this.sceneGraph = SceneGraph();
 
@@ -5423,9 +6025,8 @@ class Gum {
 
   /**
    * Set the background color. Like processing also has the effect of 
-   * a full canvas clean
+   * a full canvas clear
    * @param {Color} color 
-   * @returns 
    */
   clear(color) {
     if (color instanceof Color) {
@@ -5489,8 +6090,7 @@ class Gum {
 
     identity(this._imMatrix);
 
-    this.renderer.setProgram('default');
-    this.renderer.setRenderTarget('default');
+    this.scene.updateSceneGraph();
 
     if (this._loop && this._draw) {
       this._preDraw();
@@ -5744,9 +6344,9 @@ class Gum {
   }
 
 
-  addProgram(programName, shaders = false) {
-    if (shaders && shaders.vert && shaders.frag) {
-      this.renderer.createProgram(programName, shaders.vert, shaders.frag);
+  addProgram(programName, customShaders = false) {
+    if (customShaders && customShaders.vert && customShaders.frag) {
+      this.renderer.createProgram(programName, customShaders.vert, customShaders.frag);
       return;
     }
     if (shaders[programName].vert && shaders[programName].frag) {
@@ -5760,14 +6360,11 @@ class Gum {
    * Render the whole 3D scene.
    */
   drawScene() {
-    this.scene.updateSceneGraph();
 
     this.renderer.uniform('uTex', 'none');
 
     for (let call of this.scene.drawCalls()) {
-
       this.renderer.draw(call.geometry, call.uniforms, call.program);
-      // console.log(call);
     }
   }
 
@@ -5876,9 +6473,10 @@ class Gum {
 
 
 /**
- * Inline any public functions from a module into the g namespace.
+ * Inline any public functions from a module into the gum instance.
  * @param {Module} module An imported module.
- * @param {string} target An optional string location to put the module under.  
+ * @param {string} target An optional string location to put the module under.
+ * @private
  */
 function _inlineModule(module, context, target) {
   let targetObj = context;

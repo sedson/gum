@@ -501,7 +501,7 @@ export function _fsQuad() {
  * Make an axes gizmo.
  * @private
  */
-export function _axes() {
+export function _axes(size = 100) {
   const positions = [
     [0, 0, 0],
     [1, 0, 0],
@@ -515,7 +515,7 @@ export function _axes() {
     [0, -1, 0],
     [0, 0, 0],
     [0, 0, -1],
-  ];
+  ].map(pos => Vec3.from(pos).mult(size));
 
   const colors = [
     [1, 0, 0, 1],

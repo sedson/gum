@@ -130,7 +130,6 @@ class Vec3 extends Array {
    * @param {number} x
    * @param {number} y
    * @param {number} z
-   * 
    */
   constructor(x = 0, y = 0, z = 0) {
     super();
@@ -138,6 +137,14 @@ class Vec3 extends Array {
     this[1] = y;
     this[2] = z;
     this._changed = false;
+  }
+
+  /**
+   * Get a Vector3 from a plain js array of numbers.
+   * @param {number[]}
+   */
+  static from(arr) {
+    return new Vec3(...arr);
   }
 
   /**

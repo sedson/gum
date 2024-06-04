@@ -6,9 +6,12 @@
   </head>
   <link rel="stylesheet" href="/css/gum.css">
   <body>
-    <div class="gum-panel">
-      <canvas id="canvas" style="width: 200%; height: 200%"></canvas>
-    </div>
-    <script type="module" src="./script.js"></script>
+    <canvas id="my-canvas"></canvas>
+    <script type="text/javascript" src="/dist/gum.js"></script>
+    <script type="text/javascript">
+      // GUM3D is attached to the window. GUM3D.Gum contructs a new Gum instance.
+      const g = new GUM3D.Gum("#my-canvas", { width: 512, height: 512 });
+      g.clear(g.color("#00f"));
+    </script>
   </body>
 </html>

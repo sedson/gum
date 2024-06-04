@@ -1015,7 +1015,6 @@ var GUM3D = (function (exports) {
      * @param {number} x
      * @param {number} y
      * @param {number} z
-     * 
      */
     constructor(x = 0, y = 0, z = 0) {
       super();
@@ -1023,6 +1022,14 @@ var GUM3D = (function (exports) {
       this[1] = y;
       this[2] = z;
       this._changed = false;
+    }
+
+    /**
+     * Get a Vector3 from a plain js array of numbers.
+     * @param {number[]}
+     */
+    static from(arr) {
+      return new Vec3(...arr);
     }
 
     /**
@@ -2531,7 +2538,7 @@ var GUM3D = (function (exports) {
    * Make an axes gizmo.
    * @private
    */
-  function _axes() {
+  function _axes(size = 100) {
     const positions = [
       [0, 0, 0],
       [1, 0, 0],
@@ -2545,7 +2552,7 @@ var GUM3D = (function (exports) {
       [0, -1, 0],
       [0, 0, 0],
       [0, 0, -1],
-    ];
+    ].map(pos => Vec3.from(pos).mult(size));
 
     const colors = [
       [1, 0, 0, 1],
@@ -5819,6 +5826,10 @@ var GUM3D = (function (exports) {
        */
       this.h = settings.height || 500;
 
+      if (settings.width || settings.height) {
+        this._isFixedSize = true;
+      }
+
       /*
        * The renderer.
        * @type {RendererGL2}
@@ -5833,7 +5844,9 @@ var GUM3D = (function (exports) {
       this.gl = this.renderer.gl;
 
       // Call on resize.
+      this.size(this.w, this.h);
       this._onresize();
+
 
       /**
        * The scene.
@@ -5990,8 +6003,6 @@ var GUM3D = (function (exports) {
     run(setup, draw) {
       this._onresize();
 
-      console.log(this.w, this.h)
-
       this._setup();
 
       // Do the pre draw routine once incase any code in setup asks to draw.
@@ -6074,19 +6085,15 @@ var GUM3D = (function (exports) {
      */
     _tick() {
       if (this._disposed) return;
-     
-      this._time = now - this._timeAtLaunch;
-
-      identity(this._imMatrix);
-
-      this.renderer.setProgram('default');
-      this.renderer.setRenderTarget('default');
-
       let now = performance.now();
       let delta = 0.001 * (now - this._lastNow) / (1 / 60);
       this._lastNow = now;
 
-      this.updateSceneGraph();
+      this._time = now - this._timeAtLaunch;
+
+      identity(this._imMatrix);
+
+      this.scene.updateSceneGraph();
 
       if (this._loop && this._draw) {
         this._preDraw();
@@ -6356,7 +6363,6 @@ var GUM3D = (function (exports) {
      * Render the whole 3D scene.
      */
     drawScene() {
-      this.scene.updateSceneGraph();
 
       this.renderer.uniform('uTex', 'none');
 
@@ -6448,9 +6454,11 @@ var GUM3D = (function (exports) {
 
 
     _onresize() {
+      if (this._isFixedSize) {
+        return;
+      }
       const cW = Math.floor(this.canvas.clientWidth * this.pixelRatio);
       const cH = Math.floor(this.canvas.clientHeight * this.pixelRatio);
-
       if (cW !== this.w || cH !== this.h) {
         this.resized = true;
         this.canvas.width = cW;

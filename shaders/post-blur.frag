@@ -15,7 +15,6 @@ uniform float uWeight;
 in vec2 vTexCoord;
 out vec4 fragColor;
 
-
 void main() {
   vec4 col = texture(uMainTex, vTexCoord);
 
@@ -34,6 +33,5 @@ void main() {
 
   vec3 avg = accum / weightSum;
 
-  
   fragColor = vec4(avg, 1.0);
 }

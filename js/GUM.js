@@ -86,12 +86,16 @@ class Gum {
     /** 
      * The width of the canvas.
      */
-    this.w = 500;
+    this.w = settings.width || 500;
 
     /** 
      * The height of the canvas.
      */
-    this.h = 500;
+    this.h = settings.height || 500;
+
+    if (settings.width || settings.height) {
+      this._isFixedSize = true;
+    }
 
     /*
      * The renderer.
@@ -107,7 +111,9 @@ class Gum {
     this.gl = this.renderer.gl;
 
     // Call on resize.
+    this.size(this.w, this.h);
     this._onresize();
+
 
     /**
      * The scene.
@@ -354,8 +360,7 @@ class Gum {
 
     m4.identity(this._imMatrix);
 
-    this.renderer.setProgram('default');
-    this.renderer.setRenderTarget('default');
+    this.scene.updateSceneGraph();
 
     if (this._loop && this._draw) {
       this._preDraw();
@@ -610,8 +615,8 @@ class Gum {
 
 
   addProgram(programName, customShaders = false) {
-    if (shaders && shaders.vert && shaders.frag) {
-      this.renderer.createProgram(programName, shaders.vert, shaders.frag);
+    if (customShaders && customShaders.vert && customShaders.frag) {
+      this.renderer.createProgram(programName, customShaders.vert, customShaders.frag);
       return;
     }
     if (shaders[programName].vert && shaders[programName].frag) {
@@ -625,7 +630,6 @@ class Gum {
    * Render the whole 3D scene.
    */
   drawScene() {
-    this.scene.updateSceneGraph();
 
     this.renderer.uniform('uTex', 'none');
 
