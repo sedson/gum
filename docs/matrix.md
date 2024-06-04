@@ -2,8 +2,7 @@
 
 <dl>
 <dt><a href="#EPSILON">EPSILON</a></dt>
-<dd><p>Matrix math borrowed from GlMatrix.
-<a href="https://github.com/toji/gl-matrix/blob/master/src/mat4.js">https://github.com/toji/gl-matrix/blob/master/src/mat4.js</a>.</p>
+<dd><p>Minimal float difference for equality.</p>
 </dd>
 </dl>
 
@@ -52,8 +51,7 @@
 <a name="EPSILON"></a>
 
 ## EPSILON
-Matrix math borrowed from GlMatrix.
-https://github.com/toji/gl-matrix/blob/master/src/mat4.js.
+Minimal float difference for equality.
 
 **Kind**: global constant  
 <a name="create"></a>

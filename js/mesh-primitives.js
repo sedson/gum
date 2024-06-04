@@ -5,6 +5,9 @@
 import { Vec3 } from "./vectors.js";
 import { Mesh } from "./mesh.js";
 
+/**
+ * @module shapes
+ */
 
 /**
  * Make a cube. Centered on the origin with w, h, d of size.
@@ -63,7 +66,7 @@ export function cube(size = 1) {
 /**
  * Make an icosphere shape with diameter size.
  * @param {number} size The diameter of the sphere.
- * @param {number} level The subdivision level to use.
+ * @param {number} level The subdivision level to use. 0 is low poly. 5 is very very high poly.
  * @param {boolean} flat Whether to use flat shading. Default smooth (false).
  * @return {Mesh}
  */
@@ -134,6 +137,7 @@ export function icosphere(size = 1, level = 1, flat = false) {
    * Add a new position. Normalize its position so it sits on the surface of 
    * the sphere.
    * @param {*} pos 
+   * @private
    */
   const addPosition = (pos) => {
     positions.push(pos.normalize(radius));
@@ -144,7 +148,7 @@ export function icosphere(size = 1, level = 1, flat = false) {
   /**
    * @param {*} a 
    * @param {*} b 
-   * @returns 
+   * @private
    */
   const getMidPoint = (a, b) => {
     const key = a < b ? `${a}_${b}` : `${b}_${a}`;
@@ -218,7 +222,11 @@ export function icosphere(size = 1, level = 1, flat = false) {
 
 
 /**
- * 
+ * Make a UV Sphere - like a mercator globe.
+ * @param {number} size The diameter of the sphere.
+ * @param {number} level The segments level. 1 is very low poly. 40 is pretty high poly.
+ * @param {boolean} flat Whether to use flat shading. Default smooth (false).
+ * @returns {Mesh}
  */
 export function uvsphere(size = 1, level = 1, flat = false) {
   const radius = size / 2;
@@ -365,8 +373,8 @@ export function quad(size) {
 
 /**
  * Make a grid facing up along y axis.
- * @param {number} size The size of the quad.
- * @param {number} subdivisions The number of subdivisions.
+ * @param {number} size The size (w, h) of the grid.
+ * @param {number} subdivisions The number of subdivisions. Default 10.
  * @return {Mesh}
  */
 export function grid(size, subdivisions = 10, flat = false) {
@@ -425,7 +433,10 @@ export function grid(size, subdivisions = 10, flat = false) {
 /**
  * Make a circle with diameter size facing up along y axis.
  * @param {number} size The size of the circle.
- * @param {number} resolution The number of straight line segments to use.
+ * @param {number} resolution The number of straight line segments to use. Default 12.
+ * @param {string} fill The fill type to use. 'ngon' is default and does not require an
+ *     extra vertex at the center. 'fan' places an extra vert at the center and connects 
+ *     all the verts to that like spokes.
  * @return {Mesh}
  */
 export function circle(size, resolution = 12, fill = 'ngon') {
@@ -462,7 +473,8 @@ export function circle(size, resolution = 12, fill = 'ngon') {
 
 
 /**
- * Make a full screen quad for rendering post effects..
+ * Make a full screen quad for rendering post effects.
+ * @private
  */
 export function _fsQuad() {
   const vertices = [
@@ -487,6 +499,7 @@ export function _fsQuad() {
 
 /**
  * Make an axes gizmo.
+ * @private
  */
 export function _axes() {
   const positions = [
@@ -555,6 +568,9 @@ export function _axes() {
  * Make a circle with diameter size facing up along y axis.
  * @param {number} size The size of the circle.
  * @param {number} resolution The number of straight line segments to use.
+ * @param {string} fill The fill type to use. 'ngon' is default and does not require an
+ *     extra vertex at the center. 'fan' places an extra vert at the center and connects 
+ *     all the verts to that like spokes.
  * @return {Mesh}
  */
 export function cylinder(size, resolution = 12, fill = 'ngon', flat = false) {
@@ -662,6 +678,9 @@ export function cylinder(size, resolution = 12, fill = 'ngon', flat = false) {
  * TODO : proper normals for the cone.
  * @param {number} size The size of the circle.
  * @param {number} resolution The number of straight line segments to use.
+ * @param {string} fill The fill type to use. 'ngon' is default and does not require an
+ *     extra vertex at the center. 'fan' places an extra vert at the center and connects 
+ *     all the verts to that like spokes.
  * @return {Mesh}
  */
 export function cone(size, resolution = 12, fill = 'ngon', flat = false) {

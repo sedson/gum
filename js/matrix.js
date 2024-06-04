@@ -1,6 +1,10 @@
 /**
- * Matrix math borrowed from GlMatrix.
+ * @file Matrix math borrowed from GlMatrix.
  * https://github.com/toji/gl-matrix/blob/master/src/mat4.js.
+ */
+
+/** 
+ * Minimal float difference for equality.
  */
 
 const EPSILON = 0.0000001;

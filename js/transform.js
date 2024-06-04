@@ -6,6 +6,9 @@ import { Vec2, Vec3 } from "./vectors.js";
 import * as m4 from "./matrix.js";
 
 
+/**
+ * The transform class represents one point and manages matrix math to update that.
+ */
 export class Transform {
   constructor () {
     this.position = new Vec3();

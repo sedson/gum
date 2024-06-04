@@ -86,7 +86,6 @@ export function findGroups(faces) {
    * Join a set with another set or a list.
    * @param {Set} a The receiving set. 
    * @param {Ser|array} b The giving set or list.
-   * @returns 
    */
   const join = (a, b) => {
     if (b instanceof Set) {
@@ -153,7 +152,7 @@ export function findGroups(faces) {
  * @param {array<(array|number)>} attribValues An array of values to attach.
  *     Must be the same length as vertices. 
  * @param {array<Vertex>} vertices The mesh's vertex list.
- * @returns 
+ * @returns {array<Vertex>}
  */
 export function applyAttribVarying(attribName, attribValues, vertices) {
   const outVertices = [];
@@ -186,7 +185,7 @@ export function applyAttribVarying(attribName, attribValues, vertices) {
  * @param {array<(array|number|function)>} attribValue The value to attach.
  * @param {array<Vertex>} vertices The mesh's vertex list.
  * @param {function} filter An optional filter function to operate 
- * @returns 
+ * @returns {array<vertex>}
  */
 export function applyAttribConstant(attribName, attribValue, vertices) {
   const outVertices = [];

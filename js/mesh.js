@@ -4,11 +4,10 @@
 
 import * as MeshOps from './mesh-ops.js';
 import { Vec3 } from './vectors.js';
-import * as m4 from './matrix.js';
 import { uuid } from './id.js';
 
 /**
- * A single vertex. Contains 1 or more named attributes. 
+ * A single vertex.Contains 1 or more named attributes.
  * @typedef {object} Vertex
  */
 
@@ -17,8 +16,11 @@ import { uuid } from './id.js';
  * @typedef {array<number>} Face
  */
 
-
-export class Mesh {
+/**
+ * The mesh class represents the vertex and face data of a shape. Meshses are 
+ * created with shape primitives or by loading models.
+ */
+class Mesh {
   /**
    * Construct a mesh from a list of vertices and faces.
    * @param {array<Vertex>} vertices 
@@ -32,32 +34,34 @@ export class Mesh {
      * The array of vertices for this mesh. Each entry is object with with 
      * named attributes and arrays for the value.
      * @type {array<Vertex>}
-     * @example 
      */
     this.vertices = vertices;
 
     /**
      * The array of faces for this mesh. An array of arrays. The internal array
      * contains indices into the vertex array. Quads and ngons are allowed but 
-     * must be triangulated before being sent to the 
+     * must be triangulated before being sent to the card.
      * @type {array<Face>}
      */
     this.faces = faces;
 
     /**
      * A name for this mesh.
+     * @type {string}
      */
     this.name = meta.name || 'mesh';
 
     /**
      * The id for this mesh.
+     * @type {string}
      */
     this.id = uuid();
   }
 
 
   /**
-   * Triangulate this mesh.
+   * Triangulate this mesh. Turns any quads and ngons into triangles. Is done 
+   * before passing to GL anyway.
    * @chainable
    */
   triangulate() {
@@ -67,10 +71,9 @@ export class Mesh {
 
 
   /**
-   * Create a render-able version of the mesh that works with a gl.drawArrays()
+   * Creates a render-able version of the mesh that works with a gl.drawArrays()
    * call. 
-   * TODO : Rename this.
-   * @returns 
+   * @returns {object} The flattened, triangulates, GL ready data.
    */
   render() {
     const mode = 'TRIANGLES';
@@ -103,6 +106,11 @@ export class Mesh {
   }
 
 
+  /**
+   * Creates a wireframe version of this mesh that works with a gl.drawArrays()
+   * call. Use gl.LINES mode.
+   * @returns {object} The flattened GL ready edge data.
+   */
   renderEdges() {
     const mode = 'LINES';
     const edges = MeshOps.facesToEdges(this.faces);
@@ -131,6 +139,10 @@ export class Mesh {
   }
 
 
+  /**
+   * Render points as the vertices of this mesh. Uses gl.POINTS mode.
+   * @returns {object} The flattened GL ready point data.
+   */
   renderPoints() {
     const mode = 'POINTS';
     const vertexCount = this.vertices.length;
@@ -156,6 +168,11 @@ export class Mesh {
   }
 
 
+  /**
+   * Render the vertex normal data as wireframe lines using the gl.LINES mode
+   * @param {number} length The length in world units to debug normals with.
+   * @returns {object} The flattened GL ready edge data.
+   */
   renderNormals(length = 0.05) {
     const mode = 'LINES';
     const vertexCount = this.vertices.length * 2;
@@ -206,9 +223,10 @@ export class Mesh {
 
 
   /**
-   * Fill the vetex colors for the mesh with a single vertex color.
+   * Fill the vertex colors for the mesh with a single vertex color.
    * @param {color|function} col The color to apply to each vertex OR a function 
    *     to map to each vertex that returns a color.
+   * @chainable
    */
   fill(col) {
 
@@ -217,7 +235,7 @@ export class Mesh {
     } else if (typeof col === 'function') {
       this.vertices = MeshOps.applyAttribConstant('color', col, this.vertices);
     } else {
-      console.warn(`${col} was not of type color or function.`);
+      console.warn(`Fill: ${col} was not of type color or function.`);
     }
 
     return this;
@@ -226,12 +244,14 @@ export class Mesh {
 
   /**
    * Inflate the mesh along its normals.
+   * @param {number} amt The amount to inflate the mesh by. Can be positive or 
+   * negative.
+   * @chainable
    */
   inflate(amt = 0) {
     for (let vi = 0; vi < this.vertices.length; vi++) {
       const vertex = this.vertices[vi];
       if (!(vertex.position && vertex.normal)) continue;
-
       for (let i = 0; i < 3; i++) {
         vertex.position[i] += vertex.normal[i] * amt;
       }
@@ -240,6 +260,11 @@ export class Mesh {
   }
 
 
+  /**
+   * Get a position-only edge list where p0, p1, p2, p3 are vec3s and the edge 
+   * list is [[p0, p1], [p1, [p2], [p3, p4]]...]. 
+   * @returns {array<array<Vector3>>} The nested edge array.
+   */
   getEdges() {
     const edges = MeshOps.facesToEdges(this.faces);
     const outEdges = [];
@@ -253,6 +278,11 @@ export class Mesh {
     return outEdges;
   }
 
+
+  /**
+   * Convert this mesh to flat-shaded vertices.
+   * @chainable
+   */
   shadeFlat() {
     const { vertices, faces } = MeshOps.shadeFlat(this.vertices, this.faces);
     this.vertices = vertices;
@@ -260,6 +290,13 @@ export class Mesh {
     return this;
   }
 
+
+  /**
+   * Convert this mesh to smooth-shaded vertices.
+   * @param {number} tolerance Vertices that are closer-together than tolerance
+   *     will me merged.
+   * @chainable
+   */
   shadeSmooth(tolerance) {
     const { vertices, faces } = MeshOps.shadeSmooth(this.vertices, this.faces, tolerance);
     this.vertices = vertices;
@@ -267,6 +304,13 @@ export class Mesh {
     return this;
   }
 
+
+  /**
+   * Transforms all the positions and normals in this mesh by some 3D 
+   * transformation.
+   * @param {Transform} transform The Gum Transform to use.
+   * @chainable
+   */
   applyTransform(transform) {
     for (let vi = 0; vi < this.vertices.length; vi++) {
       const vert = this.vertices[vi];
@@ -280,6 +324,12 @@ export class Mesh {
     return this;
   }
 
+
+  /**
+   * Join another mesh into this one.
+   * @param {Mesh} The other mesh.
+   * @chainable
+   */
   join(other) {
     const offset = this.vertices.length;
 
@@ -293,34 +343,50 @@ export class Mesh {
     return this;
   }
 
+
+  /**
+   * Invert this meshes normals.
+   * @chainable
+   */
   flipNormals() {
     const flipNormal = n => n.map(x => x * -1);
     this.vertices = MeshOps.mapFuncToAttributes(this.vertices, 'normal', flipNormal);
     return this;
   }
 
+
+  /**
+   * Return a full deep copy of this mesh.
+   * @returns {Mesh} The new mesh.
+   */
   copy() {
     const copyVertices = JSON.parse(JSON.stringify(this.vertices));
     const copFaces = JSON.parse(JSON.stringify(this.faces));
     return new Mesh(copyVertices, copFaces, { name: this.name });
   }
 
+
   /**
-   * Maps a function over the vertices in this mesh.
+   * Map a function over the vertices in this mesh.
    * @param {Function} func A vertex->vertex callback.
    * 
    * @exmaple 
+   * // This function copies the vertex position, normalizes it, then uses 
+   * // that as the vertex color rgb.
    * function vertFunc (vert) {
-   *   const pos = g.vec3(...vert.aPosition);
+   *   const pos = g.vec3(...vert.position);
    *   pos.normalize();
    *   return {
-   *      aNormal: [...pos]
+   *      color: [...pos, 1]
    *   };
    * }
    * 
-   * myMesh.map(vertFunc)
+   * myMesh.attributeMap(vertFunc);
    */
   attributeMap(func) {
     this.vertices = MeshOps.attributeMap(this.vertices, func);
+    return this;
   }
 }
+
+export { Mesh }

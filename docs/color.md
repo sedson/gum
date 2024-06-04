@@ -2,7 +2,7 @@
 
 <dl>
 <dt><a href="#Color">Color</a></dt>
-<dd><p>Color class with rgb and hsl state. Ideally colors are not mutable. To 
+<dd><p>A Color class with rgb and hsl state. Ideally colors are not mutable. To 
 get a new color, create a new color.</p>
 </dd>
 </dl>
@@ -16,38 +16,187 @@ an hsl(h360, s100, l100) string, an array of 3 or 4 rgba[0-&gt;1] values, spread
 out versions of those values, or an existing color object. If no params 
 passed get a random color.</p>
 </dd>
-<dt><a href="#validColorArray">validColorArray(arr)</a> ⇒ <code>boolean</code></dt>
-<dd><p>Check if an array is a valid array of parse-able numbers with at least three
-values.</p>
-</dd>
-<dt><a href="#colorFormat">colorFormat(str)</a> ⇒ <code>string</code></dt>
-<dd><p>Get the color format from a string.</p>
-</dd>
-<dt><a href="#extractNumbers">extractNumbers(str)</a> ⇒ <code>array.&lt;number&gt;</code></dt>
-<dd><p>Get all the numbers out of a color string.</p>
-</dd>
-<dt><a href="#strToRgb">strToRgb(str, normalized)</a> ⇒ <code>array.&lt;number&gt;</code></dt>
-<dd><p>Get rgb values from a string.</p>
-</dd>
-<dt><a href="#strToHsl">strToHsl(str, normalized)</a> ⇒ <code>array.&lt;number&gt;</code></dt>
-<dd><p>Get hsl values from a string.</p>
-</dd>
-<dt><a href="#hexToRgb">hexToRgb(str, normalized)</a> ⇒ <code>array.&lt;number&gt;</code></dt>
-<dd><p>Get rgb values from a hex string.</p>
-</dd>
 <dt><a href="#hslToRgb">hslToRgb(h, s, l)</a> ⇒ <code>array</code></dt>
 <dd><p>Convert hsl values to an rgb array.</p>
 </dd>
 <dt><a href="#rgbToHsl">rgbToHsl(r, g, b)</a> ⇒ <code>array</code></dt>
 <dd><p>Convert rgb values to an hsl array.</p>
 </dd>
-<dt><a href="#isColor">isColor()</a></dt>
+<dt><a href="#isColor">isColor()</a> ⇒ <code>boolean</code></dt>
 <dd><p>Check if an object is an instance of Color.</p>
 </dd>
 <dt><a href="#blend">blend(src, target, amt, mode)</a> ⇒ <code><a href="#Color">Color</a></code></dt>
 <dd><p>Blend two colors – src and target - by amount using mode.</p>
 </dd>
 </dl>
+
+<a name="Color"></a>
+
+## Color
+A Color class with rgb and hsl state. Ideally colors are not mutable. To 
+get a new color, create a new color.
+
+**Kind**: global class  
+
+* [Color](#Color)
+    * [new Color()](#new_Color_new)
+    * [.r](#Color+r) : <code>number</code>
+    * [.g](#Color+g) : <code>number</code>
+    * [.b](#Color+b) : <code>number</code>
+    * [.h](#Color+h) : <code>number</code>
+    * [.s](#Color+s) : <code>number</code>
+    * [.l](#Color+l) : <code>number</code>
+    * [.a](#Color+a) : <code>number</code>
+    * [.rgb](#Color+rgb) : <code>array</code>
+    * [.rgba](#Color+rgba) : <code>array</code>
+    * [.hsl](#Color+hsl) : <code>array</code>
+    * [.hsla](#Color+hsla) : <code>array</code>
+    * [.rgbString()](#Color+rgbString) ⇒ <code>string</code>
+    * [.hslString()](#Color+hslString) ⇒ <code>string</code>
+    * [.blend(other, amt, mode)](#Color+blend) ⇒ [<code>Color</code>](#Color)
+    * [.copy()](#Color+copy) ⇒ [<code>Color</code>](#Color)
+    * [.shiftHue(amt)](#Color+shiftHue) ⇒ [<code>Color</code>](#Color)
+    * [.lighten(amt)](#Color+lighten) ⇒ [<code>Color</code>](#Color)
+    * [.saturate(amt)](#Color+saturate) ⇒ [<code>Color</code>](#Color)
+
+<a name="new_Color_new"></a>
+
+### new Color()
+Construct a Color from normalized rgba values. In general, API usage should 
+discourage calling 'new Color()' and should rely on the color() generator.
+
+<a name="Color+r"></a>
+
+### color.r : <code>number</code>
+The red value.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+g"></a>
+
+### color.g : <code>number</code>
+The green value.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+b"></a>
+
+### color.b : <code>number</code>
+The blue value.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+h"></a>
+
+### color.h : <code>number</code>
+The hue value.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+s"></a>
+
+### color.s : <code>number</code>
+The saturation value.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+l"></a>
+
+### color.l : <code>number</code>
+The lightness value.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+a"></a>
+
+### color.a : <code>number</code>
+The alpha value.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+rgb"></a>
+
+### color.rgb : <code>array</code>
+RGB as a plain array.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+rgba"></a>
+
+### color.rgba : <code>array</code>
+RGBA as a plain array.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+hsl"></a>
+
+### color.hsl : <code>array</code>
+HSL as a plain array.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+hsla"></a>
+
+### color.hsla : <code>array</code>
+HSLA as a plain array.
+
+**Kind**: instance property of [<code>Color</code>](#Color)  
+<a name="Color+rgbString"></a>
+
+### color.rgbString() ⇒ <code>string</code>
+Get the CSS-ready rgb or rgba string representation of this color.
+
+**Kind**: instance method of [<code>Color</code>](#Color)  
+<a name="Color+hslString"></a>
+
+### color.hslString() ⇒ <code>string</code>
+Get the CSS-ready hsl or hsla string representation of this color.
+
+**Kind**: instance method of [<code>Color</code>](#Color)  
+<a name="Color+blend"></a>
+
+### color.blend(other, amt, mode) ⇒ [<code>Color</code>](#Color)
+Blend this color with other by amount using mode.
+
+**Kind**: instance method of [<code>Color</code>](#Color)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| other | [<code>Color</code>](#Color) |  | The other color. |
+| amt | <code>number</code> | <code>0.5</code> | The aboumt to blend (0:1). |
+| mode | <code>string</code> | <code>&quot;RGB&quot;</code> | The color space to blend in. Options are 'RGB' (default) and      'HSL'. |
+
+<a name="Color+copy"></a>
+
+### color.copy() ⇒ [<code>Color</code>](#Color)
+Copy this color.
+
+**Kind**: instance method of [<code>Color</code>](#Color)  
+<a name="Color+shiftHue"></a>
+
+### color.shiftHue(amt) ⇒ [<code>Color</code>](#Color)
+Hue shift.
+
+**Kind**: instance method of [<code>Color</code>](#Color)  
+**Returns**: [<code>Color</code>](#Color) - A new color.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| amt | <code>number</code> | The amount of hue shift in degrees. |
+
+<a name="Color+lighten"></a>
+
+### color.lighten(amt) ⇒ [<code>Color</code>](#Color)
+Lighten or darken the color.
+
+**Kind**: instance method of [<code>Color</code>](#Color)  
+**Returns**: [<code>Color</code>](#Color) - A new color.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| amt | <code>number</code> | The lightness change. Positive for lighter. Negative for darker.     Overall lightness is (0:100). |
+
+<a name="Color+saturate"></a>
+
+### color.saturate(amt) ⇒ [<code>Color</code>](#Color)
+Saturate or desaturate the color.
+
+**Kind**: instance method of [<code>Color</code>](#Color)  
+**Returns**: [<code>Color</code>](#Color) - A new color.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| amt | <code>number</code> | The saturation change. Positive for more. Negative for less.     Overall saturation is (0:100). |
 
 <a name="color"></a>
 
@@ -58,82 +207,13 @@ out versions of those values, or an existing color object. If no params
 passed get a random color.
 
 **Kind**: global function  
+**Exampe**: const red = color('rgb(255, 0, 0)');
+const yellow = color('#ffff00');
+const randomColor = color();  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | color | <code>string</code> | The color. |
-
-<a name="validColorArray"></a>
-
-## validColorArray(arr) ⇒ <code>boolean</code>
-Check if an array is a valid array of parse-able numbers with at least three
-values.
-
-**Kind**: global function  
-**Returns**: <code>boolean</code> - Whether the array is valid.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| arr | <code>array</code> | An array of potential color values. |
-
-<a name="colorFormat"></a>
-
-## colorFormat(str) ⇒ <code>string</code>
-Get the color format from a string.
-
-**Kind**: global function  
-**Returns**: <code>string</code> - 'HEX' | 'RGB' | 'HSL'.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| str | <code>string</code> | The input color string. |
-
-<a name="extractNumbers"></a>
-
-## extractNumbers(str) ⇒ <code>array.&lt;number&gt;</code>
-Get all the numbers out of a color string.
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| str | <code>string</code> | An rgb or hsl string. |
-
-<a name="strToRgb"></a>
-
-## strToRgb(str, normalized) ⇒ <code>array.&lt;number&gt;</code>
-Get rgb values from a string.
-
-**Kind**: global function  
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| str | <code>string</code> |  | An rgb string. |
-| normalized | <code>boolean</code> | <code>true</code> | If true return components in the [0->1] range. If     not leave them in rgb[0->255]. |
-
-<a name="strToHsl"></a>
-
-## strToHsl(str, normalized) ⇒ <code>array.&lt;number&gt;</code>
-Get hsl values from a string.
-
-**Kind**: global function  
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| str | <code>string</code> |  | An hsl string. |
-| normalized | <code>boolean</code> | <code>true</code> | If true return components in h[0->360] sl[0->1]      range. If not leave them in h[0->360] sl[0->100]. |
-
-<a name="hexToRgb"></a>
-
-## hexToRgb(str, normalized) ⇒ <code>array.&lt;number&gt;</code>
-Get rgb values from a hex string.
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| str | <code>string</code> | An hex string. |
-| normalized | <code>boolean</code> | If true return components in the [0->1] range. If     not leave them in rgb[0->255]. |
 
 <a name="hslToRgb"></a>
 
@@ -165,7 +245,7 @@ Convert rgb values to an hsl array.
 
 <a name="isColor"></a>
 
-## isColor()
+## isColor() ⇒ <code>boolean</code>
 Check if an object is an instance of Color.
 
 **Kind**: global function  

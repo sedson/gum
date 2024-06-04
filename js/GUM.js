@@ -65,7 +65,7 @@ const globals = {
 /**
  * The class for one instance of Gum. It has a renderer, a scene-graph, etc.
  */
-export class Gum {
+class Gum {
   constructor(canvas, settings) {
     settings = settings || {};
 
@@ -125,7 +125,7 @@ export class Gum {
 
     /**
      * The scene graph widget.
-     * @type {}
+     * @type {SceneGraph}
      */
     this.sceneGraph = SceneGraph();
 
@@ -609,7 +609,7 @@ export class Gum {
   }
 
 
-  addProgram(programName, shaders = false) {
+  addProgram(programName, customShaders = false) {
     if (shaders && shaders.vert && shaders.frag) {
       this.renderer.createProgram(programName, shaders.vert, shaders.frag);
       return;
@@ -630,9 +630,7 @@ export class Gum {
     this.renderer.uniform('uTex', 'none');
 
     for (let call of this.scene.drawCalls()) {
-
       this.renderer.draw(call.geometry, call.uniforms, call.program);
-      // console.log(call);
     }
   }
 
@@ -741,9 +739,10 @@ export class Gum {
 
 
 /**
- * Inline any public functions from a module into the g namespace.
+ * Inline any public functions from a module into the gum instance.
  * @param {Module} module An imported module.
- * @param {string} target An optional string location to put the module under.  
+ * @param {string} target An optional string location to put the module under.
+ * @private
  */
 function _inlineModule(module, context, target) {
   let targetObj = context;
@@ -771,3 +770,6 @@ _inlineModule(globals, Gum.prototype);
 _inlineModule(dom, Gum.prototype, 'dom');
 _inlineModule(primitives, Gum.prototype, 'shapes');
 _inlineModule(meshOps, Gum.prototype, 'meshops');
+
+
+export { Gum }

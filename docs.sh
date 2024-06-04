@@ -4,3 +4,4 @@ for filename in js/*; do
     echo "$name"
     npx jsdoc-to-markdown "$filename" > "docs/$name.md"
 done
+
